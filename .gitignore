@@ -1,0 +1,11 @@
+# Chaves e acesso pela .env
+.env/
+
+
+# Logs e arquivos temporários
+logs/
+
+
+# Testes e cobertura de código
+Test/
+

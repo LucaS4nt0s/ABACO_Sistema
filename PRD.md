@@ -1,8 +1,8 @@
-# PRD — Sistema de Gestão Acadêmica (SGA) Associação Abraços
+# PRD — Sistema de Gestão Acadêmica (SGA) Associação ABACO
 
 ## 1. Contexto
 
-A Associação Abraços é uma ONG que oferece cursos profissionalizantes gratuitos para a comunidade. Atualmente os processos administrativos são realizados manualmente, gerando atrasos e dificuldades na gestão das turmas.
+A Associação ABACO é uma ONG que oferece cursos profissionalizantes gratuitos para a comunidade. Atualmente os processos administrativos são realizados manualmente, gerando atrasos e dificuldades na gestão das turmas.
 
 Este sistema tem como objetivo digitalizar os processos acadêmicos e administrativos.
 
@@ -116,3 +116,13 @@ O sistema será considerado pronto quando:
 - notas puderem ser lançadas
 - pedidos puderem ser aprovados
 - dashboards puderem ser gerados
+
+## 7. Critérios de execução
+
+A forma de trabalho deve adotar as seguintes medidas:
+
+- Divida em pequenas tarefas
+- Anote a cada etapa de desenvolvimento (Concluido, em andamento, a iniciar)
+- Utilizar sub agentes para a realização das tarefas
+- É Necessário a realização de testes para a validação de cada etapa
+- Anote as etapas de andamento dos testes

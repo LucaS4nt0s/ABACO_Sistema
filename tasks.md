@@ -1,5 +1,18 @@
 # Development Tasks
 
+## Docker Setup
+
+1 - Create docker-compose.yml  
+2 - Create backend Dockerfile  
+3 - Create frontend Dockerfile  
+4 - Create .dockerignore files  
+5 - Create .env.example  
+6 - Configure PostgreSQL container  
+7 - Configure backend container  
+8 - Configure frontend container  
+9 - Ensure docker compose up --build starts the full system  
+10 - Ensure database schema is automatically initialized  
+
 ## Setup
 
 1 - Create project structure  
@@ -61,3 +74,17 @@
 22 - Add validation  
 23 - Add error handling  
 24 - Write documentation
+
+## Project Structure
+
+1 - Create monorepo structure  
+2 - Create /docs folder  
+3 - Create /backend folder  
+4 - Create /frontend folder  
+5 - Configure backend layered architecture  
+6 - Configure frontend component-based architecture  
+7 - Separate backend into modules  
+8 - Separate frontend into pages, components, services, hooks, types and utils  
+9 - Ensure controllers do not access database directly  
+10 - Ensure services contain business rules  
+11 - Ensure repositories contain database queries  

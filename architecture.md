@@ -1,5 +1,6 @@
 # Arquitetura do Sistema
 
+
 ## Frontend
 
 Framework: Next.js  
@@ -58,3 +59,25 @@ Banco: Supabase
 Custo estimado:
 
 R$0 – R$40 mês
+
+## Docker
+
+The system must be fully containerized.
+
+Development should run with:
+
+docker compose up --build
+
+The system must include:
+
+- PostgreSQL container
+- Express backend container
+- Next.js frontend container
+
+The backend must connect to PostgreSQL using:
+
+postgres://postgres:postgres@database:5432/sga_abacos
+
+The frontend must call the backend through:
+
+http://localhost:3333
