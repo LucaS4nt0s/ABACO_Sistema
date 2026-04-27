@@ -1,0 +1,11 @@
+{
+  "name": "abaco-sistema",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present"
+  }
+}

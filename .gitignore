@@ -1,11 +1,23 @@
 # Chaves e acesso pela .env
 .env/
+.env
+.env.*
 
 
 # Logs e arquivos temporários
 logs/
+*.log
 
 
 # Testes e cobertura de código
 Test/
+coverage/
+
+node_modules/
+dist/
+*.tsbuildinfo
+
+frontend/.next/
+
+# .worktrees/
 
