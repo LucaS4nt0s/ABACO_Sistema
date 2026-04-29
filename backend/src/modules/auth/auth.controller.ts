@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from 'express';
 
 import { authenticateUser } from './auth.service';
 import { HttpError } from '../../shared/middlewares/error-handler';
-import { successResponse } from '../../shared/utils/api-response';
 
 export async function loginController(
   req: Request,
@@ -17,7 +16,7 @@ export async function loginController(
     }
 
     const token = await authenticateUser(email, senha);
-    res.status(200).json(successResponse({ token }));
+    res.status(200).json({ token });
   } catch (error) {
     next(error);
   }

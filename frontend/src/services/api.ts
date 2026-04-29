@@ -1,5 +1,9 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333/api';
+const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333';
+const normalizedApiBaseUrl = rawApiBaseUrl.replace(/\/$/, '');
+
+export const API_BASE_URL = normalizedApiBaseUrl.endsWith('/api')
+  ? normalizedApiBaseUrl
+  : `${normalizedApiBaseUrl}/api`;
 
 export class ApiError extends Error {
   constructor(
