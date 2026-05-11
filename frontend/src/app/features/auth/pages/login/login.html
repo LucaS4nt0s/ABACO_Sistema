@@ -1,1 +1,24 @@
-<p>login works!</p>
+<div class="page-center">
+	<div class="login-card" role="region" aria-label="Login">
+		<div class="brand">
+			<img src="/Logo_ABACO.png" alt="ABACO" class="logo" />
+		</div>
+		<h1>Entrar no SGA</h1>
+
+		<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+			<ab-email-field [control]="form.controls.email"></ab-email-field>
+
+			<ab-password-field [control]="form.controls.password"></ab-password-field>
+
+			<ab-primary-button [disabled]="form.invalid || loading" [label]="loading ? 'Carregando...' : 'Entrar'">
+				<span *ngIf="loading" class="spinner" aria-hidden="true"></span>
+			</ab-primary-button>
+
+			<div class="actions">
+				<a routerLink="/recuperar-senha" class="forgot">Esqueci a senha</a>
+			</div>
+
+			<div class="error" *ngIf="error">{{ error }}</div>
+		</form>
+	</div>
+</div>
