@@ -3,8 +3,8 @@
 
 ## Frontend
 
-Framework: Next.js  
-Linguagem: TypeScript  
+Framework: Angular
+Linguagem: TypeScript
 UI: TailwindCSS
 
 Responsabilidades:
