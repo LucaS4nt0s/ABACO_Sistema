@@ -17,8 +17,8 @@ Responsabilidades:
 
 ## Backend
 
-Runtime: Node.js  
-Framework: Express
+Runtime: Python
+Framework: FastAPI
 
 Responsabilidades:
 
@@ -71,7 +71,7 @@ docker compose up --build
 The system must include:
 
 - PostgreSQL container
-- Express backend container
+- FastAPI backend container
 - Next.js frontend container
 
 The backend must connect to PostgreSQL using:
@@ -80,4 +80,4 @@ postgres://postgres:postgres@database:5432/sga_abacos
 
 The frontend must call the backend through:
 
-http://localhost:3333
+http://localhost:8000

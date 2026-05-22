@@ -34,13 +34,12 @@ Depends on:
 
 Technology:
 
-- Node.js
-- Express
-- TypeScript
+- Python
+- FastAPI
 
 Port:
 
-3333
+8000
 
 Depends on:
 

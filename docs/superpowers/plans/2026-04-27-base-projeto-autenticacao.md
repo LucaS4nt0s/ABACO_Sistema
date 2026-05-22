@@ -162,7 +162,7 @@ git commit -m "feat: add frontend login flow"
 
 - [ ] **Step 1: Write the failing test**
 
-Add a lightweight integration check script or container smoke test that expects `docker compose up --build` to expose the backend on `http://localhost:3333/api/auth/login`.
+Add a lightweight integration check script or container smoke test that expects `docker compose up --build` to expose the backend on `http://localhost:8000/`.
 
 - [ ] **Step 2: Run test to verify it fails**
 

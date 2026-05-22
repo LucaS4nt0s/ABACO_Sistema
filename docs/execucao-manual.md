@@ -43,7 +43,7 @@ docker compose up --build
 O comando inicia:
 
 - PostgreSQL em `localhost:5432`
-- backend em `http://localhost:3333`
+- backend em `http://localhost:8000`
 - frontend em `http://localhost:3000`
 
 ## 4. Acesse a aplicação
@@ -51,7 +51,7 @@ O comando inicia:
 Abra no navegador:
 
 - `http://localhost:3000` para o frontend
-- `http://localhost:3333/api/auth/login` para a API de login
+- `http://localhost:8000/api/auth/login` para a API de login
 
 ## 5. Pare o ambiente
 
@@ -70,3 +70,11 @@ docker compose down -v
 ## Observação importante
 
 O banco é iniciado com o schema, mas os usuários precisam ser cadastrados manualmente para o login funcionar.
+
+Para criar ou atualizar o usuário administrador localmente, defina `ADMIN_SEED_EMAIL` e `ADMIN_SEED_PASSWORD` no arquivo `.env` do backend e execute no diretório `backend`:
+
+```powershell
+.\venv\Scripts\python.exe scripts\seed_admin.py
+```
+
+O script também aceita os argumentos `--nome`, `--email`, `--telefone`, `--senha`, `--hash` e `--cargo` para sobrescrever os valores do `.env`.

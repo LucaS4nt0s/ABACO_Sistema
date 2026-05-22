@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, map, throwError } from 'rxjs';
+
+interface LoginApiResponse {
+  access_token: string;
+  token_type: string;
+  usuario: {
+    idUsuario: number;
+    nome: string | null;
+    email: string;
+    cargo: number | null;
+  };
+}
 
 export interface LoginResponse {
   token: string;
@@ -9,23 +20,37 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // Mocked login: inspects email to decide role
+  private readonly loginUrl = 'http://localhost:8000/api/v1/auth/login';
+
+  constructor(private http: HttpClient) {}
+
   login(email: string, password: string): Observable<LoginResponse> {
-    if (!email || !password) {
-      return throwError(() => ({ status: 400, message: 'E-mail e senha são obrigatórios' }));
+    return this.http.post<LoginApiResponse>(this.loginUrl, { email, senha: password }).pipe(
+      map((response) => ({
+        token: response.access_token,
+        role: this.mapCargoToRole(response.usuario.cargo),
+      })),
+      catchError((error) => {
+        const message = error?.error?.detail || error?.message || 'Credenciais inválidas';
+        return throwError(() => ({ status: error?.status, message }));
+      })
+    );
+  }
+
+  private mapCargoToRole(cargo: number | null): LoginResponse['role'] {
+    if (cargo === 1) {
+      return 'DIRECTOR';
     }
 
-    const lower = email.toLowerCase();
-    let role: string = 'ADMIN';
-    if (lower.includes('director')) role = 'DIRECTOR';
-    else if (lower.includes('teacher')) role = 'TEACHER';
+    if (cargo === 2) {
+      return 'TEACHER';
+    }
 
-    // Create a fake token payload (not a real JWT)
-    const payload = btoa(JSON.stringify({ sub: email, role }));
-    const token = `fake.${payload}.signature`;
+    if (cargo === 3) {
+      return 'ADMIN';
+    }
 
-    // Simulate network delay of 1s
-    return of({ token, role }).pipe(delay(1000));
+    return 'ADMIN';
   }
 
   setToken(token: string) {
