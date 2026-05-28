@@ -1,2 +1,6 @@
-<!-- App shell: render routed pages only -->
+<div class="global-alert" *ngIf="notifications.message() as message">
+	<span>{{ message }}</span>
+	<button type="button" class="global-alert__close" (click)="notifications.clear()">Fechar</button>
+</div>
+
 <router-outlet></router-outlet>

@@ -20,7 +20,7 @@ DEFAULT_NAME = "Admin ABACO"
 DEFAULT_EMAIL = get_settings().admin_seed_email
 DEFAULT_PHONE = "11999999999"
 DEFAULT_PASSWORD = get_settings().admin_seed_password
-DEFAULT_CARGO = 3
+DEFAULT_CARGO = 1
 
 
 def normalize_text(value: str | None) -> str | None:

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { finalize } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -38,25 +39,27 @@ export class Login {
     this.loading = true;
     this.form.disable();
     const { email, password } = this.form.value as { email: string; password: string };
-    this.auth.login(email, password).subscribe({
+    this.auth.login(email, password).pipe(
+      finalize(() => {
+        this.loading = false;
+        this.form.enable();
+      })
+    ).subscribe({
       next: (res) => {
         localStorage.setItem('abaco_token', res.token);
-        // route based on role
         const role = res.role;
         if (role === 'DIRECTOR') {
-          this.router.navigate(['/admin/dashboards']);
+          this.router.navigate(['/admin']);
         } else if (role === 'ADMIN') {
-          this.router.navigate(['/admin/alunos']);
+          this.router.navigate(['/admin']);
         } else if (role === 'TEACHER') {
-          this.router.navigate(['/academico/presenca']);
+          this.router.navigate(['/academico']);
         } else {
-          this.router.navigate(['/']);
+          this.router.navigate(['/login']);
         }
       },
       error: (err) => {
         this.error = err?.message || 'Credenciais inválidas';
-        this.loading = false;
-        this.form.enable();
       }
     });
   }

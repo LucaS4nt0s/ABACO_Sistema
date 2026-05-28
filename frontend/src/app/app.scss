@@ -1,0 +1,25 @@
+ :host {
+	display: block;
+}
+
+.global-alert {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: center;
+	padding: 0.875rem 1rem;
+	background: #1f1f1f;
+	color: #fff;
+	font-weight: 600;
+}
+
+.global-alert__close {
+	border: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	font-weight: 700;
+}

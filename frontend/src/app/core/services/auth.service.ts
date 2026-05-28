@@ -18,6 +18,12 @@ export interface LoginResponse {
   role: 'DIRECTOR' | 'ADMIN' | 'TEACHER' | string;
 }
 
+interface JwtPayload {
+  sub?: string;
+  cargo?: number;
+  exp?: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly loginUrl = 'http://localhost:8000/api/v1/auth/login';
@@ -59,5 +65,35 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('abaco_token');
+  }
+
+  getRoleFromToken(): LoginResponse['role'] {
+    const token = this.getToken();
+    if (!token) {
+      return 'ADMIN';
+    }
+
+    const payload = this.decodePayload(token);
+    return this.mapCargoToRole(payload.cargo ?? null);
+  }
+
+  hasDirectorAccess(): boolean {
+    return this.getRoleFromToken() === 'DIRECTOR';
+  }
+
+  private decodePayload(token: string): JwtPayload {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return {};
+    }
+
+    try {
+      const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+      const decoded = atob(padded);
+      return JSON.parse(decoded) as JwtPayload;
+    } catch {
+      return {};
+    }
   }
 }
