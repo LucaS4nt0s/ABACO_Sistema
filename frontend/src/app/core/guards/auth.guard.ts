@@ -1,15 +1,20 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { AuthService } from '../services/auth.service';
+import { clearStoredToken, getStoredToken, isTokenExpired } from '../services/auth.service';
 
 export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
   const router = inject(Router);
+  const token = getStoredToken();
 
-  if (authService.hasDirectorAccess()) {
-    return true;
+  if (!token) {
+    return router.parseUrl('/login');
   }
 
-  return router.parseUrl('/login');
+  if (isTokenExpired(token)) {
+    clearStoredToken();
+    return router.parseUrl('/login');
+  }
+
+  return true;
 };
