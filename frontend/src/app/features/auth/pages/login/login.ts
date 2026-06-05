@@ -46,7 +46,7 @@ export class Login {
       })
     ).subscribe({
       next: (res) => {
-        localStorage.setItem('abaco_token', res.token);
+        this.auth.setToken(res.token);
         const role = res.role;
         if (role === 'DIRECTOR') {
           this.router.navigate(['/admin']);

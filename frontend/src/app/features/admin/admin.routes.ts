@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { roleGuard } from '../../core/guards/role.guard';
+import { directorGuard } from '../../core/guards/role.guard';
 
 export const ADMIN_ROUTES: Routes = [
 	{
 		path: '',
-		canActivate: [roleGuard],
+		canActivate: [directorGuard],
 		children: [
 			{ path: '', pathMatch: 'full', redirectTo: 'usuarios' },
 			{
