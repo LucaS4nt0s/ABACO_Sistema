@@ -42,7 +42,7 @@ services:
     networks:
       - sga_network
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()\""]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; r = urllib.request.urlopen('http://localhost:8000/api/health'); assert r.status == 200; assert b'ok' in r.read()\""]
       interval: 10s
       timeout: 5s
       retries: 5
