@@ -200,9 +200,10 @@ export class UsersManagementComponent implements OnInit {
     this.pagedUsuarios = this.filteredUsuarios.slice(start, start + this.pageSize);
   }
 
-  private normalizeCargo(cargo: number): CargoNivel {
-    if (cargo === 1 || cargo === 2 || cargo === 3) {
-      return cargo;
+  private normalizeCargo(cargo: number | string): CargoNivel {
+    const num = Number(cargo);
+    if (num === 1 || num === 2 || num === 3) {
+      return num as CargoNivel;
     }
 
     return 3;

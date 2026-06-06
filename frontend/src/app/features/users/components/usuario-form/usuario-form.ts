@@ -64,7 +64,7 @@ export class UsuarioFormComponent implements OnChanges {
       nome: value.nome.trim(),
       telefone: value.telefone.trim() || null,
       email: value.email.trim(),
-      cargo: value.cargo,
+      cargo: Number(value.cargo) as CargoNivel,
     };
 
     if (this.mode === 'create') {
@@ -101,9 +101,10 @@ export class UsuarioFormComponent implements OnChanges {
     this.form.controls.senha.updateValueAndValidity({ emitEvent: false });
   }
 
-  private normalizeCargo(cargo: number | null): CargoNivel {
-    if (cargo === 1 || cargo === 2 || cargo === 3) {
-      return cargo;
+  private normalizeCargo(cargo: number | null | string): CargoNivel {
+    const num = Number(cargo);
+    if (num === 1 || num === 2 || num === 3) {
+      return num as CargoNivel;
     }
 
     return 3;
