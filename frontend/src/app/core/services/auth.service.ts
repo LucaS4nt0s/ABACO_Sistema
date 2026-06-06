@@ -67,9 +67,16 @@ export function mapCargoToRole(cargo: number | null): LoginResponse['role'] {
   return 'ADMIN';
 }
 
+interface AuthState {
+  token: string | null;
+  userId: number | null;
+  role: AppRole | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly loginUrl = `${environment.apiUrl}/api/v1/auth/login`;
+  private readonly TOKEN_KEY = 'abaco_token';
 
   readonly authState = signal<AuthState>({ token: null, userId: null, role: null });
 
@@ -85,7 +92,7 @@ export class AuthService {
       })),
       tap((res) => {
         localStorage.setItem(this.TOKEN_KEY, res.token);
-        const payload = this.decodePayload(res.token);
+        const payload = decodePayload(res.token);
         this.authState.set({
           token: res.token,
           userId: payload.sub ? Number(payload.sub) : null,
@@ -99,8 +106,28 @@ export class AuthService {
     );
   }
 
+  logout(): void {
+    clearStoredToken();
+    this.authState.set({ token: null, userId: null, role: null });
+  }
+
+  isAuthenticated(): boolean {
+    const token = getStoredToken();
+    if (!token) return false;
+    return !isTokenExpired(token);
+  }
+
+  hasRole(allowedRoles: AppRole[]): boolean {
+    const role = this.getRoleFromToken();
+    return allowedRoles.includes(role);
+  }
+
+  getUserId(): number | null {
+    return this.authState().userId;
+  }
+
   setToken(token: string) {
-    localStorage.setItem('abaco_token', token);
+    localStorage.setItem(this.TOKEN_KEY, token);
   }
 
   getToken(): string | null {
@@ -115,9 +142,20 @@ export class AuthService {
     return mapCargoToRole(payload.cargo ?? null);
   }
 
-  private mapCargoToRole(cargo: number | null): AppRole {
-    if (cargo === 1) return 'DIRECTOR';
-    if (cargo === 2) return 'TEACHER';
-    return 'ADMIN';
+  private restoreSession(): void {
+    const token = getStoredToken();
+    if (!token) return;
+
+    if (isTokenExpired(token)) {
+      clearStoredToken();
+      return;
+    }
+
+    const payload = decodePayload(token);
+    this.authState.set({
+      token,
+      userId: payload.sub ? Number(payload.sub) : null,
+      role: mapCargoToRole(payload.cargo ?? null),
+    });
   }
 }

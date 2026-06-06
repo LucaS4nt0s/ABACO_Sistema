@@ -1,0 +1,34 @@
+<main class="students-management">
+  <header class="students-management__topbar">
+    <div>
+      <h1>Alunos</h1>
+      <p>Painel administrativo para cadastro e gestao de alunos.</p>
+    </div>
+    <button type="button" class="new-student-btn" (click)="openCreate()" [disabled]="saving || loadingList">Novo aluno</button>
+  </header>
+
+  <p class="local-feedback" *ngIf="localFeedback">{{ localFeedback }}</p>
+
+  <section class="students-management__layout">
+    <app-student-list
+      [alunos]="pagedAlunos"
+      [loading]="loadingList || saving"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [deletingAlunoId]="deletingAlunoId"
+      (search)="onSearch($event)"
+      (edit)="openEdit($event)"
+      (remove)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    ></app-student-list>
+
+    <app-student-form
+      *ngIf="panelOpen"
+      [mode]="formMode"
+      [aluno]="selectedAluno"
+      [loading]="saving"
+      (save)="onSave($event)"
+      (cancel)="closePanel()"
+    ></app-student-form>
+  </section>
+</main>

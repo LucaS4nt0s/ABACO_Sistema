@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app.api.v1.alunos import router as alunos_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.usuarios import router as usuarios_router
 from app.db.database import engine
@@ -23,6 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(alunos_router)
 app.include_router(auth_router)
 app.include_router(usuarios_router)
 
