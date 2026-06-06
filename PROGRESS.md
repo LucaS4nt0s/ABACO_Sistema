@@ -12,7 +12,7 @@
 
 - [ ] #14 feat(students): implement student management
 - [ ] #15 feat(courses): implement course management
-- [ ] #16 feat(classes): implement class management and relationships
+- [x] #16 feat(classes): implement class management and relationships
 - [ ] #17 feat(enrollments): implement student enrollment workflow
 
 ## Sprint 3

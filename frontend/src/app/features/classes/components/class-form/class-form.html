@@ -1,0 +1,48 @@
+<section class="form-card" aria-label="Formulario de turma">
+  <header>
+    <h2>{{ mode === 'create' ? 'Nova turma' : 'Editar turma' }}</h2>
+    <p>{{ mode === 'create' ? 'Cadastre uma nova turma no sistema.' : 'Atualize os dados da turma.' }}</p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label>
+      <span>Curso *</span>
+      <select formControlName="idCurso">
+        <option [value]="0" disabled>Selecione um curso</option>
+        <option *ngFor="let curso of cursos" [value]="curso.idCurso">{{ curso.nomeCurso }}</option>
+      </select>
+      <small class="error" *ngIf="form.controls.idCurso.invalid && form.controls.idCurso.touched">Curso e obrigatorio.</small>
+    </label>
+
+    <label>
+      <span>Professor</span>
+      <select formControlName="idProfessor">
+        <option [value]="0">Selecione um professor</option>
+        <option *ngFor="let prof of professores" [value]="prof.idUsuario">{{ prof.nome }}</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Capacidade</span>
+      <input formControlName="capacidade" type="number" min="0" placeholder="Numero de vagas" />
+    </label>
+
+    <label>
+      <span>Data de inicio</span>
+      <input formControlName="dataInicio" type="date" />
+    </label>
+
+    <label>
+      <span>Data de fim</span>
+      <input formControlName="dataFim" type="date" />
+    </label>
+
+    <footer>
+      <button type="button" class="btn btn--ghost" (click)="cancel.emit()" [disabled]="loading">Cancelar</button>
+      <button type="submit" class="btn btn--primary" [disabled]="loading">
+        <span *ngIf="loading" class="spinner" aria-hidden="true"></span>
+        {{ loading ? 'Salvando...' : 'Salvar' }}
+      </button>
+    </footer>
+  </form>
+</section>
