@@ -4,25 +4,43 @@
     <p>Bem-vindo ao sistema de gestao ABACO.</p>
   </header>
 
-  <div class="dashboard__cards">
-    <a class="card" routerLink="/admin/alunos">
-      <h2>Alunos</h2>
-      <p>Cadastro e gerenciamento de alunos</p>
-    </a>
+  <section class="dashboard__section">
+    <h2 class="dashboard__section-title">Academico</h2>
+    <div class="dashboard__cards">
+      <a class="card" routerLink="/admin/alunos">
+        <h2>Alunos</h2>
+        <p>Cadastro e gerenciamento de alunos</p>
+      </a>
 
-    <a class="card" routerLink="/admin/cursos">
-      <h2>Cursos</h2>
-      <p>Cadastro e gerenciamento de cursos</p>
-    </a>
+      <a class="card" routerLink="/admin/cursos">
+        <h2>Cursos</h2>
+        <p>Cadastro e gerenciamento de cursos</p>
+      </a>
 
-    <a class="card" routerLink="/admin/turmas">
-      <h2>Turmas</h2>
-      <p>Cadastro e gerenciamento de turmas</p>
-    </a>
+      <a class="card" routerLink="/admin/turmas">
+        <h2>Turmas</h2>
+        <p>Cadastro e gerenciamento de turmas</p>
+      </a>
 
-    <a class="card" routerLink="/admin/usuarios">
-      <h2>Usuarios</h2>
-      <p>Gerenciamento de colaboradores e permissoes</p>
-    </a>
-  </div>
+      <a class="card" routerLink="/admin/matriculas">
+        <h2>Matriculas</h2>
+        <p>Gerenciamento de matriculas em turmas</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="dashboard__section">
+    <h2 class="dashboard__section-title">Logistico</h2>
+    <div class="dashboard__cards">
+      <a class="card" routerLink="/admin/logistico/estoque">
+        <h2>Estoque</h2>
+        <p>Controle de itens e materiais disponiveis</p>
+      </a>
+
+      <a class="card" routerLink="/admin/logistico/pedidos">
+        <h2>Pedidos</h2>
+        <p>Solicitacao e aprovacao de materiais</p>
+      </a>
+    </div>
+  </section>
 </div>

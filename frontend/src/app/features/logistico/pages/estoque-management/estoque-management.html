@@ -1,0 +1,34 @@
+<main class="estoque-management">
+  <header class="estoque-management__topbar">
+    <div>
+      <h1>Estoque</h1>
+      <p>Painel de gerenciamento de itens do estoque.</p>
+    </div>
+    <button type="button" class="new-item-btn" (click)="openCreate()" [disabled]="saving || loadingList">Novo item</button>
+  </header>
+
+  <p class="local-feedback" *ngIf="localFeedback">{{ localFeedback }}</p>
+
+  <section class="estoque-management__layout">
+    <app-estoque-list
+      [estoque]="pagedEstoque"
+      [loading]="loadingList || saving"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [deletingEstoqueId]="deletingEstoqueId"
+      (search)="onSearch($event)"
+      (edit)="openEdit($event)"
+      (remove)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    ></app-estoque-list>
+
+    <app-estoque-form
+      *ngIf="panelOpen"
+      [mode]="formMode"
+      [item]="selectedItem"
+      [loading]="saving"
+      (save)="onSave($event)"
+      (cancel)="closePanel()"
+    ></app-estoque-form>
+  </section>
+</main>

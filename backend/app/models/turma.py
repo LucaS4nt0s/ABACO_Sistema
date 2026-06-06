@@ -18,3 +18,4 @@ class Turma(Base):
 
     curso = relationship("Curso", lazy="joined")
     professor = relationship("Usuario", lazy="joined")
+    matriculas = relationship("Matricula", lazy="joined")

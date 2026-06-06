@@ -1,0 +1,36 @@
+﻿<main class="enrollments-management">
+  <header class="enrollments-management__topbar">
+    <div>
+      <h1>Matriculas</h1>
+      <p>Painel administrativo para cadastro e gestao de matriculas.</p>
+    </div>
+    <button type="button" class="new-enrollment-btn" (click)="openCreate()" [disabled]="saving || loadingList">Nova matricula</button>
+  </header>
+
+  <p class="local-feedback" *ngIf="localFeedback">{{ localFeedback }}</p>
+
+  <section class="enrollments-management__layout">
+    <app-enrollment-list
+      [matriculas]="pagedMatriculas"
+      [loading]="loadingList || saving"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [deletingMatriculaId]="deletingMatriculaId"
+      (search)="onSearch($event)"
+      (edit)="openEdit($event)"
+      (remove)="onDelete($event)"
+      (pageChange)="onPageChange($event)"
+    ></app-enrollment-list>
+
+    <app-enrollment-form
+      *ngIf="panelOpen"
+      [mode]="formMode"
+      [matricula]="selectedMatricula"
+      [alunos]="alunos"
+      [turmas]="turmas"
+      [loading]="saving"
+      (save)="onSave($event)"
+      (cancel)="closePanel()"
+    ></app-enrollment-form>
+  </section>
+</main>

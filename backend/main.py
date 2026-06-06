@@ -5,7 +5,10 @@ from sqlalchemy import text
 from app.api.v1.alunos import router as alunos_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.cursos import router as cursos_router
+from app.api.v1.estoque import router as estoque_router
+from app.api.v1.pedidos import router as pedidos_router
 from app.api.v1.turmas import router as turmas_router
+from app.api.v1.matriculas import router as matriculas_router
 from app.api.v1.usuarios import router as usuarios_router
 from app.db.database import engine
 
@@ -31,7 +34,10 @@ app.add_middleware(
 app.include_router(alunos_router)
 app.include_router(auth_router)
 app.include_router(cursos_router)
+app.include_router(estoque_router)
+app.include_router(pedidos_router)
 app.include_router(turmas_router)
+app.include_router(matriculas_router)
 app.include_router(usuarios_router)
 
 

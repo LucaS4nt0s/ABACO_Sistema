@@ -1,0 +1,17 @@
+<main class="pedido-list">
+  <header class="pedido-list__topbar">
+    <div>
+      <h1>Pedidos</h1>
+      <p>Visualize e gerencie as solicitacoes de materiais.</p>
+    </div>
+    <button type="button" class="new-pedido-btn" (click)="newPedido()" [disabled]="loadingList">Novo pedido</button>
+  </header>
+
+  <app-pedido-table
+    [pedidos]="pedidos"
+    [loading]="loadingList"
+    [currentUserCargo]="currentUserCargo"
+    (approve)="onApprove($event)"
+    (remove)="onDelete($event)"
+  ></app-pedido-table>
+</main>
