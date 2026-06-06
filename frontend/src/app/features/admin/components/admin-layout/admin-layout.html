@@ -1,4 +1,4 @@
-<div class="admin-shell">
+﻿<div class="admin-shell">
   <nav class="admin-nav">
     <div class="admin-nav__brand">
       <img src="/Logo_ABACO.png" alt="ABACO" class="admin-nav__logo" />
@@ -11,6 +11,10 @@
           Inicio
         </a>
       </li>
+    </ul>
+
+    <div class="admin-nav__section-label">Academico</div>
+    <ul class="admin-nav__links">
       <li>
         <a routerLink="/admin/alunos" routerLinkActive="active">
           Alunos
@@ -26,7 +30,35 @@
           Turmas
         </a>
       </li>
+      <li>
+        <a routerLink="/admin/matriculas" routerLinkActive="active">
+          Matriculas
+        </a>
+      </li>
       <li *ngIf="auth.authState().role === 'DIRECTOR'">
+        <a routerLink="/admin/usuarios" routerLinkActive="active">
+          Usuarios
+        </a>
+      </li>
+    </ul>
+
+    <div class="admin-nav__section-label">Logistico</div>
+    <ul class="admin-nav__links">
+      <li>
+        <a routerLink="/admin/logistico/estoque" routerLinkActive="active">
+          Estoque
+        </a>
+      </li>
+      <li>
+        <a routerLink="/admin/logistico/pedidos" routerLinkActive="active">
+          Pedidos
+        </a>
+      </li>
+    </ul>
+
+    <div class="admin-nav__section-label" *ngIf="auth.authState().role === 'DIRECTOR'">Administracao</div>
+    <ul class="admin-nav__links" *ngIf="auth.authState().role === 'DIRECTOR'">
+      <li>
         <a routerLink="/admin/usuarios" routerLinkActive="active">
           Usuarios
         </a>
@@ -44,3 +76,4 @@
     <router-outlet></router-outlet>
   </main>
 </div>
+

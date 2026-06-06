@@ -1,7 +1,7 @@
 from datetime import date
 
 from sqlalchemy import Integer, Text, Date
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
 
@@ -16,3 +16,5 @@ class Aluno(Base):
     rua: Mapped[str | None] = mapped_column(Text, nullable=True)
     bairro: Mapped[str | None] = mapped_column(Text, nullable=True)
     numero: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+    matriculas = relationship("Matricula", lazy="joined")

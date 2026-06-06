@@ -11,10 +11,6 @@ export const routes: Routes = [
 		loadChildren: () => import('./features/academico/academico.routes').then(m => m.ACADEMICO_ROUTES)
 	},
 	{
-		path: 'logistico',
-		loadChildren: () => import('./features/logistico/logistico.routes').then(m => m.LOGISTICO_ROUTES)
-	},
-	{
 		path: 'admin',
 		loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
 	},

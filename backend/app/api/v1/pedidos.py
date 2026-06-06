@@ -1,0 +1,68 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.core.dependencies import get_current_user, verify_cargo
+from app.db.database import get_db
+from app.schemas.pedido_schema import PedidoCreateSchema, PedidoResponseSchema, PedidoUpdateSchema
+from app.services.pedido_service import (
+    EstoqueNotFoundForPedidoError,
+    PedidoHasDependenciesError,
+    PedidoNotFoundError,
+    TurmaNotFoundForPedidoError,
+    create_pedido,
+    delete_pedido,
+    get_pedido_by_id,
+    list_pedidos,
+    update_pedido_status,
+)
+
+router = APIRouter(prefix="/api/v1/pedidos", tags=["pedidos"])
+
+
+@router.get("")
+def read_pedidos(_current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
+    return [PedidoResponseSchema.model_validate(pedido) for pedido in list_pedidos(db)]
+
+
+@router.get("/{pedido_id}")
+def read_pedido(pedido_id: int, _current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
+    try:
+        pedido = get_pedido_by_id(db, pedido_id)
+    except PedidoNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
+    return PedidoResponseSchema.model_validate(pedido)
+
+
+@router.post("")
+def create_pedidos(payload: PedidoCreateSchema, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+    usuario_id = int(current_user.get("sub", 0))
+    try:
+        pedido = create_pedido(db, payload, usuario_id)
+    except TurmaNotFoundForPedidoError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Turma informada não existe") from exc
+    except EstoqueNotFoundForPedidoError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Item de estoque informado não existe") from exc
+    return PedidoResponseSchema.model_validate(pedido)
+
+
+@router.put("/{pedido_id}")
+def update_pedidos(pedido_id: int, payload: PedidoUpdateSchema, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    try:
+        pedido = update_pedido_status(db, pedido_id, payload)
+    except PedidoNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
+    except PedidoHasDependenciesError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível atualizar o pedido") from exc
+    return PedidoResponseSchema.model_validate(pedido)
+
+
+@router.delete("/{pedido_id}")
+def delete_pedidos(pedido_id: int, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    try:
+        delete_pedido(db, pedido_id)
+    except PedidoNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
+    except PedidoHasDependenciesError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível excluir o pedido") from exc
+
+    return {"detail": "Pedido excluído com sucesso"}

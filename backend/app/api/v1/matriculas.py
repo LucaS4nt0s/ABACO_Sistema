@@ -1,0 +1,77 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.core.dependencies import verify_cargo
+from app.db.database import get_db
+from app.schemas.matricula_schema import MatriculaCreateSchema, MatriculaResponseSchema, MatriculaUpdateSchema
+from app.services.matricula_service import (
+    AlunoNotFoundForMatriculaError,
+    MatriculaDuplicadaError,
+    MatriculaHasDependenciesError,
+    MatriculaNotFoundError,
+    TurmaLotadaError,
+    TurmaNotFoundForMatriculaError,
+    create_matricula,
+    delete_matricula,
+    get_matricula_by_id,
+    list_matriculas,
+    update_matricula,
+)
+
+router = APIRouter(prefix="/api/v1/matriculas", tags=["matriculas"])
+
+
+@router.get("")
+def read_matriculas(_current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    return [MatriculaResponseSchema.model_validate(m) for m in list_matriculas(db)]
+
+
+@router.get("/{matricula_id}")
+def read_matricula(matricula_id: int, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    try:
+        matricula = get_matricula_by_id(db, matricula_id)
+    except MatriculaNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Matricula nao encontrada") from exc
+    return MatriculaResponseSchema.model_validate(matricula)
+
+
+@router.post("")
+def create_matriculas(payload: MatriculaCreateSchema, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    try:
+        matricula = create_matricula(db, payload)
+    except AlunoNotFoundForMatriculaError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Aluno informado nao existe") from exc
+    except TurmaNotFoundForMatriculaError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Turma informada nao existe") from exc
+    except TurmaLotadaError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Turma esta lotada") from exc
+    except MatriculaDuplicadaError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Aluno ja possui matricula ativa nesta turma") from exc
+    return MatriculaResponseSchema.model_validate(matricula)
+
+
+@router.put("/{matricula_id}")
+def update_matriculas(matricula_id: int, payload: MatriculaUpdateSchema, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    try:
+        matricula = update_matricula(db, matricula_id, payload)
+    except MatriculaNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Matricula nao encontrada") from exc
+    except AlunoNotFoundForMatriculaError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Aluno informado nao existe") from exc
+    except TurmaNotFoundForMatriculaError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Turma informada nao existe") from exc
+    except MatriculaHasDependenciesError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Nao foi possivel atualizar a matricula") from exc
+    return MatriculaResponseSchema.model_validate(matricula)
+
+
+@router.delete("/{matricula_id}")
+def delete_matriculas(matricula_id: int, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+    try:
+        delete_matricula(db, matricula_id)
+    except MatriculaNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Matricula nao encontrada") from exc
+    except MatriculaHasDependenciesError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Nao e possivel excluir uma matricula que possui vinculos") from exc
+
+    return {"detail": "Matricula excluida com sucesso"}

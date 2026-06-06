@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
 import { adminGuard, directorGuard } from '../../core/guards/role.guard';
 
@@ -37,6 +37,36 @@ export const ADMIN_ROUTES: Routes = [
 				canActivate: [adminGuard],
 				loadComponent: () =>
 					import('../classes/pages/classes-management/classes-management').then(m => m.ClassesManagementComponent)
+			},
+			{
+				path: 'matriculas',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../enrollments/pages/enrollments-management/enrollments-management').then(m => m.EnrollmentsManagementComponent)
+			},
+			{
+				path: 'logistico',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../logistico/pages/home/home').then(m => m.LogisticoHome)
+			},
+			{
+				path: 'logistico/estoque',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../logistico/pages/estoque-management/estoque-management').then(m => m.EstoqueManagementComponent)
+			},
+			{
+				path: 'logistico/pedidos',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../logistico/pages/pedido-list/pedido-list').then(m => m.PedidoListComponent)
+			},
+			{
+				path: 'logistico/pedidos/novo',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../logistico/pages/pedido-form/pedido-form').then(m => m.PedidoFormPageComponent)
 			}
 		]
 	}

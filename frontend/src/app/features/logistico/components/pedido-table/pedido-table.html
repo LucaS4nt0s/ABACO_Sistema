@@ -1,0 +1,64 @@
+<section class="table-card">
+  <header class="table-card__header">
+    <div>
+      <h1>Pedidos de Materiais</h1>
+      <p>Visualize e gerencie as solicitacoes de materiais.</p>
+    </div>
+  </header>
+
+  <div class="table-wrap" *ngIf="pedidos.length > 0; else emptyState">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Turma</th>
+          <th>Solicitante</th>
+          <th>Data</th>
+          <th>Itens</th>
+          <th>Status</th>
+          <th class="actions-col">Acoes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pedido of pedidos">
+          <td>{{ pedido.idPedido }}</td>
+          <td>{{ pedido.turma?.capacidade ?? '-' }}</td>
+          <td>{{ pedido.usuario?.nome ?? '-' }}</td>
+          <td>{{ pedido.dataPedido ? (pedido.dataPedido | date:'dd/MM/yyyy') : '-' }}</td>
+          <td>
+            <ul class="item-list" *ngIf="pedido.itens && pedido.itens.length > 0">
+              <li *ngFor="let item of pedido.itens">
+                {{ item.itemEstoque?.nomeItem ?? 'Item #' + item.idItemEstoque }} - {{ item.quantidade ?? '?' }} {{ item.itemEstoque?.unidade ?? '' }}
+              </li>
+            </ul>
+            <span *ngIf="!pedido.itens || pedido.itens.length === 0">-</span>
+          </td>
+          <td><span [class]="getStatusClass(pedido.status)">{{ getStatusLabel(pedido.status) }}</span></td>
+          <td class="actions-col">
+            <button
+              *ngIf="canApprove(pedido.status) && currentUserCargo === 1"
+              type="button"
+              class="btn btn--approve"
+              (click)="approve.emit(pedido)"
+              [disabled]="loading"
+            >
+              Aprovar
+            </button>
+            <button
+              type="button"
+              class="btn btn--danger"
+              (click)="remove.emit(pedido)"
+              [disabled]="loading"
+            >
+              Excluir
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #emptyState>
+    <p class="empty">Nenhum pedido encontrado.</p>
+  </ng-template>
+</section>
