@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { directorGuard } from '../../core/guards/role.guard';
+import { adminGuard, directorGuard } from '../../core/guards/role.guard';
 
 export const ADMIN_ROUTES: Routes = [
 	{
 		path: '',
-		canActivate: [directorGuard],
+		canActivate: [adminGuard],
 		children: [
 			{ path: '', pathMatch: 'full', redirectTo: 'usuarios' },
 			{
@@ -13,8 +13,14 @@ export const ADMIN_ROUTES: Routes = [
 			},
 			{
 				path: 'usuarios',
+				canActivate: [directorGuard],
 				loadComponent: () =>
 					import('../users/pages/users-management/users-management').then(m => m.UsersManagementComponent)
+			},
+			{
+				path: 'alunos',
+				loadComponent: () =>
+					import('../students/pages/students-management/students-management').then(m => m.StudentsManagementComponent)
 			}
 		]
 	}
