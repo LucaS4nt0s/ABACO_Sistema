@@ -31,6 +31,12 @@ export const ADMIN_ROUTES: Routes = [
 				canActivate: [adminGuard],
 				loadComponent: () =>
 					import('../courses/pages/courses-management/courses-management').then(m => m.CoursesManagementComponent)
+			},
+			{
+				path: 'turmas',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../classes/pages/classes-management/classes-management').then(m => m.ClassesManagementComponent)
 			}
 		]
 	}

@@ -21,6 +21,11 @@
           Cursos
         </a>
       </li>
+      <li>
+        <a routerLink="/admin/turmas" routerLinkActive="active">
+          Turmas
+        </a>
+      </li>
       <li *ngIf="auth.authState().role === 'DIRECTOR'">
         <a routerLink="/admin/usuarios" routerLinkActive="active">
           Usuarios
@@ -29,7 +34,7 @@
     </ul>
 
     <div class="admin-nav__user">
-      <button type="button" class="admin-nav__logout" (click)="logout()">
+      <button type="button" class="admin-nav__logout" (click)="auth.logout()">
         Sair
       </button>
     </div>
