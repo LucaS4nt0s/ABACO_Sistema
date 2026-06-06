@@ -33,12 +33,9 @@ services:
       PORT: 8000
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@database:5432/sga_abacos
       JWT_SECRET: development_secret_change_me
-      NODE_ENV: development
     depends_on:
       database:
         condition: service_healthy
-    volumes:
-      - ./backend:/app
     networks:
       - sga_network
     healthcheck:
