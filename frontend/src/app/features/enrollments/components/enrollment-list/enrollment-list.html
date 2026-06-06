@@ -29,7 +29,7 @@
       <tbody>
         <tr *ngFor="let m of matriculas">
           <td>{{ m.aluno?.nome ?? '---' }}</td>
-          <td>{{ m.turma?.curso ?? '---' }}</td>
+          <td>{{ m.turma?.curso?.nomeCurso ?? '---' }}</td>
           <td>{{ m.dataMatricula ? (m.dataMatricula | slice:0:10) : '---' }}</td>
           <td>{{ statusLabel(m.status) }}</td>
           <td class="actions-col">

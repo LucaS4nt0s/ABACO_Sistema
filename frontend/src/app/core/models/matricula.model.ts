@@ -3,9 +3,15 @@
   nome: string | null;
 }
 
+export interface MatriculaCursoInfo {
+  idCurso: number;
+  nomeCurso: string;
+}
+
 export interface MatriculaTurmaInfo {
   idTurma: number;
-  curso: string | null;
+  capacidade: number | null;
+  curso: MatriculaCursoInfo | null;
 }
 
 export interface Matricula {

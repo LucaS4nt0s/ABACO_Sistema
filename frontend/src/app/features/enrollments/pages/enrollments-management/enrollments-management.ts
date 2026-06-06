@@ -220,7 +220,7 @@ export class EnrollmentsManagementComponent implements OnInit {
       }
 
       const alunoNome = (m.aluno?.nome ?? '').toLowerCase();
-      const turmaCurso = (m.turma?.curso ?? '').toLowerCase();
+      const turmaCurso = (m.turma?.curso?.nomeCurso ?? '').toLowerCase();
       return alunoNome.includes(this.searchTerm) || turmaCurso.includes(this.searchTerm);
     });
 

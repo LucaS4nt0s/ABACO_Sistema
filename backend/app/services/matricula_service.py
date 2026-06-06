@@ -57,12 +57,29 @@ def _check_turma_lotada(db: Session, turma_id: int) -> None:
             raise TurmaLotadaError
 
 
-def _check_matricula_duplicada(db: Session, aluno_id: int, turma_id: int) -> None:
-    existing = db.query(Matricula).filter(
+def _get_turma_curso_id(db: Session, turma_id: int) -> int:
+    from app.models.turma import Turma
+    turma = db.query(Turma).filter(Turma.id_turma == turma_id).first()
+    if not turma:
+        raise TurmaNotFoundForMatriculaError
+    return turma.id_curso
+
+
+def _check_matricula_duplicada(db: Session, aluno_id: int, turma_id: int, exclude_id: int | None = None) -> None:
+    from app.models.turma import Turma
+
+    curso_id = _get_turma_curso_id(db, turma_id)
+    turmas_mesmo_curso = db.query(Turma.id_turma).filter(Turma.id_curso == curso_id).subquery()
+
+    query = db.query(Matricula).filter(
         Matricula.id_aluno == aluno_id,
-        Matricula.id_turma == turma_id,
+        Matricula.id_turma.in_(turmas_mesmo_curso),
         Matricula.status == 0,
-    ).first()
+    )
+    if exclude_id is not None:
+        query = query.filter(Matricula.id_matricula != exclude_id)
+
+    existing = query.first()
     if existing:
         raise MatriculaDuplicadaError
 
@@ -103,8 +120,14 @@ def update_matricula(db: Session, matricula_id: int, payload: MatriculaUpdateSch
         _resolve_aluno(db, payload.idAluno)
         matricula.id_aluno = payload.idAluno
 
+    turma_id = payload.idTurma if payload.idTurma is not None else matricula.id_turma
+
+    if payload.idAluno is not None or payload.idTurma is not None:
+        _check_matricula_duplicada(db, matricula.id_aluno, turma_id, exclude_id=matricula_id)
+
     if payload.idTurma is not None:
         _resolve_turma(db, payload.idTurma)
+        _check_turma_lotada(db, payload.idTurma)
         matricula.id_turma = payload.idTurma
 
     if payload.dataMatricula is not None:

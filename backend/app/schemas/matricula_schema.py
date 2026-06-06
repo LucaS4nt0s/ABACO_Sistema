@@ -24,11 +24,19 @@ class MatriculaAlunoInfo(BaseModel):
     nome: str | None = None
 
 
+class MatriculaCursoInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    id_curso: int = Field(alias="idCurso")
+    nome_curso: str = Field(alias="nomeCurso")
+
+
 class MatriculaTurmaInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     id_turma: int = Field(alias="idTurma")
-    curso: str | None = None
+    capacidade: int | None = None
+    curso: MatriculaCursoInfo | None = None
 
 
 class MatriculaResponseSchema(BaseModel):

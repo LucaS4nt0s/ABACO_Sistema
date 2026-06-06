@@ -46,7 +46,7 @@ def create_matriculas(payload: MatriculaCreateSchema, _current_user: dict = Depe
     except TurmaLotadaError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Turma esta lotada") from exc
     except MatriculaDuplicadaError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Aluno ja possui matricula ativa nesta turma") from exc
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Aluno ja possui matricula ativa neste curso") from exc
     return MatriculaResponseSchema.model_validate(matricula)
 
 
