@@ -4,7 +4,7 @@ import { roleGuard } from '../../core/guards/role.guard';
 export const ADMIN_ROUTES: Routes = [
 	{
 		path: '',
-		canActivate: [roleGuard],
+		canActivate: [roleGuard(['DIRECTOR', 'ADMIN'])],
 		children: [
 			{ path: '', pathMatch: 'full', redirectTo: 'usuarios' },
 			{

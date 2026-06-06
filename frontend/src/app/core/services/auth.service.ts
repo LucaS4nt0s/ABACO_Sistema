@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError, tap } from 'rxjs';
 
 interface LoginApiResponse {
   access_token: string;
@@ -13,9 +13,11 @@ interface LoginApiResponse {
   };
 }
 
+export type AppRole = 'DIRECTOR' | 'ADMIN' | 'TEACHER';
+
 export interface LoginResponse {
   token: string;
-  role: 'DIRECTOR' | 'ADMIN' | 'TEACHER' | string;
+  role: AppRole;
 }
 
 interface JwtPayload {
@@ -24,11 +26,22 @@ interface JwtPayload {
   exp?: number;
 }
 
+interface AuthState {
+  token: string | null;
+  userId: number | null;
+  role: AppRole | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly loginUrl = 'http://localhost:8000/api/v1/auth/login';
+  private readonly TOKEN_KEY = 'abaco_token';
 
-  constructor(private http: HttpClient) {}
+  readonly authState = signal<AuthState>({ token: null, userId: null, role: null });
+
+  constructor(private http: HttpClient) {
+    this.restoreSession();
+  }
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginApiResponse>(this.loginUrl, { email, senha: password }).pipe(
@@ -36,6 +49,15 @@ export class AuthService {
         token: response.access_token,
         role: this.mapCargoToRole(response.usuario.cargo),
       })),
+      tap((res) => {
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        const payload = this.decodePayload(res.token);
+        this.authState.set({
+          token: res.token,
+          userId: payload.sub ? Number(payload.sub) : null,
+          role: res.role,
+        });
+      }),
       catchError((error) => {
         const message = error?.error?.detail || error?.message || 'Credenciais inválidas';
         return throwError(() => ({ status: error?.status, message }));
@@ -43,49 +65,62 @@ export class AuthService {
     );
   }
 
-  private mapCargoToRole(cargo: number | null): LoginResponse['role'] {
-    if (cargo === 1) {
-      return 'DIRECTOR';
-    }
-
-    if (cargo === 2) {
-      return 'TEACHER';
-    }
-
-    if (cargo === 3) {
-      return 'ADMIN';
-    }
-
-    return 'ADMIN';
-  }
-
-  setToken(token: string) {
-    localStorage.setItem('abaco_token', token);
+  logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.authState.set({ token: null, userId: null, role: null });
   }
 
   getToken(): string | null {
-    return localStorage.getItem('abaco_token');
+    return this.authState().token;
   }
 
-  getRoleFromToken(): LoginResponse['role'] {
-    const token = this.getToken();
-    if (!token) {
-      return 'ADMIN';
-    }
+  getRole(): AppRole | null {
+    return this.authState().role;
+  }
+
+  getUserId(): number | null {
+    return this.authState().userId;
+  }
+
+  isAuthenticated(): boolean {
+    const state = this.authState();
+    if (!state.token) return false;
+    const payload = this.decodePayload(state.token);
+    if (!payload.exp) return false;
+    return payload.exp * 1000 > Date.now();
+  }
+
+  hasRole(allowedRoles: AppRole[]): boolean {
+    const role = this.getRole();
+    return role !== null && allowedRoles.includes(role);
+  }
+
+  private restoreSession(): void {
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    if (!token) return;
 
     const payload = this.decodePayload(token);
-    return this.mapCargoToRole(payload.cargo ?? null);
+    if (!payload.exp || payload.exp * 1000 <= Date.now()) {
+      localStorage.removeItem(this.TOKEN_KEY);
+      return;
+    }
+
+    this.authState.set({
+      token,
+      userId: payload.sub ? Number(payload.sub) : null,
+      role: this.mapCargoToRole(payload.cargo ?? null),
+    });
   }
 
-  hasDirectorAccess(): boolean {
-    return this.getRoleFromToken() === 'DIRECTOR';
+  private mapCargoToRole(cargo: number | null): AppRole {
+    if (cargo === 1) return 'DIRECTOR';
+    if (cargo === 2) return 'TEACHER';
+    return 'ADMIN';
   }
 
   private decodePayload(token: string): JwtPayload {
     const parts = token.split('.');
-    if (parts.length !== 3) {
-      return {};
-    }
+    if (parts.length !== 3) return {};
 
     try {
       const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/');

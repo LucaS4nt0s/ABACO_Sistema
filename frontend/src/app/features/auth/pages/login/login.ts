@@ -46,16 +46,10 @@ export class Login {
       })
     ).subscribe({
       next: (res) => {
-        localStorage.setItem('abaco_token', res.token);
-        const role = res.role;
-        if (role === 'DIRECTOR') {
-          this.router.navigate(['/admin']);
-        } else if (role === 'ADMIN') {
-          this.router.navigate(['/admin']);
-        } else if (role === 'TEACHER') {
+        if (res.role === 'TEACHER') {
           this.router.navigate(['/academico']);
         } else {
-          this.router.navigate(['/login']);
+          this.router.navigate(['/admin']);
         }
       },
       error: (err) => {

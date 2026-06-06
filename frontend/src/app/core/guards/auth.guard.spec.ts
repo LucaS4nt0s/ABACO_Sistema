@@ -5,17 +5,21 @@ import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
 
 class FakeAuthService {
-  token: string | null = null;
+  private _authenticated = false;
 
-  hasDirectorAccess() {
-    return this.token === 'director-token';
+  isAuthenticated() {
+    return this._authenticated;
+  }
+
+  setAuthenticated(value: boolean) {
+    this._authenticated = value;
   }
 }
 
 describe('authGuard', () => {
-  it('allows access for director tokens', () => {
+  it('allows access for authenticated users', () => {
     const authService = new FakeAuthService();
-    authService.token = 'director-token';
+    authService.setAuthenticated(true);
 
     TestBed.configureTestingModule({
       providers: [
@@ -27,5 +31,21 @@ describe('authGuard', () => {
     const result = TestBed.runInInjectionContext(() => authGuard({} as never, {} as never));
 
     expect(result).toBe(true);
+  });
+
+  it('redirects unauthenticated users to login', () => {
+    const authService = new FakeAuthService();
+    authService.setAuthenticated(false);
+
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: AuthService, useValue: authService },
+        { provide: Router, useValue: { parseUrl: (url: string) => url } }
+      ]
+    });
+
+    const result = TestBed.runInInjectionContext(() => authGuard({} as never, {} as never));
+
+    expect(result).toBe('/login');
   });
 });
