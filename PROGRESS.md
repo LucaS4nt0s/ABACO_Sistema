@@ -13,7 +13,7 @@
 - [ ] #14 feat(students): implement student management
 - [ ] #15 feat(courses): implement course management
 - [x] #16 feat(classes): implement class management and relationships
-- [ ] #17 feat(enrollments): implement student enrollment workflow
+- [x] #17 feat(enrollments): implement student enrollment workflow
 
 ## Sprint 3
 
@@ -23,9 +23,10 @@
 
 ## Sprint 4
 
-- [ ] #21 feat(orders): implement material request creation and listing
-- [ ] #22 feat(orders): implement request approval workflow
-- [ ] #23 feat(inventory): implement stock update and low-stock alerts
+- [x] #21 feat(orders): implement material request creation and listing
+- [x] #22 feat(orders): implement request approval workflow
+- [x] #23 feat(inventory): implement stock update and low-stock alerts
+- [x] #28 feat(logistics): implement full logistic module (stock, orders, management)
 
 ## Sprint 5
 
