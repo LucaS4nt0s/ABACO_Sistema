@@ -55,7 +55,7 @@ export class Login {
         } else if (role === 'TEACHER') {
           this.router.navigate(['/academico']);
         } else {
-          this.router.navigate(['/login']);
+          this.router.navigate(['/admin']);
         }
       },
       error: (err) => {

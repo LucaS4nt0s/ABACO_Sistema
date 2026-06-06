@@ -11,8 +11,7 @@ def _extract_token(authorization: str | None) -> str:
 	if not authorization:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
-			detail="Token ausente",
-			headers=AUTH_ERROR_HEADERS,
+			detail="Token de acesso não fornecido. Faça login para continuar.",
 		)
 
 	parts = authorization.split()
@@ -39,30 +38,26 @@ def decode_access_token(token: str) -> dict:
 	except jwt.PyJWTError as exc:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
-			detail="Token inválido",
-			headers=AUTH_ERROR_HEADERS,
+			detail="Token de acesso inválido ou expirado. Faça login novamente.",
 		) from exc
 
 
 def get_current_user(authorization: str | None = Header(default=None)) -> dict:
-	token = _extract_token(authorization)
-	return decode_access_token(token)
+	return decode_access_token(_extract_token(authorization))
+
+def verify_cargo(*allowed_cargos: int):
+	def dependency(authorization: str | None = Header(default=None)) -> dict:
+		token = _extract_token(authorization)
+		payload = decode_access_token(token)
+		cargo = int(payload.get("cargo", 0) or 0)
+		if cargo not in allowed_cargos:
+			raise HTTPException(
+				status_code=status.HTTP_403_FORBIDDEN,
+				detail="Acesso negado. Você não tem permissão para acessar este recurso.",
+			)
+		return payload
+
+	return dependency
 
 
-def verify_director_role(current_user: dict = Depends(get_current_user)) -> dict:
-	if int(current_user.get("cargo", 0) or 0) != 1:
-		raise HTTPException(
-			status_code=status.HTTP_403_FORBIDDEN,
-			detail="Acesso restrito à diretoria",
-		)
-	return current_user
-
-
-def verify_admin_role(current_user: dict = Depends(get_current_user)) -> dict:
-	cargo = int(current_user.get("cargo", 0) or 0)
-	if cargo not in (1, 3):
-		raise HTTPException(
-			status_code=status.HTTP_403_FORBIDDEN,
-			detail="Acesso restrito à administração",
-		)
-	return current_user
+verify_director_role = verify_cargo(1)

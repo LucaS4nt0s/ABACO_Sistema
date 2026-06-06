@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
@@ -15,9 +15,11 @@ interface LoginApiResponse {
   };
 }
 
+export type AppRole = 'DIRECTOR' | 'ADMIN' | 'TEACHER';
+
 export interface LoginResponse {
   token: string;
-  role: 'DIRECTOR' | 'ADMIN' | 'TEACHER' | string;
+  role: AppRole;
 }
 
 export interface JwtPayload {
@@ -69,7 +71,11 @@ export function mapCargoToRole(cargo: number | null): LoginResponse['role'] {
 export class AuthService {
   private readonly loginUrl = `${environment.apiUrl}/api/v1/auth/login`;
 
-  constructor(private http: HttpClient) {}
+  readonly authState = signal<AuthState>({ token: null, userId: null, role: null });
+
+  constructor(private http: HttpClient) {
+    this.restoreSession();
+  }
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginApiResponse>(this.loginUrl, { email, senha: password }).pipe(
@@ -77,6 +83,15 @@ export class AuthService {
         token: response.access_token,
         role: mapCargoToRole(response.usuario.cargo),
       })),
+      tap((res) => {
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        const payload = this.decodePayload(res.token);
+        this.authState.set({
+          token: res.token,
+          userId: payload.sub ? Number(payload.sub) : null,
+          role: res.role,
+        });
+      }),
       catchError((error) => {
         const message = error?.error?.detail || error?.message || 'Credenciais inválidas';
         return throwError(() => ({ status: error?.status, message }));
@@ -100,7 +115,9 @@ export class AuthService {
     return mapCargoToRole(payload.cargo ?? null);
   }
 
-  hasDirectorAccess(): boolean {
-    return this.getRoleFromToken() === 'DIRECTOR';
+  private mapCargoToRole(cargo: number | null): AppRole {
+    if (cargo === 1) return 'DIRECTOR';
+    if (cargo === 2) return 'TEACHER';
+    return 'ADMIN';
   }
 }
