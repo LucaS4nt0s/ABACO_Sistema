@@ -17,6 +17,11 @@
         </a>
       </li>
       <li>
+        <a routerLink="/admin/cursos" routerLinkActive="active">
+          Cursos
+        </a>
+      </li>
+      <li *ngIf="auth.authState().role === 'DIRECTOR'">
         <a routerLink="/admin/usuarios" routerLinkActive="active">
           Usuarios
         </a>
@@ -24,7 +29,7 @@
     </ul>
 
     <div class="admin-nav__user">
-      <button type="button" class="admin-nav__logout" (click)="auth.logout(); $event.preventDefault()">
+      <button type="button" class="admin-nav__logout" (click)="logout()">
         Sair
       </button>
     </div>
