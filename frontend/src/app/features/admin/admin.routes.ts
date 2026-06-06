@@ -5,8 +5,9 @@ export const ADMIN_ROUTES: Routes = [
 	{
 		path: '',
 		canActivate: [adminGuard],
+		loadComponent: () => import('./components/admin-layout/admin-layout').then(m => m.AdminLayoutComponent),
 		children: [
-			{ path: '', pathMatch: 'full', redirectTo: 'usuarios' },
+			{ path: '', pathMatch: 'full', redirectTo: 'home' },
 			{
 				path: 'home',
 				loadComponent: () => import('./pages/home/home').then(m => m.AdminHome)
