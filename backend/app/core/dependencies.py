@@ -1,7 +1,10 @@
-from fastapi import Header, HTTPException, status
+from fastapi import Depends, Header, HTTPException, status
 import jwt
 
 from app.core.config import get_settings
+
+
+AUTH_ERROR_HEADERS = {"WWW-Authenticate": "Bearer"}
 
 
 def _extract_token(authorization: str | None) -> str:
@@ -15,13 +18,23 @@ def _extract_token(authorization: str | None) -> str:
 	if len(parts) == 2 and parts[0].lower() == "bearer":
 		return parts[1]
 
-	return authorization
+	raise HTTPException(
+		status_code=status.HTTP_401_UNAUTHORIZED,
+		detail="Formato de token inválido",
+		headers=AUTH_ERROR_HEADERS,
+	)
 
 
 def decode_access_token(token: str) -> dict:
 	settings = get_settings()
 	try:
 		return jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
+	except jwt.ExpiredSignatureError:
+		raise HTTPException(
+			status_code=status.HTTP_401_UNAUTHORIZED,
+			detail="Token expirado",
+			headers=AUTH_ERROR_HEADERS,
+		)
 	except jwt.PyJWTError as exc:
 		raise HTTPException(
 			status_code=status.HTTP_401_UNAUTHORIZED,
@@ -31,7 +44,6 @@ def decode_access_token(token: str) -> dict:
 
 def get_current_user(authorization: str | None = Header(default=None)) -> dict:
 	return decode_access_token(_extract_token(authorization))
-
 
 def verify_cargo(*allowed_cargos: int):
 	def dependency(authorization: str | None = Header(default=None)) -> dict:

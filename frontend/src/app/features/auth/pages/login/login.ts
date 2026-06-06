@@ -46,7 +46,13 @@ export class Login {
       })
     ).subscribe({
       next: (res) => {
-        if (res.role === 'TEACHER') {
+        this.auth.setToken(res.token);
+        const role = res.role;
+        if (role === 'DIRECTOR') {
+          this.router.navigate(['/admin']);
+        } else if (role === 'ADMIN') {
+          this.router.navigate(['/admin']);
+        } else if (role === 'TEACHER') {
           this.router.navigate(['/academico']);
         } else {
           this.router.navigate(['/admin']);

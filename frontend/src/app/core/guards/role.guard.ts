@@ -1,21 +1,32 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { AppRole, AuthService } from '../services/auth.service';
+import { decodePayload, getStoredToken, isTokenExpired, clearStoredToken } from '../services/auth.service';
 
-export function roleGuard(allowedRoles: AppRole[]): CanActivateFn {
+export function roleGuard(allowedCargos: number[]): CanActivateFn {
   return () => {
-    const authService = inject(AuthService);
     const router = inject(Router);
+    const token = getStoredToken();
 
-    if (!authService.isAuthenticated()) {
+    if (!token) {
       return router.parseUrl('/login');
     }
 
-    if (authService.hasRole(allowedRoles)) {
-      return true;
+    if (isTokenExpired(token)) {
+      clearStoredToken();
+      return router.parseUrl('/login');
     }
 
-    return router.parseUrl('/login');
+    const payload = decodePayload(token);
+    const cargo = payload.cargo ?? null;
+
+    if (cargo === null || !allowedCargos.includes(cargo)) {
+      return router.parseUrl('/login');
+    }
+
+    return true;
   };
 }
+
+export const directorGuard = roleGuard([1]);
+export const adminGuard = roleGuard([1, 3]);
