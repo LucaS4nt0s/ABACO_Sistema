@@ -7,6 +7,8 @@
 # Logs e arquivos temporários
 logs/
 *.log
+__pycache__/
+*.pyc
 
 
 # Testes e cobertura de código

@@ -94,7 +94,6 @@ export class AttendanceManagementComponent implements OnInit {
     this.presencaService.create(payload).subscribe({
       next: () => {
         this.notifications.clear();
-        this.notifications.success('Presencas registradas com sucesso.');
         this.saving = false;
         this.changeDetectorRef.detectChanges();
       },
