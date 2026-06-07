@@ -5,4 +5,5 @@ from app.models.item_pedido import ItemPedido
 from app.models.matricula import Matricula
 from app.models.pedido import Pedido
 from app.models.turma import Turma
+from app.models.presenca import Presenca
 from app.models.usuario import Usuario
