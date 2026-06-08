@@ -9,12 +9,13 @@ import { MatriculaService } from '../../../../core/services/matricula.service';
 import { TurmaService } from '../../../../core/services/turma.service';
 import { NotaService } from '../../../../core/services/nota.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { GradesAverageChartComponent } from '../../components/grades-average-chart/grades-average-chart';
 import { GradesListComponent, GradeStudentRow } from '../../components/grades-list/grades-list';
 
 @Component({
   selector: 'app-grades-management',
   standalone: true,
-  imports: [CommonModule, GradesListComponent],
+  imports: [CommonModule, GradesListComponent, GradesAverageChartComponent],
   templateUrl: './grades-management.html',
   styleUrls: ['./grades-management.scss'],
 })

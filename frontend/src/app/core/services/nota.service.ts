@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Nota, NotaBatchPayload } from '../models/nota.model';
+import { MediaTurma, Nota, NotaBatchPayload } from '../models/nota.model';
 
 @Injectable({ providedIn: 'root' })
 export class NotaService {
@@ -32,5 +32,9 @@ export class NotaService {
 
   create(payload: NotaBatchPayload): Observable<Nota[]> {
     return this.http.post<Nota[]>(this.baseUrl, payload);
+  }
+
+  getMediaTurma(turmaId: number): Observable<MediaTurma> {
+    return this.http.get<MediaTurma>(`${this.baseUrl}/media/turma/${turmaId}`);
   }
 }

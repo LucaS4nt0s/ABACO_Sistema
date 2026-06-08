@@ -32,3 +32,13 @@ export interface NotaBatchPayload {
   prova: number;
   notas: NotaItem[];
 }
+
+export interface MediaProva {
+  prova: number;
+  media: number | null;
+}
+
+export interface MediaTurma {
+  idTurma: number;
+  medias: MediaProva[];
+}

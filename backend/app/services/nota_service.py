@@ -1,8 +1,9 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.matricula import Matricula
 from app.models.nota import Nota
-from app.schemas.nota_schema import NotaBatchSchema
+from app.schemas.nota_schema import MediaProvaSchema, NotaBatchSchema
 
 
 def create_or_update_notas(db: Session, payload: NotaBatchSchema) -> list[Nota]:
@@ -50,3 +51,18 @@ def list_notas_by_turma(db: Session, turma_id: int, prova: int | None = None) ->
     if prova is not None:
         query = query.filter(Nota.prova == prova)
     return query.order_by(Nota.prova, Nota.id_nota).all()
+
+
+def calcular_media_por_prova(db: Session, turma_id: int) -> list[MediaProvaSchema]:
+    resultados = (
+        db.query(
+            Nota.prova,
+            func.avg(Nota.nota).label("media"),
+        )
+        .join(Matricula, Nota.id_matricula == Matricula.id_matricula)
+        .filter(Matricula.id_turma == turma_id, Nota.nota.isnot(None))
+        .group_by(Nota.prova)
+        .order_by(Nota.prova)
+        .all()
+    )
+    return [MediaProvaSchema(prova=r.prova, media=round(float(r.media), 2) if r.media is not None else None) for r in resultados]

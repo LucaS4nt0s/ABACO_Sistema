@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import verify_cargo
 from app.db.database import get_db
-from app.schemas.nota_schema import NotaBatchSchema, NotaResponseSchema
-from app.services.nota_service import create_or_update_notas, list_notas_by_matricula, list_notas_by_turma
+from app.schemas.nota_schema import MediaTurmaSchema, NotaBatchSchema, NotaResponseSchema
+from app.services.nota_service import (
+    calcular_media_por_prova,
+    create_or_update_notas,
+    list_notas_by_matricula,
+    list_notas_by_turma,
+)
 
 router = APIRouter(prefix="/api/v1/notas", tags=["notas"])
 
@@ -40,3 +45,13 @@ def read_notas_by_turma(
 ):
     notas = list_notas_by_turma(db, turma_id, prova)
     return [NotaResponseSchema.model_validate(n) for n in notas]
+
+
+@router.get("/media/turma/{turma_id}")
+def read_media_turma(
+    turma_id: int,
+    _current_user: dict = Depends(verify_cargo(1, 3)),
+    db: Session = Depends(get_db),
+):
+    medias = calcular_media_por_prova(db, turma_id)
+    return MediaTurmaSchema(idTurma=turma_id, medias=medias)

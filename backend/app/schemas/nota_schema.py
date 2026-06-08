@@ -51,3 +51,13 @@ class NotaResponseSchema(BaseModel):
     nota: float | None = None
     prova: int | None = None
     matricula: NotaMatriculaInfo | None = None
+
+
+class MediaProvaSchema(BaseModel):
+    prova: int
+    media: float | None = None
+
+
+class MediaTurmaSchema(BaseModel):
+    id_turma: int = Field(alias="idTurma")
+    medias: list[MediaProvaSchema]

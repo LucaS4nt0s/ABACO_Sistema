@@ -38,4 +38,10 @@
     (notaChange)="onNotaChange($event)"
     (provaChange)="onProvaChange($event)"
   ></app-grades-list>
+
+  <app-grades-average-chart
+    *ngIf="selectedTurma"
+    [turmaId]="selectedTurma.idTurma"
+    [turmaNome]="selectedTurma.curso?.nomeCurso ?? ''"
+  ></app-grades-average-chart>
 </main>
