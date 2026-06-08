@@ -92,7 +92,7 @@ export class EnrollmentsManagementComponent implements OnInit {
   }
 
   onViewGrades(matriculaId: number): void {
-    this.router.navigate(['/admin/notas/aluno', matriculaId]);
+    this.router.navigate(['/admin/matriculas', matriculaId, 'notas']);
   }
 
   onSave(payload: EnrollmentFormSubmit): void {

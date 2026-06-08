@@ -45,6 +45,12 @@ export const ADMIN_ROUTES: Routes = [
 					import('../enrollments/pages/enrollments-management/enrollments-management').then(m => m.EnrollmentsManagementComponent)
 			},
 			{
+				path: 'matriculas/:id/notas',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../grades/pages/student-grades/student-grades').then(m => m.StudentGradesComponent)
+			},
+			{
 				path: 'presencas',
 				canActivate: [adminGuard],
 				loadComponent: () =>
