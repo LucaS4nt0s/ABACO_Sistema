@@ -51,6 +51,12 @@ export const ADMIN_ROUTES: Routes = [
 					import('../grades/pages/student-grades/student-grades').then(m => m.StudentGradesComponent)
 			},
 			{
+				path: 'historico/matricula/:id',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../transcript/pages/transcript-view/transcript-view').then(m => m.TranscriptViewComponent)
+			},
+			{
 				path: 'presencas',
 				canActivate: [adminGuard],
 				loadComponent: () =>

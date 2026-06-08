@@ -1,5 +1,5 @@
 ﻿import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 import { Matricula } from '../../../../core/models/matricula.model';
 
@@ -21,7 +21,26 @@ export class EnrollmentListComponent {
   @Output() readonly edit = new EventEmitter<Matricula>();
   @Output() readonly remove = new EventEmitter<Matricula>();
   @Output() readonly viewGrades = new EventEmitter<number>();
+  @Output() readonly viewTranscript = new EventEmitter<number>();
   @Output() readonly pageChange = new EventEmitter<number>();
+
+  openDropdownId: number | null = null;
+
+  toggleDropdown(matriculaId: number): void {
+    this.openDropdownId = this.openDropdownId === matriculaId ? null : matriculaId;
+  }
+
+  closeDropdown(): void {
+    this.openDropdownId = null;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown')) {
+      this.openDropdownId = null;
+    }
+  }
 
   statusLabel(status: number | null): string {
     if (status === 0) return 'Ativa';
