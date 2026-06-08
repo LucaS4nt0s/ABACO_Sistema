@@ -36,6 +36,7 @@ export class PedidoFormComponent implements OnInit {
   filteredEstoque: Estoque[][] = [];
   searchTerms: Subject<string>[] = [];
   showDropdown: boolean[] = [];
+  private searchInputValues: string[] = [];
 
   readonly form = this.fb.nonNullable.group({
     idTurma: [<number | null>null, [Validators.required]],
@@ -44,8 +45,6 @@ export class PedidoFormComponent implements OnInit {
       this.createItemGroup(),
     ]),
   });
-
-  private searchInputValues: string[] = [];
 
   ngOnInit(): void {
     this.loadTurmas();
