@@ -17,4 +17,4 @@ class Aluno(Base):
     bairro: Mapped[str | None] = mapped_column(Text, nullable=True)
     numero: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    matriculas = relationship("Matricula", lazy="joined")
+    matriculas = relationship("Matricula", lazy="selectin")

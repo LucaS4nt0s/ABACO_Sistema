@@ -53,6 +53,7 @@ export class GradesManagementComponent implements OnInit {
     this.notasExistentes = [];
 
     if (this.selectedTurma) {
+      this.loadMatriculas();
       this.loadNotas();
     }
     this.changeDetectorRef.detectChanges();

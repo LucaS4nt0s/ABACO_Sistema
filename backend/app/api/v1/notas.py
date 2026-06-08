@@ -23,7 +23,9 @@ def create_notas(
     if payload.prova < 1:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="O numero da prova deve ser maior ou igual a 1.")
     notas = create_or_update_notas(db, payload)
-    return [NotaResponseSchema.model_validate(n) for n in notas]
+    result = [NotaResponseSchema.model_validate(n) for n in notas]
+    db.commit()
+    return result
 
 
 @router.get("/matricula/{matricula_id}")

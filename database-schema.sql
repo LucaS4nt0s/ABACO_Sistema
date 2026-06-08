@@ -54,6 +54,9 @@ CREATE TABLE nota (
     idMatricula INTEGER REFERENCES matricula(idMatricula)
 );
 
+CREATE INDEX idx_nota_id_matricula ON nota (idMatricula);
+CREATE INDEX idx_nota_matricula_prova ON nota (idMatricula, prova);
+
 CREATE TABLE estoque (
     idItemEstoque SERIAL PRIMARY KEY,
     nomeItem TEXT,
