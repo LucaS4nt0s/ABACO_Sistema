@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Matricula } from '../../../../core/models/matricula.model';
@@ -27,6 +27,7 @@ export class StudentGradesComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly notaService: NotaService,
     private readonly matriculaService: MatriculaService,
+    private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -50,10 +51,12 @@ export class StudentGradesComponent implements OnInit {
           this.loadMatriculaInfo();
         }
         this.loading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.error = 'Erro ao carregar as notas.';
         this.loading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
@@ -66,6 +69,7 @@ export class StudentGradesComponent implements OnInit {
           this.alunoNome = matricula.aluno?.nome ?? '';
           this.turmaNome = matricula.turma?.curso?.nomeCurso ?? '';
         }
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {},
     });
