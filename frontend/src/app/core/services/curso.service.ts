@@ -6,17 +6,9 @@ import { Curso, CursoCreatePayload, CursoUpdatePayload } from '../models/curso.m
 
 @Injectable({ providedIn: 'root' })
 export class CursoService {
-  private readonly baseUrl: string;
+  private readonly baseUrl = '/api/v1/cursos';
 
-  constructor(private readonly http: HttpClient) {
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const port = typeof window !== 'undefined' ? window.location.port : '';
-    if (hostname === 'localhost' && (port === '4200' || port === '5173' || port === '3000')) {
-      this.baseUrl = 'http://localhost:8000/api/v1/cursos';
-    } else {
-      this.baseUrl = '/api/v1/cursos';
-    }
-  }
+  constructor(private readonly http: HttpClient) {}
 
   list(): Observable<Curso[]> {
     return this.http.get<Curso[]>(this.baseUrl);

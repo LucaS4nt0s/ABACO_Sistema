@@ -46,6 +46,11 @@ input, select {
   font-size: 0.75rem;
 }
 
+.hint {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
 fieldset {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -70,6 +75,53 @@ legend {
 .item-row label {
   flex: 1;
   min-width: 150px;
+}
+
+.item-search-wrap {
+  flex: 2;
+  min-width: 200px;
+  position: relative;
+}
+
+.item-search-wrap label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+.dropdown-qty {
+  color: #64748b;
+  font-size: 0.8rem;
 }
 
 .btn {

@@ -196,8 +196,9 @@ export class EnrollmentsManagementComponent implements OnInit {
         this.loadingList = false;
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.loadingList = false;
+        this.notifications.error('Erro ao carregar matriculas. Verifique se o servidor esta rodando.');
         this.changeDetectorRef.detectChanges();
       },
     });

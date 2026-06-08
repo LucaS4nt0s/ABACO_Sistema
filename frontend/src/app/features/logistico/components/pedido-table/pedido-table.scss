@@ -76,6 +76,16 @@
   color: #065f46;
 }
 
+.btn--purchase {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.btn--deliver {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
 .btn--danger {
   background: #fee2e2;
   color: #991b1b;
@@ -84,6 +94,20 @@
 .btn[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.entrega-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.qtd-input {
+  width: 60px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
 }
 
 .badge {
@@ -102,6 +126,11 @@
 .badge--approved {
   background: #d1fae5;
   color: #065f46;
+}
+
+.badge--purchased {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .badge--delivered {

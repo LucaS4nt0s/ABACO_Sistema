@@ -28,6 +28,10 @@ class InsufficientStockError(Exception):
     pass
 
 
+class PedidoCannotBeDeliveredError(Exception):
+    pass
+
+
 def _resolve_turma(db: Session, turma_id: int) -> None:
     from app.models.turma import Turma
 
@@ -86,6 +90,33 @@ def get_pedido_by_id(db: Session, pedido_id: int) -> Pedido:
 def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchema) -> Pedido:
     pedido = get_pedido_by_id(db, pedido_id)
     pedido.status = payload.status
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise PedidoHasDependenciesError from exc
+
+    db.refresh(pedido)
+    return pedido
+
+
+def entregar_pedido(db: Session, pedido_id: int, quantidade: int) -> Pedido:
+    from app.models.estoque import Estoque
+
+    pedido = get_pedido_by_id(db, pedido_id)
+
+    if pedido.status != 2:
+        raise PedidoCannotBeDeliveredError
+
+    pedido.status = 3
+
+    for item_pedido in pedido.itens:
+        estoque_item = db.query(Estoque).filter(
+            Estoque.id_item_estoque == item_pedido.id_item_estoque
+        ).first()
+        if estoque_item:
+            estoque_item.quantidade_disponivel = (estoque_item.quantidade_disponivel or 0) + quantidade
 
     try:
         db.commit()

@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthService, decodePayload, getStoredToken, mapCargoToRole } from '../../../../core/services/auth.service';
+import { AuthService, decodePayload, getStoredToken } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Pedido, PedidoUpdatePayload } from '../../../../core/models/pedido.model';
+import { Pedido, PedidoUpdatePayload, PEDIDO_STATUS, getPedidoStatusLabel, getPedidoStatusClass } from '../../../../core/models/pedido.model';
 import { PedidoService } from '../../../../core/services/pedido.service';
 import { PedidoTableComponent } from '../../components/pedido-table/pedido-table';
 
@@ -17,6 +17,7 @@ import { PedidoTableComponent } from '../../components/pedido-table/pedido-table
 })
 export class PedidoListComponent implements OnInit {
   pedidos: Pedido[] = [];
+  activeTab: 'todos' | 'lista-compras' = 'todos';
 
   loadingList = false;
   currentUserCargo: number | null = null;
@@ -38,13 +39,28 @@ export class PedidoListComponent implements OnInit {
     this.loadPedidos();
   }
 
+  get approvedPedidos(): Pedido[] {
+    return this.pedidos.filter((p) => p.status !== null && p.status! >= 1);
+  }
+
+  get filteredPedidos(): Pedido[] {
+    if (this.activeTab === 'lista-compras') {
+      return this.approvedPedidos;
+    }
+    return this.pedidos;
+  }
+
+  setTab(tab: 'todos' | 'lista-compras'): void {
+    this.activeTab = tab;
+  }
+
   onApprove(pedido: Pedido): void {
     const shouldApprove = confirm(`Aprovar o pedido #${pedido.idPedido}?`);
     if (!shouldApprove) {
       return;
     }
 
-    const payload: PedidoUpdatePayload = { status: 1 };
+    const payload: PedidoUpdatePayload = { status: PEDIDO_STATUS.APROVADO };
 
     this.pedidoService.update(pedido.idPedido, payload).subscribe({
       next: () => {
@@ -54,6 +70,48 @@ export class PedidoListComponent implements OnInit {
       },
       error: (err) => {
         const message = err?.error?.detail || err?.message || 'Erro ao aprovar pedido.';
+        this.notifications.error(message);
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  onPurchase(pedido: Pedido): void {
+    const shouldPurchase = confirm(`Marcar pedido #${pedido.idPedido} como comprado?`);
+    if (!shouldPurchase) {
+      return;
+    }
+
+    const payload: PedidoUpdatePayload = { status: PEDIDO_STATUS.COMPRADO };
+
+    this.pedidoService.update(pedido.idPedido, payload).subscribe({
+      next: () => {
+        this.notifications.clear();
+        this.loadPedidos();
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (err) => {
+        const message = err?.error?.detail || err?.message || 'Erro ao marcar pedido como comprado.';
+        this.notifications.error(message);
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  onDeliver(event: { pedido: Pedido; quantidade: number }): void {
+    const shouldDeliver = confirm(`Entregar pedido #${event.pedido.idPedido} com quantidade ${event.quantidade}? Os itens serao adicionados ao estoque.`);
+    if (!shouldDeliver) {
+      return;
+    }
+
+    this.pedidoService.entregar(event.pedido.idPedido, { quantidade: event.quantidade }).subscribe({
+      next: () => {
+        this.notifications.clear();
+        this.loadPedidos();
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (err) => {
+        const message = err?.error?.detail || err?.message || 'Erro ao entregar pedido.';
         this.notifications.error(message);
         this.changeDetectorRef.detectChanges();
       },

@@ -10,21 +10,9 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
-  // Use relative API path so nginx proxy in Docker works.
-  // When running locally via `ng serve` use localhost:8000 as backend.
-  private readonly baseUrl: string;
+  private readonly baseUrl = '/api/v1/usuarios';
 
-  constructor(private readonly http: HttpClient) {
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const port = typeof window !== 'undefined' ? window.location.port : '';
-    // If running with ng serve (commonly port 4200) prefer direct backend on localhost:8000
-    if (hostname === 'localhost' && (port === '4200' || port === '5173' || port === '3000')) {
-      this.baseUrl = 'http://localhost:8000/api/v1/usuarios';
-    } else {
-      // In Docker/nginx the frontend is served from same origin; proxy will forward /api to backend
-      this.baseUrl = '/api/v1/usuarios';
-    }
-  }
+  constructor(private readonly http: HttpClient) {}
 
   list(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(this.baseUrl).pipe(map((usuarios) => usuarios.map((usuario) => this.normalize(usuario))));

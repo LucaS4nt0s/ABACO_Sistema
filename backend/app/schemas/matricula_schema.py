@@ -43,8 +43,8 @@ class MatriculaResponseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     id_matricula: int = Field(alias="idMatricula")
-    id_aluno: int = Field(alias="idAluno")
-    id_turma: int = Field(alias="idTurma")
+    id_aluno: int | None = Field(None, alias="idAluno")
+    id_turma: int | None = Field(None, alias="idTurma")
     data_matricula: date | None = Field(None, alias="dataMatricula")
     status: int | None = None
     aluno: MatriculaAlunoInfo | None = None

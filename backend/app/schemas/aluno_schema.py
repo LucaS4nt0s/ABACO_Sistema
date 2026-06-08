@@ -27,7 +27,7 @@ class AlunoResponseSchema(BaseModel):
     id_aluno: int = Field(alias="idAluno")
     nome: str
     telefone: str | None = None
-    dataNascimento: date | None = Field(None, alias="dataNascimento")
+    data_nascimento: date | None = Field(None, alias="dataNascimento")
     rua: str | None = None
     bairro: str | None = None
     numero: int | None = None

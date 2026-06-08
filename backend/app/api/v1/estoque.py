@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import verify_cargo
@@ -11,6 +11,7 @@ from app.services.estoque_service import (
     delete_estoque,
     get_estoque_by_id,
     list_estoque,
+    search_estoque_by_name,
     update_estoque,
 )
 
@@ -20,6 +21,11 @@ router = APIRouter(prefix="/api/v1/estoque", tags=["estoque"])
 @router.get("")
 def read_estoque(_current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
     return [EstoqueResponseSchema.model_validate(item) for item in list_estoque(db)]
+
+
+@router.get("/search")
+def search_estoque(q: str = Query(""), _current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
+    return [EstoqueResponseSchema.model_validate(item) for item in search_estoque_by_name(db, q)]
 
 
 @router.get("/{estoque_id}")
