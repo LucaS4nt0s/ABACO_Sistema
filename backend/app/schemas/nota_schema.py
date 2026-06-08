@@ -1,4 +1,6 @@
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class NotaItemSchema(BaseModel):
@@ -22,6 +24,17 @@ class NotaTurmaInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
     id_turma: int = Field(alias="idTurma")
     nome_curso: str | None = Field(None, alias="nomeCurso")
+
+    @model_validator(mode="before")
+    @classmethod
+    def extract_nome_curso(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            return data
+        curso = getattr(data, 'curso', None)
+        if curso is not None:
+            nome = getattr(curso, 'nome_curso', None)
+            return {'id_turma': getattr(data, 'id_turma', None), 'nome_curso': nome}
+        return data
 
 
 class NotaMatriculaInfo(BaseModel):
