@@ -95,6 +95,10 @@ export class EnrollmentsManagementComponent implements OnInit {
     this.router.navigate(['/admin/matriculas', matriculaId, 'notas']);
   }
 
+  onViewTranscript(matriculaId: number): void {
+    this.router.navigate(['/admin/historico/matricula', matriculaId]);
+  }
+
   onSave(payload: EnrollmentFormSubmit): void {
     this.saving = true;
     this.localFeedback = null;

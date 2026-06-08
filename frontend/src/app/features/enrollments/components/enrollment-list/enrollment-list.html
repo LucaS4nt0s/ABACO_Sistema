@@ -32,19 +32,30 @@
           <td>{{ m.turma?.curso?.nomeCurso ?? '---' }}</td>
           <td>{{ m.dataMatricula ? (m.dataMatricula | slice:0:10) : '---' }}</td>
           <td>{{ statusLabel(m.status) }}</td>
-           <td class="actions-col">
-            <button type="button" class="btn btn--ghost" (click)="viewGrades.emit(m.idMatricula)" [disabled]="loading">Notas</button>
-            <button type="button" class="btn btn--ghost" (click)="edit.emit(m)" [disabled]="loading">Editar</button>
-            <button
-              type="button"
-              class="btn btn--danger"
-              (click)="remove.emit(m)"
-              [disabled]="loading || deletingMatriculaId === m.idMatricula"
-            >
-              <span *ngIf="deletingMatriculaId === m.idMatricula" class="spinner" aria-hidden="true"></span>
-              {{ deletingMatriculaId === m.idMatricula ? 'Excluindo...' : 'Excluir' }}
-            </button>
-          </td>
+            <td class="actions-col">
+              <div class="dropdown">
+                <button type="button" class="btn btn--ghost dropdown__toggle" (click)="toggleDropdown(m.idMatricula)" [disabled]="loading">
+                  Acoes <span class="dropdown__arrow">&#9662;</span>
+                </button>
+                <ul class="dropdown__menu" *ngIf="openDropdownId === m.idMatricula">
+                  <li><button type="button" (click)="viewGrades.emit(m.idMatricula); closeDropdown()">Notas</button></li>
+                  <li><button type="button" (click)="edit.emit(m); closeDropdown()">Editar</button></li>
+                  <li><button type="button" (click)="viewTranscript.emit(m.idMatricula); closeDropdown()">Historico</button></li>
+                  <li class="dropdown__divider"></li>
+                  <li>
+                    <button
+                      type="button"
+                      class="dropdown__danger"
+                      (click)="remove.emit(m); closeDropdown()"
+                      [disabled]="deletingMatriculaId === m.idMatricula"
+                    >
+                      <span *ngIf="deletingMatriculaId === m.idMatricula" class="spinner" aria-hidden="true"></span>
+                      {{ deletingMatriculaId === m.idMatricula ? 'Excluindo...' : 'Excluir' }}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </td>
         </tr>
       </tbody>
     </table>

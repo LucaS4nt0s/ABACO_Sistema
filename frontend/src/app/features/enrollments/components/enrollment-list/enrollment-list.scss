@@ -61,16 +61,82 @@
   white-space: nowrap;
 }
 
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dropdown__arrow {
+  font-size: 0.75rem;
+}
+
+.dropdown__menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  list-style: none;
+  padding: 0.35rem 0;
+  margin-bottom: 0;
+  z-index: 50;
+}
+
+.dropdown__menu li {
+  padding: 0;
+}
+
+.dropdown__menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.dropdown__menu button:hover {
+  background: #f8fafc;
+}
+
+.dropdown__menu button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdown__danger {
+  color: #991b1b !important;
+}
+
+.dropdown__danger:hover {
+  background: #fee2e2 !important;
+}
+
+.dropdown__divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 0.25rem 0;
+}
+
 .btn {
   border: 0;
   border-radius: 8px;
   padding: 0.5rem 0.8rem;
   cursor: pointer;
   font-weight: 600;
-}
-
-.btn + .btn {
-  margin-left: 0.5rem;
 }
 
 .btn--ghost {
