@@ -1,0 +1,31 @@
+.grades-management {
+  padding: 24px;
+
+  &__topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0;
+      color: #6b7280;
+    }
+  }
+
+  &__controls {
+    margin-bottom: 24px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 320px;
+    }
+  }
+}
