@@ -3,9 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, verify_cargo
 from app.db.database import get_db
-from app.schemas.pedido_schema import PedidoCreateSchema, PedidoResponseSchema, PedidoUpdateSchema
+from app.schemas.pedido_schema import PedidoCompraSchema, PedidoCreateSchema, PedidoResponseSchema, PedidoUpdateSchema
 from app.services.pedido_service import (
-    EstoqueNotFoundForPedidoError,
     PedidoCannotBeDeliveredError,
     PedidoHasDependenciesError,
     PedidoInvalidTransitionError,
@@ -45,8 +44,6 @@ def create_pedidos(payload: PedidoCreateSchema, current_user: dict = Depends(get
         pedido = create_pedido(db, payload, usuario_id)
     except TurmaNotFoundForPedidoError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Turma informada não existe") from exc
-    except EstoqueNotFoundForPedidoError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Item de estoque informado não existe") from exc
     return PedidoResponseSchema.model_validate(pedido)
 
 
@@ -64,9 +61,9 @@ def aprovar_pedido_endpoint(pedido_id: int, _current_user: dict = Depends(verify
 
 
 @router.put("/{pedido_id}/comprar")
-def comprar_pedido_endpoint(pedido_id: int, _current_user: dict = Depends(verify_cargo(1)), db: Session = Depends(get_db)):
+def comprar_pedido_endpoint(pedido_id: int, payload: PedidoCompraSchema, _current_user: dict = Depends(verify_cargo(1)), db: Session = Depends(get_db)):
     try:
-        pedido = comprar_pedido(db, pedido_id)
+        pedido = comprar_pedido(db, pedido_id, payload)
     except PedidoNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
     except PedidoInvalidTransitionError as exc:

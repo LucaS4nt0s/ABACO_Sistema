@@ -26,53 +26,89 @@
           <td>{{ pedido.usuario?.nome ?? '-' }}</td>
           <td>{{ pedido.dataPedido ? (pedido.dataPedido | date:'dd/MM/yyyy') : '-' }}</td>
           <td>
-            <ul class="item-list" *ngIf="pedido.itens && pedido.itens.length > 0">
-              <li *ngFor="let item of pedido.itens">
-                {{ item.itemEstoque?.nomeItem ?? 'Item #' + item.idItemEstoque }} - {{ item.quantidade ?? '?' }} {{ item.itemEstoque?.unidade ?? '' }}
-              </li>
-            </ul>
-            <span *ngIf="!pedido.itens || pedido.itens.length === 0">-</span>
+            <ng-container *ngIf="purchasingPedidoId !== pedido.idPedido; else purchaseMode">
+              <ul class="item-list" *ngIf="pedido.itens && pedido.itens.length > 0">
+                <li *ngFor="let item of pedido.itens">
+                  {{ item.nomeItem ?? item.itemEstoque?.nomeItem ?? 'Item #' + item.idItemEstoque }} - {{ item.quantidade ?? '?' }} {{ item.itemEstoque?.unidade ?? '' }}
+                </li>
+              </ul>
+              <span *ngIf="!pedido.itens || pedido.itens.length === 0">-</span>
+            </ng-container>
+            <ng-template #purchaseMode>
+              <div class="purchase-items">
+                <div *ngFor="let item of pedido.itens; trackBy: trackById" class="purchase-item">
+                  <span class="purchase-item-name">{{ item.nomeItem ?? item.itemEstoque?.nomeItem ?? 'Item #' + item.idItemEstoque }}</span>
+                  <input
+                    type="number"
+                    class="qtd-input"
+                    [(ngModel)]="purchaseQtys[item.idItemPedido]"
+                    min="0"
+                    placeholder="Qtd"
+                  />
+                </div>
+              </div>
+            </ng-template>
           </td>
           <td><span [class]="getStatusClass(pedido.status)">{{ getStatusLabel(pedido.status) }}</span></td>
           <td class="actions-col">
-            <button
-              *ngIf="canApprove(pedido.status) && isDirector()"
-              type="button"
-              class="btn btn--approve"
-              (click)="approve.emit(pedido)"
-              [disabled]="loading"
-            >
-              Aprovar
-            </button>
+            <ng-container *ngIf="purchasingPedidoId !== pedido.idPedido; else purchaseActions">
+              <button
+                *ngIf="canApprove(pedido.status) && isDirector()"
+                type="button"
+                class="btn btn--approve"
+                (click)="approve.emit(pedido)"
+                [disabled]="loading"
+              >
+                Aprovar
+              </button>
 
-            <button
-              *ngIf="canPurchase(pedido.status) && isDirector()"
-              type="button"
-              class="btn btn--purchase"
-              (click)="purchase.emit(pedido)"
-              [disabled]="loading"
-            >
-              Comprar
-            </button>
+              <button
+                *ngIf="canPurchase(pedido.status) && isDirector()"
+                type="button"
+                class="btn btn--purchase"
+                (click)="startPurchase(pedido)"
+                [disabled]="loading"
+              >
+                Comprar
+              </button>
 
-            <button
-              *ngIf="canDeliver(pedido.status) && isDirector()"
-              type="button"
-              class="btn btn--deliver"
-              (click)="deliver.emit(pedido)"
-              [disabled]="loading"
-            >
-              Entregar
-            </button>
+              <button
+                *ngIf="canDeliver(pedido.status) && isDirector()"
+                type="button"
+                class="btn btn--deliver"
+                (click)="deliver.emit(pedido)"
+                [disabled]="loading"
+              >
+                Entregar
+              </button>
 
-            <button
-              type="button"
-              class="btn btn--danger"
-              (click)="remove.emit(pedido)"
-              [disabled]="loading"
-            >
-              Excluir
-            </button>
+              <button
+                type="button"
+                class="btn btn--danger"
+                (click)="remove.emit(pedido)"
+                [disabled]="loading"
+              >
+                Excluir
+              </button>
+            </ng-container>
+            <ng-template #purchaseActions>
+              <button
+                type="button"
+                class="btn btn--primary"
+                (click)="onConfirmPurchase(pedido)"
+                [disabled]="loading"
+              >
+                Confirmar
+              </button>
+              <button
+                type="button"
+                class="btn btn--ghost"
+                (click)="onCancelPurchase()"
+                [disabled]="loading"
+              >
+                Cancelar
+              </button>
+            </ng-template>
           </td>
         </tr>
       </tbody>

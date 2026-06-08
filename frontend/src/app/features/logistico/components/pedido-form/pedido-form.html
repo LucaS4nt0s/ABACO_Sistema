@@ -23,7 +23,7 @@
 
     <fieldset>
       <legend>Itens do pedido</legend>
-      <small class="hint">Digite o nome do item para buscar no estoque. Selecione um item existente para evitar duplicatas.</small>
+      <small class="hint">Digite o nome do item. O estoque existente aparece como consulta abaixo.</small>
 
       <div formArrayName="itens">
         <div *ngFor="let itemForm of itensArray.controls; let i = index" [formGroupName]="i" class="item-row">
@@ -36,6 +36,7 @@
                 class="item-search-input"
                 placeholder="Digite o nome do item..."
                 autocomplete="off"
+                formControlName="nomeItem"
                 (input)="onSearchInput(i, $event)"
                 (focus)="onFocus(i)"
                 (blur)="onBlur(i)"
@@ -52,8 +53,7 @@
                 <span class="dropdown-qty">{{ item.quantidadeDisponivel ?? '0' }} {{ item.unidade ?? '' }}</span>
               </button>
             </div>
-            <input formControlName="idItemEstoque" type="hidden" />
-            <small class="error" *ngIf="itemForm.get('idItemEstoque')?.invalid && itemForm.get('idItemEstoque')?.touched">Selecione um item.</small>
+            <small class="error" *ngIf="itemForm.get('nomeItem')?.invalid && itemForm.get('nomeItem')?.touched">Digite o nome do item.</small>
           </div>
 
           <label>

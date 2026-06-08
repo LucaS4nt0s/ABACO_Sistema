@@ -11,7 +11,7 @@ import { TurmaService } from '../../../../core/services/turma.service';
 export interface PedidoFormSubmit {
   idTurma: number;
   dataPedido: string | null;
-  itens: { idItemEstoque: number; quantidade: number | null }[];
+  itens: { nomeItem: string; quantidade: number | null; idItemEstoque: number | null }[];
 }
 
 @Component({
@@ -45,6 +45,8 @@ export class PedidoFormComponent implements OnInit {
     ]),
   });
 
+  private searchInputValues: string[] = [];
+
   ngOnInit(): void {
     this.loadTurmas();
     this.loadEstoque();
@@ -67,11 +69,17 @@ export class PedidoFormComponent implements OnInit {
       this.filteredEstoque.splice(index, 1);
       this.showDropdown.splice(index, 1);
       this.searchTerms.splice(index, 1);
+      this.searchInputValues.splice(index, 1);
     }
   }
 
   onSearchInput(index: number, event: Event): void {
     const value = (event.target as HTMLInputElement).value;
+    this.searchInputValues[index] = value;
+
+    const group = this.itensArray.at(index);
+    group.patchValue({ nomeItem: value });
+
     if (this.searchTerms[index]) {
       this.searchTerms[index].next(value);
     }
@@ -79,13 +87,13 @@ export class PedidoFormComponent implements OnInit {
 
   selectItem(index: number, item: Estoque): void {
     const group = this.itensArray.at(index);
-    group.patchValue({ idItemEstoque: item.idItemEstoque });
+    group.patchValue({
+      idItemEstoque: item.idItemEstoque,
+      nomeItem: item.nomeItem,
+    });
     this.showDropdown[index] = false;
 
-    const input = document.getElementById(`item-search-${index}`) as HTMLInputElement;
-    if (input) {
-      input.value = `${item.nomeItem} (${item.quantidadeDisponivel ?? '?'} ${item.unidade ?? ''})`;
-    }
+    this.searchInputValues[index] = item.nomeItem ?? '';
   }
 
   hasFilteredItems(index: number): boolean {
@@ -113,8 +121,9 @@ export class PedidoFormComponent implements OnInit {
       idTurma: value.idTurma!,
       dataPedido: value.dataPedido || null,
       itens: value.itens.map((item) => ({
-        idItemEstoque: item.idItemEstoque!,
+        nomeItem: item.nomeItem ?? '',
         quantidade: item.quantidade ?? null,
+        idItemEstoque: item.idItemEstoque ?? null,
       })),
     };
 
@@ -125,8 +134,10 @@ export class PedidoFormComponent implements OnInit {
     this.filteredEstoque.push([]);
     this.showDropdown.push(false);
     this.searchTerms.push(new Subject<string>());
+    this.searchInputValues.push('');
     return this.fb.nonNullable.group({
-      idItemEstoque: [<number | null>null, [Validators.required]],
+      nomeItem: ['', [Validators.required]],
+      idItemEstoque: [<number | null>null],
       quantidade: [<number | null>null],
     });
   }

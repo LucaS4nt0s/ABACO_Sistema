@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { AuthService, decodePayload, getStoredToken } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Pedido, getPedidoStatusLabel, getPedidoStatusClass } from '../../../../core/models/pedido.model';
+import { Pedido, PedidoCompraPayload, getPedidoStatusLabel, getPedidoStatusClass } from '../../../../core/models/pedido.model';
 import { PedidoService } from '../../../../core/services/pedido.service';
 import { PedidoTableComponent } from '../../components/pedido-table/pedido-table';
 
@@ -74,13 +74,9 @@ export class PedidoListComponent implements OnInit {
     });
   }
 
-  onPurchase(pedido: Pedido): void {
-    const shouldPurchase = confirm(`Marcar pedido #${pedido.idPedido} como comprado?`);
-    if (!shouldPurchase) {
-      return;
-    }
-
-    this.pedidoService.comprar(pedido.idPedido).subscribe({
+  onConfirmPurchase(event: { pedido: Pedido; itens: { idItemPedido: number; quantidade: number }[] }): void {
+    const payload: PedidoCompraPayload = { itens: event.itens };
+    this.pedidoService.comprar(event.pedido.idPedido, payload).subscribe({
       next: () => {
         this.notifications.clear();
         this.loadPedidos();

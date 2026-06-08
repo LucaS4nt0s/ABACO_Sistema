@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Pedido, PedidoCreatePayload } from '../models/pedido.model';
+import { Pedido, PedidoCompraPayload, PedidoCreatePayload } from '../models/pedido.model';
 
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
@@ -22,8 +22,8 @@ export class PedidoService {
     return this.http.put<Pedido>(`${this.baseUrl}/${pedidoId}/aprovar`, {});
   }
 
-  comprar(pedidoId: number): Observable<Pedido> {
-    return this.http.put<Pedido>(`${this.baseUrl}/${pedidoId}/comprar`, {});
+  comprar(pedidoId: number, payload: PedidoCompraPayload): Observable<Pedido> {
+    return this.http.put<Pedido>(`${this.baseUrl}/${pedidoId}/comprar`, payload);
   }
 
   entregar(pedidoId: number): Observable<Pedido> {

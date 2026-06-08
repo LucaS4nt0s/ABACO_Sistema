@@ -7,7 +7,8 @@ export interface EstoqueItemInfo {
 export interface ItemPedido {
   idItemPedido: number;
   idPedido: number;
-  idItemEstoque: number;
+  idItemEstoque: number | null;
+  nomeItem: string | null;
   quantidade: number | null;
   precoUnitario: number | null;
   itemEstoque: EstoqueItemInfo | null;
@@ -35,8 +36,9 @@ export interface Pedido {
 }
 
 export interface ItemPedidoCreatePayload {
-  idItemEstoque: number;
+  nomeItem: string;
   quantidade: number | null;
+  idItemEstoque: number | null;
   precoUnitario: number | null;
 }
 
@@ -46,12 +48,13 @@ export interface PedidoCreatePayload {
   itens: ItemPedidoCreatePayload[];
 }
 
-export interface PedidoUpdatePayload {
-  status: number;
+export interface ItemPedidoCompraPayload {
+  idItemPedido: number;
+  quantidade: number;
 }
 
-export interface PedidoEntregaPayload {
-  quantidade: number;
+export interface PedidoCompraPayload {
+  itens: ItemPedidoCompraPayload[];
 }
 
 export const PEDIDO_STATUS = {

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.models.item_pedido import ItemPedido
 from app.models.pedido import Pedido
-from app.schemas.pedido_schema import PedidoCreateSchema, PedidoUpdateSchema
+from app.schemas.pedido_schema import PedidoCompraSchema, PedidoCreateSchema, PedidoUpdateSchema
 
 
 class PedidoNotFoundError(Exception):
@@ -44,18 +44,8 @@ def _resolve_turma(db: Session, turma_id: int) -> None:
         raise TurmaNotFoundForPedidoError
 
 
-def _resolve_estoque(db: Session, estoque_id: int) -> None:
-    from app.models.estoque import Estoque
-
-    estoque = db.query(Estoque).filter(Estoque.id_item_estoque == estoque_id).first()
-    if not estoque:
-        raise EstoqueNotFoundForPedidoError
-
-
 def create_pedido(db: Session, payload: PedidoCreateSchema, usuario_id: int) -> Pedido:
     _resolve_turma(db, payload.idTurma)
-    for item in payload.itens:
-        _resolve_estoque(db, item.idItemEstoque)
 
     pedido = Pedido(
         id_usuario=usuario_id,
@@ -69,6 +59,7 @@ def create_pedido(db: Session, payload: PedidoCreateSchema, usuario_id: int) -> 
     for item in payload.itens:
         item_pedido = ItemPedido(
             id_pedido=pedido.id_pedido,
+            nome_item=item.nomeItem,
             id_item_estoque=item.idItemEstoque,
             quantidade=item.quantidade,
             preco_unitario=item.precoUnitario,
@@ -109,11 +100,17 @@ def aprovar_pedido(db: Session, pedido_id: int) -> Pedido:
     return pedido
 
 
-def comprar_pedido(db: Session, pedido_id: int) -> Pedido:
+def comprar_pedido(db: Session, pedido_id: int, payload: PedidoCompraSchema) -> Pedido:
     pedido = get_pedido_by_id(db, pedido_id)
 
     if pedido.status != 1:
         raise PedidoInvalidTransitionError("Apenas pedidos com status 'Aprovado' podem ser marcados como comprados")
+
+    qtd_map = {item.idItemPedido: item.quantidade for item in payload.itens}
+
+    for item_pedido in pedido.itens:
+        if item_pedido.id_item_pedido in qtd_map:
+            item_pedido.quantidade = qtd_map[item_pedido.id_item_pedido]
 
     pedido.status = 2
 
@@ -164,11 +161,22 @@ def entregar_pedido(db: Session, pedido_id: int) -> Pedido:
     pedido.status = 3
 
     for item_pedido in pedido.itens:
+        if not item_pedido.quantidade or not item_pedido.nome_item:
+            continue
+
         estoque_item = db.query(Estoque).filter(
-            Estoque.id_item_estoque == item_pedido.id_item_estoque
+            Estoque.nome_item == item_pedido.nome_item
         ).first()
-        if estoque_item and item_pedido.quantidade:
+
+        if estoque_item:
             estoque_item.quantidade_disponivel = (estoque_item.quantidade_disponivel or 0) + item_pedido.quantidade
+        else:
+            novo_item = Estoque(
+                nome_item=item_pedido.nome_item,
+                quantidade_disponivel=item_pedido.quantidade,
+                unidade=None,
+            )
+            db.add(novo_item)
 
     try:
         db.commit()
