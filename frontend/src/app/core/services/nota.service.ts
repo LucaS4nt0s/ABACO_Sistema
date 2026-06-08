@@ -26,6 +26,10 @@ export class NotaService {
     return this.http.get<Nota[]>(`${this.baseUrl}/turma/${turmaId}`, { params });
   }
 
+  listByMatricula(matriculaId: number): Observable<Nota[]> {
+    return this.http.get<Nota[]>(`${this.baseUrl}/matricula/${matriculaId}`);
+  }
+
   create(payload: NotaBatchPayload): Observable<Nota[]> {
     return this.http.post<Nota[]>(this.baseUrl, payload);
   }

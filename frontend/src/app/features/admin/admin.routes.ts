@@ -57,6 +57,12 @@ export const ADMIN_ROUTES: Routes = [
 					import('../grades/pages/grades-management/grades-management').then(m => m.GradesManagementComponent)
 			},
 			{
+				path: 'notas/aluno/:id',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../grades/pages/student-grades/student-grades').then(m => m.StudentGradesComponent)
+			},
+			{
 				path: 'logistico',
 				canActivate: [adminGuard],
 				loadComponent: () =>

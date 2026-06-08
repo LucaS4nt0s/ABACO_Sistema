@@ -39,6 +39,10 @@ def create_or_update_notas(db: Session, payload: NotaBatchSchema) -> list[Nota]:
     return criadas
 
 
+def list_notas_by_matricula(db: Session, matricula_id: int) -> list[Nota]:
+    return db.query(Nota).filter(Nota.id_matricula == matricula_id).order_by(Nota.prova).all()
+
+
 def list_notas_by_turma(db: Session, turma_id: int, prova: int | None = None) -> list[Nota]:
     query = db.query(Nota).join(
         Matricula, Nota.id_matricula == Matricula.id_matricula

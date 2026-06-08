@@ -1,6 +1,7 @@
 ﻿import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 import { Aluno } from '../../../../core/models/aluno.model';
 import { Matricula, MatriculaCreatePayload, MatriculaUpdatePayload } from '../../../../core/models/matricula.model';
@@ -41,6 +42,7 @@ export class EnrollmentsManagementComponent implements OnInit {
   localFeedback: string | null = null;
 
   constructor(
+    private readonly router: Router,
     private readonly matriculaService: MatriculaService,
     private readonly alunoService: AlunoService,
     private readonly turmaService: TurmaService,
@@ -87,6 +89,10 @@ export class EnrollmentsManagementComponent implements OnInit {
   closePanel(): void {
     this.panelOpen = false;
     this.selectedMatricula = null;
+  }
+
+  onViewGrades(matriculaId: number): void {
+    this.router.navigate(['/admin/notas/aluno', matriculaId]);
   }
 
   onSave(payload: EnrollmentFormSubmit): void {

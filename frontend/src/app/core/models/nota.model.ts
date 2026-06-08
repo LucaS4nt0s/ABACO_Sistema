@@ -3,9 +3,15 @@ export interface NotaAlunoInfo {
   nome: string | null;
 }
 
+export interface NotaTurmaInfo {
+  idTurma: number;
+  nomeCurso: string | null;
+}
+
 export interface NotaMatriculaInfo {
   idMatricula: number;
   aluno: NotaAlunoInfo | null;
+  turma: NotaTurmaInfo | null;
 }
 
 export interface Nota {

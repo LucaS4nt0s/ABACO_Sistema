@@ -18,10 +18,17 @@ class NotaAlunoInfo(BaseModel):
     nome: str | None = None
 
 
+class NotaTurmaInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    id_turma: int = Field(alias="idTurma")
+    nome_curso: str | None = Field(None, alias="nomeCurso")
+
+
 class NotaMatriculaInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
     id_matricula: int = Field(alias="idMatricula")
     aluno: NotaAlunoInfo | None = None
+    turma: NotaTurmaInfo | None = None
 
 
 class NotaResponseSchema(BaseModel):

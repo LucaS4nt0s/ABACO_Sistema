@@ -20,6 +20,7 @@ export class EnrollmentListComponent {
   @Output() readonly search = new EventEmitter<string>();
   @Output() readonly edit = new EventEmitter<Matricula>();
   @Output() readonly remove = new EventEmitter<Matricula>();
+  @Output() readonly viewGrades = new EventEmitter<number>();
   @Output() readonly pageChange = new EventEmitter<number>();
 
   statusLabel(status: number | null): string {
