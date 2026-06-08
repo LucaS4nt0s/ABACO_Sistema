@@ -35,6 +35,11 @@
           Matriculas
         </a>
       </li>
+      <li>
+        <a routerLink="/admin/presencas" routerLinkActive="active">
+          Presencas
+        </a>
+      </li>
       <li *ngIf="auth.authState().role === 'DIRECTOR'">
         <a routerLink="/admin/usuarios" routerLinkActive="active">
           Usuarios

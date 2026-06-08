@@ -45,6 +45,12 @@ export const ADMIN_ROUTES: Routes = [
 					import('../enrollments/pages/enrollments-management/enrollments-management').then(m => m.EnrollmentsManagementComponent)
 			},
 			{
+				path: 'presencas',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../attendance/pages/attendance-management/attendance-management').then(m => m.AttendanceManagementComponent)
+			},
+			{
 				path: 'logistico',
 				canActivate: [adminGuard],
 				loadComponent: () =>

@@ -28,7 +28,8 @@ CREATE TABLE turma (
     dataInicio DATE,
     dataFim DATE,
     idCurso INTEGER REFERENCES curso(idCurso),
-    idProfessor INTEGER REFERENCES usuario(idUsuario)
+    idProfessor INTEGER REFERENCES usuario(idUsuario),
+    diasAula TEXT
 );
 
 CREATE TABLE matricula (

@@ -15,6 +15,7 @@ export interface Turma {
   dataFim: string | null;
   idCurso: number;
   idProfessor: number | null;
+  diasAula: string | null;
   curso: TurmaCursoInfo | null;
   professor: TurmaProfessorInfo | null;
 }
@@ -25,6 +26,7 @@ export interface TurmaCreatePayload {
   dataFim: string | null;
   idCurso: number;
   idProfessor: number | null;
+  diasAula: string | null;
 }
 
 export interface TurmaUpdatePayload {
@@ -33,4 +35,5 @@ export interface TurmaUpdatePayload {
   dataFim: string | null;
   idCurso: number | null;
   idProfessor: number | null;
+  diasAula: string | null;
 }
