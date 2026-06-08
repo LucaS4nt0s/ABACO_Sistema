@@ -100,6 +100,7 @@ export class ClassesManagementComponent implements OnInit {
         capacidade: payload.capacidade,
         dataInicio: payload.dataInicio,
         dataFim: payload.dataFim,
+        diasAula: payload.diasAula,
       };
 
       this.turmaService.create(createPayload).subscribe({
@@ -131,6 +132,7 @@ export class ClassesManagementComponent implements OnInit {
       capacidade: payload.capacidade,
       dataInicio: payload.dataInicio,
       dataFim: payload.dataFim,
+      diasAula: payload.diasAula,
     };
 
     this.turmaService.update(this.selectedTurma.idTurma, updatePayload).subscribe({

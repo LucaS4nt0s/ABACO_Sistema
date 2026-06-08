@@ -37,6 +37,16 @@
       <input formControlName="dataFim" type="date" />
     </label>
 
+    <fieldset class="dias-aula">
+      <legend>Dias de aula</legend>
+      <div class="dias-aula__grid">
+        <label *ngFor="let dia of diasSemana; let i = index" class="dia-checkbox">
+          <input type="checkbox" [formControl]="diasAulaControls[i]" />
+          <span>{{ dia.label }}</span>
+        </label>
+      </div>
+    </fieldset>
+
     <footer>
       <button type="button" class="btn btn--ghost" (click)="cancel.emit()" [disabled]="loading">Cancelar</button>
       <button type="submit" class="btn btn--primary" [disabled]="loading">

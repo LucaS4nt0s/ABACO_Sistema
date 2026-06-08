@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Curso } from '../../../../core/models/curso.model';
 import { Turma } from '../../../../core/models/turma.model';
@@ -12,6 +12,12 @@ export interface ClassFormSubmit {
   dataFim: string | null;
   idCurso: number;
   idProfessor: number | null;
+  diasAula: string | null;
+}
+
+interface DiaSemana {
+  label: string;
+  value: number;
 }
 
 @Component({
@@ -33,13 +39,39 @@ export class ClassFormComponent implements OnChanges {
   @Output() readonly save = new EventEmitter<ClassFormSubmit>();
   @Output() readonly cancel = new EventEmitter<void>();
 
+  readonly diasSemana: DiaSemana[] = [
+    { label: 'Dom', value: 0 },
+    { label: 'Seg', value: 1 },
+    { label: 'Ter', value: 2 },
+    { label: 'Qua', value: 3 },
+    { label: 'Qui', value: 4 },
+    { label: 'Sex', value: 5 },
+    { label: 'Sab', value: 6 },
+  ];
+
   readonly form = this.fb.nonNullable.group({
     idCurso: [0, [Validators.required, Validators.min(1)]],
     idProfessor: [0],
     capacidade: [0],
     dataInicio: [''],
     dataFim: [''],
+    diasAula: this.fb.array(this.diasSemana.map(() => false)),
   });
+
+  get diasAulaArray(): FormArray {
+    return this.form.controls.diasAula as FormArray;
+  }
+
+  get diasAulaControls(): FormControl[] {
+    return (this.form.controls.diasAula as FormArray).controls as FormControl[];
+  }
+
+  get diasAulaString(): string | null {
+    const selected = this.diasAulaArray.value
+      .map((checked: boolean, i: number) => checked ? this.diasSemana[i].value : null)
+      .filter((v: number | null) => v !== null);
+    return selected.length > 0 ? selected.join(',') : null;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['mode'] || changes['turma']) {
@@ -64,6 +96,7 @@ export class ClassFormComponent implements OnChanges {
       capacidade: value.capacidade > 0 ? value.capacidade : null,
       dataInicio: value.dataInicio || null,
       dataFim: value.dataFim || null,
+      diasAula: this.diasAulaString,
     };
 
     this.save.emit(payload);
@@ -71,6 +104,9 @@ export class ClassFormComponent implements OnChanges {
 
   private patchForm(): void {
     if (this.mode === 'edit' && this.turma) {
+      const diasSelecionados = (this.turma.diasAula ?? '').split(',').map(Number);
+      const diasArray = this.diasSemana.map((d) => diasSelecionados.includes(d.value));
+
       this.form.reset({
         idCurso: this.turma.idCurso,
         idProfessor: this.turma.idProfessor ?? 0,
@@ -78,6 +114,7 @@ export class ClassFormComponent implements OnChanges {
         dataInicio: this.turma.dataInicio ?? '',
         dataFim: this.turma.dataFim ?? '',
       });
+      this.diasAulaArray.patchValue(diasArray);
       return;
     }
 
@@ -88,6 +125,7 @@ export class ClassFormComponent implements OnChanges {
       dataInicio: '',
       dataFim: '',
     });
+    this.diasAulaArray.patchValue(this.diasSemana.map(() => false));
   }
 
   private toggleFormState(): void {
