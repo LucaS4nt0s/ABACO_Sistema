@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.models.item_pedido import ItemPedido
 from app.models.pedido import Pedido
-from app.schemas.pedido_schema import PedidoCreateSchema, PedidoUpdateSchema
+from app.schemas.pedido_schema import PedidoCompraSchema, PedidoCreateSchema, PedidoUpdateSchema
 
 
 class PedidoNotFoundError(Exception):
@@ -32,6 +32,10 @@ class PedidoCannotBeDeliveredError(Exception):
     pass
 
 
+class PedidoInvalidTransitionError(Exception):
+    pass
+
+
 def _resolve_turma(db: Session, turma_id: int) -> None:
     from app.models.turma import Turma
 
@@ -40,18 +44,8 @@ def _resolve_turma(db: Session, turma_id: int) -> None:
         raise TurmaNotFoundForPedidoError
 
 
-def _resolve_estoque(db: Session, estoque_id: int) -> None:
-    from app.models.estoque import Estoque
-
-    estoque = db.query(Estoque).filter(Estoque.id_item_estoque == estoque_id).first()
-    if not estoque:
-        raise EstoqueNotFoundForPedidoError
-
-
 def create_pedido(db: Session, payload: PedidoCreateSchema, usuario_id: int) -> Pedido:
     _resolve_turma(db, payload.idTurma)
-    for item in payload.itens:
-        _resolve_estoque(db, item.idItemEstoque)
 
     pedido = Pedido(
         id_usuario=usuario_id,
@@ -65,6 +59,7 @@ def create_pedido(db: Session, payload: PedidoCreateSchema, usuario_id: int) -> 
     for item in payload.itens:
         item_pedido = ItemPedido(
             id_pedido=pedido.id_pedido,
+            nome_item=item.nomeItem,
             id_item_estoque=item.idItemEstoque,
             quantidade=item.quantidade,
             preco_unitario=item.precoUnitario,
@@ -87,8 +82,62 @@ def get_pedido_by_id(db: Session, pedido_id: int) -> Pedido:
     return pedido
 
 
+def aprovar_pedido(db: Session, pedido_id: int) -> Pedido:
+    pedido = get_pedido_by_id(db, pedido_id)
+
+    if pedido.status != 0:
+        raise PedidoInvalidTransitionError("Apenas pedidos com status 'Solicitado' podem ser aprovados")
+
+    pedido.status = 1
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise PedidoHasDependenciesError from exc
+
+    db.refresh(pedido)
+    return pedido
+
+
+def comprar_pedido(db: Session, pedido_id: int, payload: PedidoCompraSchema) -> Pedido:
+    pedido = get_pedido_by_id(db, pedido_id)
+
+    if pedido.status != 1:
+        raise PedidoInvalidTransitionError("Apenas pedidos com status 'Aprovado' podem ser marcados como comprados")
+
+    qtd_map = {item.idItemPedido: item.quantidade for item in payload.itens}
+
+    for item_pedido in pedido.itens:
+        if item_pedido.id_item_pedido in qtd_map:
+            item_pedido.quantidade = qtd_map[item_pedido.id_item_pedido]
+
+    pedido.status = 2
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise PedidoHasDependenciesError from exc
+
+    db.refresh(pedido)
+    return pedido
+
+
 def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchema) -> Pedido:
     pedido = get_pedido_by_id(db, pedido_id)
+
+    if payload.status not in (1, 2):
+        raise PedidoInvalidTransitionError(
+            "Transição de status inválida. Use os endpoints específicos para aprovar, comprar ou entregar."
+        )
+
+    expected_previous = 0 if payload.status == 1 else 1
+    if pedido.status != expected_previous:
+        raise PedidoInvalidTransitionError(
+            f"Não é possível alterar o status de {pedido.status} para {payload.status}"
+        )
+
     pedido.status = payload.status
 
     try:
@@ -101,7 +150,7 @@ def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchem
     return pedido
 
 
-def entregar_pedido(db: Session, pedido_id: int, quantidade: int) -> Pedido:
+def entregar_pedido(db: Session, pedido_id: int) -> Pedido:
     from app.models.estoque import Estoque
 
     pedido = get_pedido_by_id(db, pedido_id)
@@ -112,11 +161,22 @@ def entregar_pedido(db: Session, pedido_id: int, quantidade: int) -> Pedido:
     pedido.status = 3
 
     for item_pedido in pedido.itens:
+        if not item_pedido.quantidade or not item_pedido.nome_item:
+            continue
+
         estoque_item = db.query(Estoque).filter(
-            Estoque.id_item_estoque == item_pedido.id_item_estoque
+            Estoque.nome_item == item_pedido.nome_item
         ).first()
+
         if estoque_item:
-            estoque_item.quantidade_disponivel = (estoque_item.quantidade_disponivel or 0) + quantidade
+            estoque_item.quantidade_disponivel = (estoque_item.quantidade_disponivel or 0) + item_pedido.quantidade
+        else:
+            novo_item = Estoque(
+                nome_item=item_pedido.nome_item,
+                quantidade_disponivel=item_pedido.quantidade,
+                unidade=None,
+            )
+            db.add(novo_item)
 
     try:
         db.commit()

@@ -76,6 +76,7 @@ CREATE TABLE itemPedido (
     idItemPedido SERIAL PRIMARY KEY,
     idPedido INTEGER REFERENCES pedido(idPedido),
     idItemEstoque INTEGER REFERENCES estoque(idItemEstoque),
+    nomeItem TEXT,
     quantidade INTEGER,
     precoUnitario FLOAT
 );

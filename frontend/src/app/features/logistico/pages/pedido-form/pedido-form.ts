@@ -31,8 +31,9 @@ export class PedidoFormPageComponent {
       idTurma: payload.idTurma,
       dataPedido: payload.dataPedido,
       itens: payload.itens.map((item) => ({
-        idItemEstoque: item.idItemEstoque,
+        nomeItem: item.nomeItem,
         quantidade: item.quantidade,
+        idItemEstoque: item.idItemEstoque ?? null,
         precoUnitario: null,
       })),
     };

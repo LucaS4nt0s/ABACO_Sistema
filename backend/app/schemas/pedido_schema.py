@@ -4,8 +4,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class ItemPedidoCreateSchema(BaseModel):
-    idItemEstoque: int
+    nomeItem: str
     quantidade: int | None = None
+    idItemEstoque: int | None = None
     precoUnitario: float | None = None
 
 
@@ -15,12 +16,21 @@ class PedidoCreateSchema(BaseModel):
     itens: list[ItemPedidoCreateSchema]
 
 
+class ItemPedidoCompraSchema(BaseModel):
+    idItemPedido: int
+    quantidade: int
+
+
+class PedidoCompraSchema(BaseModel):
+    itens: list[ItemPedidoCompraSchema]
+
+
 class PedidoUpdateSchema(BaseModel):
     status: int
 
 
 class PedidoEntregaSchema(BaseModel):
-    quantidade: int
+    pass
 
 
 class EstoqueItemInfo(BaseModel):
@@ -36,7 +46,8 @@ class ItemPedidoResponseSchema(BaseModel):
 
     id_item_pedido: int = Field(alias="idItemPedido")
     id_pedido: int = Field(alias="idPedido")
-    id_item_estoque: int = Field(alias="idItemEstoque")
+    id_item_estoque: int | None = Field(None, alias="idItemEstoque")
+    nome_item: str | None = Field(None, alias="nomeItem")
     quantidade: int | None = None
     preco_unitario: float | None = Field(None, alias="precoUnitario")
     item_estoque: EstoqueItemInfo | None = None
