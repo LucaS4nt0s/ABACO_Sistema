@@ -9,6 +9,7 @@ class TurmaCreateSchema(BaseModel):
     dataFim: date | None = None
     idCurso: int
     idProfessor: int | None = None
+    diasAula: str | None = None
 
 
 class TurmaUpdateSchema(BaseModel):
@@ -17,6 +18,7 @@ class TurmaUpdateSchema(BaseModel):
     dataFim: date | None = None
     idCurso: int | None = None
     idProfessor: int | None = None
+    diasAula: str | None = None
 
 
 class TurmaCursoInfo(BaseModel):
@@ -42,5 +44,6 @@ class TurmaResponseSchema(BaseModel):
     data_fim: date | None = Field(None, alias="dataFim")
     id_curso: int = Field(alias="idCurso")
     id_professor: int | None = Field(None, alias="idProfessor")
+    dias_aula: str | None = Field(None, alias="diasAula")
     curso: TurmaCursoInfo | None = None
     professor: TurmaProfessorInfo | None = None
