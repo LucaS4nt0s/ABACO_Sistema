@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { AuthService, decodePayload, getStoredToken } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Pedido, PedidoUpdatePayload, PEDIDO_STATUS, getPedidoStatusLabel, getPedidoStatusClass } from '../../../../core/models/pedido.model';
+import { Pedido, getPedidoStatusLabel, getPedidoStatusClass } from '../../../../core/models/pedido.model';
 import { PedidoService } from '../../../../core/services/pedido.service';
 import { PedidoTableComponent } from '../../components/pedido-table/pedido-table';
 
@@ -60,9 +60,7 @@ export class PedidoListComponent implements OnInit {
       return;
     }
 
-    const payload: PedidoUpdatePayload = { status: PEDIDO_STATUS.APROVADO };
-
-    this.pedidoService.update(pedido.idPedido, payload).subscribe({
+    this.pedidoService.aprovar(pedido.idPedido).subscribe({
       next: () => {
         this.notifications.clear();
         this.loadPedidos();
@@ -82,9 +80,7 @@ export class PedidoListComponent implements OnInit {
       return;
     }
 
-    const payload: PedidoUpdatePayload = { status: PEDIDO_STATUS.COMPRADO };
-
-    this.pedidoService.update(pedido.idPedido, payload).subscribe({
+    this.pedidoService.comprar(pedido.idPedido).subscribe({
       next: () => {
         this.notifications.clear();
         this.loadPedidos();
@@ -98,13 +94,13 @@ export class PedidoListComponent implements OnInit {
     });
   }
 
-  onDeliver(event: { pedido: Pedido; quantidade: number }): void {
-    const shouldDeliver = confirm(`Entregar pedido #${event.pedido.idPedido} com quantidade ${event.quantidade}? Os itens serao adicionados ao estoque.`);
+  onDeliver(pedido: Pedido): void {
+    const shouldDeliver = confirm(`Entregar pedido #${pedido.idPedido}? Os itens serao adicionados ao estoque.`);
     if (!shouldDeliver) {
       return;
     }
 
-    this.pedidoService.entregar(event.pedido.idPedido, { quantidade: event.quantidade }).subscribe({
+    this.pedidoService.entregar(pedido.idPedido).subscribe({
       next: () => {
         this.notifications.clear();
         this.loadPedidos();

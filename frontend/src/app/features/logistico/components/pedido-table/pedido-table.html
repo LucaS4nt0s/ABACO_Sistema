@@ -55,23 +55,15 @@
               Comprar
             </button>
 
-            <div *ngIf="canDeliver(pedido.status) && isDirector()" class="entrega-group">
-              <input
-                type="number"
-                class="qtd-input"
-                placeholder="Qtd"
-                [(ngModel)]="entregaQuantidade[pedido.idPedido]"
-                min="1"
-              />
-              <button
-                type="button"
-                class="btn btn--deliver"
-                (click)="onDeliver(pedido)"
-                [disabled]="loading || !entregaQuantidade[pedido.idPedido] || entregaQuantidade[pedido.idPedido] <= 0"
-              >
-                Entregar
-              </button>
-            </div>
+            <button
+              *ngIf="canDeliver(pedido.status) && isDirector()"
+              type="button"
+              class="btn btn--deliver"
+              (click)="deliver.emit(pedido)"
+              [disabled]="loading"
+            >
+              Entregar
+            </button>
 
             <button
               type="button"

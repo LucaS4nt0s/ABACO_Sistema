@@ -32,6 +32,10 @@ class PedidoCannotBeDeliveredError(Exception):
     pass
 
 
+class PedidoInvalidTransitionError(Exception):
+    pass
+
+
 def _resolve_turma(db: Session, turma_id: int) -> None:
     from app.models.turma import Turma
 
@@ -87,8 +91,56 @@ def get_pedido_by_id(db: Session, pedido_id: int) -> Pedido:
     return pedido
 
 
+def aprovar_pedido(db: Session, pedido_id: int) -> Pedido:
+    pedido = get_pedido_by_id(db, pedido_id)
+
+    if pedido.status != 0:
+        raise PedidoInvalidTransitionError("Apenas pedidos com status 'Solicitado' podem ser aprovados")
+
+    pedido.status = 1
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise PedidoHasDependenciesError from exc
+
+    db.refresh(pedido)
+    return pedido
+
+
+def comprar_pedido(db: Session, pedido_id: int) -> Pedido:
+    pedido = get_pedido_by_id(db, pedido_id)
+
+    if pedido.status != 1:
+        raise PedidoInvalidTransitionError("Apenas pedidos com status 'Aprovado' podem ser marcados como comprados")
+
+    pedido.status = 2
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise PedidoHasDependenciesError from exc
+
+    db.refresh(pedido)
+    return pedido
+
+
 def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchema) -> Pedido:
     pedido = get_pedido_by_id(db, pedido_id)
+
+    if payload.status not in (1, 2):
+        raise PedidoInvalidTransitionError(
+            "Transição de status inválida. Use os endpoints específicos para aprovar, comprar ou entregar."
+        )
+
+    expected_previous = 0 if payload.status == 1 else 1
+    if pedido.status != expected_previous:
+        raise PedidoInvalidTransitionError(
+            f"Não é possível alterar o status de {pedido.status} para {payload.status}"
+        )
+
     pedido.status = payload.status
 
     try:
@@ -101,7 +153,7 @@ def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchem
     return pedido
 
 
-def entregar_pedido(db: Session, pedido_id: int, quantidade: int) -> Pedido:
+def entregar_pedido(db: Session, pedido_id: int) -> Pedido:
     from app.models.estoque import Estoque
 
     pedido = get_pedido_by_id(db, pedido_id)
@@ -115,8 +167,8 @@ def entregar_pedido(db: Session, pedido_id: int, quantidade: int) -> Pedido:
         estoque_item = db.query(Estoque).filter(
             Estoque.id_item_estoque == item_pedido.id_item_estoque
         ).first()
-        if estoque_item:
-            estoque_item.quantidade_disponivel = (estoque_item.quantidade_disponivel or 0) + quantidade
+        if estoque_item and item_pedido.quantidade:
+            estoque_item.quantidade_disponivel = (estoque_item.quantidade_disponivel or 0) + item_pedido.quantidade
 
     try:
         db.commit()

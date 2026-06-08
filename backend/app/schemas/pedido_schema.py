@@ -20,7 +20,7 @@ class PedidoUpdateSchema(BaseModel):
 
 
 class PedidoEntregaSchema(BaseModel):
-    quantidade: int
+    pass
 
 
 class EstoqueItemInfo(BaseModel):
