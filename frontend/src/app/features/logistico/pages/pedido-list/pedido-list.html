@@ -7,11 +7,32 @@
     <button type="button" class="new-pedido-btn" (click)="newPedido()" [disabled]="loadingList">Novo pedido</button>
   </header>
 
+  <nav class="tabs">
+    <button
+      type="button"
+      class="tab"
+      [class.tab--active]="activeTab === 'todos'"
+      (click)="setTab('todos')"
+    >
+      Todos os Pedidos
+    </button>
+    <button
+      type="button"
+      class="tab"
+      [class.tab--active]="activeTab === 'lista-compras'"
+      (click)="setTab('lista-compras')"
+    >
+      Lista de Compras ({{ approvedPedidos.length }})
+    </button>
+  </nav>
+
   <app-pedido-table
-    [pedidos]="pedidos"
+    [pedidos]="filteredPedidos"
     [loading]="loadingList"
     [currentUserCargo]="currentUserCargo"
     (approve)="onApprove($event)"
+    (purchase)="onPurchase($event)"
+    (deliver)="onDeliver($event)"
     (remove)="onDelete($event)"
   ></app-pedido-table>
 </main>

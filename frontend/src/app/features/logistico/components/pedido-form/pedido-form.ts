@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 import { Estoque } from '../../../../core/models/estoque.model';
 import { EstoqueService } from '../../../../core/services/estoque.service';
@@ -31,7 +32,10 @@ export class PedidoFormComponent implements OnInit {
   @Output() readonly cancel = new EventEmitter<void>();
 
   turmas: Turma[] = [];
-  estoque: Estoque[] = [];
+  estoqueItems: Estoque[] = [];
+  filteredEstoque: Estoque[][] = [];
+  searchTerms: Subject<string>[] = [];
+  showDropdown: boolean[] = [];
 
   readonly form = this.fb.nonNullable.group({
     idTurma: [<number | null>null, [Validators.required]],
@@ -44,6 +48,7 @@ export class PedidoFormComponent implements OnInit {
   ngOnInit(): void {
     this.loadTurmas();
     this.loadEstoque();
+    setTimeout(() => this.searchTerms.forEach((_, i) => this.setupSearch(i)));
   }
 
   get itensArray(): FormArray {
@@ -52,12 +57,49 @@ export class PedidoFormComponent implements OnInit {
 
   addItem(): void {
     this.itensArray.push(this.createItemGroup());
+    const idx = this.searchTerms.length - 1;
+    this.setupSearch(idx);
   }
 
   removeItem(index: number): void {
     if (this.itensArray.length > 1) {
       this.itensArray.removeAt(index);
+      this.filteredEstoque.splice(index, 1);
+      this.showDropdown.splice(index, 1);
+      this.searchTerms.splice(index, 1);
     }
+  }
+
+  onSearchInput(index: number, event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    if (this.searchTerms[index]) {
+      this.searchTerms[index].next(value);
+    }
+  }
+
+  selectItem(index: number, item: Estoque): void {
+    const group = this.itensArray.at(index);
+    group.patchValue({ idItemEstoque: item.idItemEstoque });
+    this.showDropdown[index] = false;
+
+    const input = document.getElementById(`item-search-${index}`) as HTMLInputElement;
+    if (input) {
+      input.value = `${item.nomeItem} (${item.quantidadeDisponivel ?? '?'} ${item.unidade ?? ''})`;
+    }
+  }
+
+  hasFilteredItems(index: number): boolean {
+    return (this.filteredEstoque[index]?.length ?? 0) > 0;
+  }
+
+  onFocus(index: number): void {
+    this.showDropdown[index] = true;
+  }
+
+  onBlur(index: number): void {
+    setTimeout(() => {
+      this.showDropdown[index] = false;
+    }, 200);
   }
 
   submit(): void {
@@ -80,9 +122,27 @@ export class PedidoFormComponent implements OnInit {
   }
 
   private createItemGroup() {
+    this.filteredEstoque.push([]);
+    this.showDropdown.push(false);
+    this.searchTerms.push(new Subject<string>());
     return this.fb.nonNullable.group({
       idItemEstoque: [<number | null>null, [Validators.required]],
       quantidade: [<number | null>null],
+    });
+  }
+
+  private setupSearch(index: number): void {
+    this.searchTerms[index].pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((term) => {
+        if (!term || term.trim().length === 0) {
+          return [this.estoqueItems];
+        }
+        return this.estoqueService.search(term);
+      }),
+    ).subscribe((items) => {
+      this.filteredEstoque[index] = items;
     });
   }
 
@@ -97,7 +157,8 @@ export class PedidoFormComponent implements OnInit {
   private loadEstoque(): void {
     this.estoqueService.list().subscribe({
       next: (items) => {
-        this.estoque = items;
+        this.estoqueItems = items;
+        this.filteredEstoque = this.filteredEstoque.map(() => [...items]);
       },
     });
   }

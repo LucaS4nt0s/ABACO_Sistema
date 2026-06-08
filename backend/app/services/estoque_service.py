@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -14,8 +15,18 @@ class EstoqueHasDependenciesError(Exception):
 
 
 def create_estoque(db: Session, payload: EstoqueCreateSchema) -> Estoque:
+    existing = db.query(Estoque).filter(
+        func.lower(Estoque.nome_item) == func.lower(payload.nomeItem.strip())
+    ).first()
+
+    if existing:
+        existing.quantidade_disponivel = (existing.quantidade_disponivel or 0) + (payload.quantidadeDisponivel or 0)
+        db.commit()
+        db.refresh(existing)
+        return existing
+
     estoque = Estoque(
-        nome_item=payload.nomeItem,
+        nome_item=payload.nomeItem.strip(),
         quantidade_disponivel=payload.quantidadeDisponivel,
         unidade=payload.unidade,
     )
@@ -27,6 +38,12 @@ def create_estoque(db: Session, payload: EstoqueCreateSchema) -> Estoque:
 
 def list_estoque(db: Session) -> list[Estoque]:
     return db.query(Estoque).order_by(Estoque.nome_item).all()
+
+
+def search_estoque_by_name(db: Session, term: str) -> list[Estoque]:
+    return db.query(Estoque).filter(
+        Estoque.nome_item.ilike(f"%{term}%")
+    ).order_by(Estoque.nome_item).all()
 
 
 def get_estoque_by_id(db: Session, estoque_id: int) -> Estoque:

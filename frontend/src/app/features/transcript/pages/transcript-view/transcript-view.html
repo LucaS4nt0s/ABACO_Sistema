@@ -32,7 +32,7 @@
         </tr>
         <tr>
           <th>Data de Nascimento</th>
-          <td>{{ (historico.aluno.dataNascimento ?? '') | slice:0:10 }}</td>
+          <td>{{ (historico.aluno.dataNascimento ?? '') | date:'dd/MM/yyyy' }}</td>
         </tr>
         <tr>
           <th>Telefone</th>
@@ -54,7 +54,7 @@
         </tr>
         <tr>
           <th>Periodo</th>
-          <td>{{ (historico.turma.dataInicio ?? '') | slice:0:10 }} a {{ (historico.turma.dataFim ?? '') | slice:0:10 }}</td>
+          <td>{{ (historico.turma.dataInicio ?? '') | date:'dd/MM/yyyy' }} a {{ (historico.turma.dataFim ?? '') | date:'dd/MM/yyyy' }}</td>
         </tr>
         <tr>
           <th>Dias de Aula</th>
@@ -62,7 +62,7 @@
         </tr>
         <tr>
           <th>Data da Matricula</th>
-          <td>{{ (historico.dataMatricula ?? '') | slice:0:10 }}</td>
+          <td>{{ (historico.dataMatricula ?? '') | date:'dd/MM/yyyy' }}</td>
         </tr>
         <tr>
           <th>Status</th>
@@ -103,7 +103,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let p of historico.presencas">
-            <td>{{ (p.dataAula ?? '') | slice:0:10 }}</td>
+            <td>{{ (p.dataAula ?? '') | date:'dd/MM/yyyy' }}</td>
             <td>{{ p.presente ? 'Sim' : 'Nao' }}</td>
           </tr>
         </tbody>

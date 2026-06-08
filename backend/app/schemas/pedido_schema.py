@@ -19,6 +19,10 @@ class PedidoUpdateSchema(BaseModel):
     status: int
 
 
+class PedidoEntregaSchema(BaseModel):
+    quantidade: int
+
+
 class EstoqueItemInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 

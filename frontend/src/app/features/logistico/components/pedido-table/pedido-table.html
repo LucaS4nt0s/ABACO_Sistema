@@ -36,7 +36,7 @@
           <td><span [class]="getStatusClass(pedido.status)">{{ getStatusLabel(pedido.status) }}</span></td>
           <td class="actions-col">
             <button
-              *ngIf="canApprove(pedido.status) && currentUserCargo === 1"
+              *ngIf="canApprove(pedido.status) && isDirector()"
               type="button"
               class="btn btn--approve"
               (click)="approve.emit(pedido)"
@@ -44,6 +44,35 @@
             >
               Aprovar
             </button>
+
+            <button
+              *ngIf="canPurchase(pedido.status) && isDirector()"
+              type="button"
+              class="btn btn--purchase"
+              (click)="purchase.emit(pedido)"
+              [disabled]="loading"
+            >
+              Comprar
+            </button>
+
+            <div *ngIf="canDeliver(pedido.status) && isDirector()" class="entrega-group">
+              <input
+                type="number"
+                class="qtd-input"
+                placeholder="Qtd"
+                [(ngModel)]="entregaQuantidade[pedido.idPedido]"
+                min="1"
+              />
+              <button
+                type="button"
+                class="btn btn--deliver"
+                (click)="onDeliver(pedido)"
+                [disabled]="loading || !entregaQuantidade[pedido.idPedido] || entregaQuantidade[pedido.idPedido] <= 0"
+              >
+                Entregar
+              </button>
+            </div>
+
             <button
               type="button"
               class="btn btn--danger"

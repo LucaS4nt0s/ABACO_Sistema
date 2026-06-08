@@ -49,3 +49,34 @@ export interface PedidoCreatePayload {
 export interface PedidoUpdatePayload {
   status: number;
 }
+
+export interface PedidoEntregaPayload {
+  quantidade: number;
+}
+
+export const PEDIDO_STATUS = {
+  SOLICITADO: 0,
+  APROVADO: 1,
+  COMPRADO: 2,
+  ENTREGUE: 3,
+} as const;
+
+export function getPedidoStatusLabel(status: number | null): string {
+  switch (status) {
+    case 0: return 'Solicitado';
+    case 1: return 'Aprovado';
+    case 2: return 'Comprado';
+    case 3: return 'Entregue';
+    default: return 'Desconhecido';
+  }
+}
+
+export function getPedidoStatusClass(status: number | null): string {
+  switch (status) {
+    case 0: return 'badge badge--pending';
+    case 1: return 'badge badge--approved';
+    case 2: return 'badge badge--purchased';
+    case 3: return 'badge badge--delivered';
+    default: return 'badge';
+  }
+}

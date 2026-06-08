@@ -9,13 +9,7 @@ export class AlunoService {
   private readonly baseUrl: string;
 
   constructor(private readonly http: HttpClient) {
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const port = typeof window !== 'undefined' ? window.location.port : '';
-    if (hostname === 'localhost' && (port === '4200' || port === '5173' || port === '3000')) {
-      this.baseUrl = 'http://localhost:8000/api/v1/alunos';
-    } else {
-      this.baseUrl = '/api/v1/alunos';
-    }
+    this.baseUrl = '/api/v1/alunos';
   }
 
   list(): Observable<Aluno[]> {

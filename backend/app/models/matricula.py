@@ -15,5 +15,5 @@ class Matricula(Base):
     data_matricula: Mapped[date | None] = mapped_column("datamatricula", Date, nullable=True)
     status: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
-    aluno = relationship("Aluno", lazy="joined")
-    turma = relationship("Turma", lazy="joined")
+    aluno = relationship("Aluno", back_populates="matriculas", lazy="joined")
+    turma = relationship("Turma", back_populates="matriculas", lazy="joined")

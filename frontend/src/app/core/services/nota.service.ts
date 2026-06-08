@@ -6,17 +6,9 @@ import { MediaTurma, Nota, NotaBatchPayload } from '../models/nota.model';
 
 @Injectable({ providedIn: 'root' })
 export class NotaService {
-  private readonly baseUrl: string;
+  private readonly baseUrl = '/api/v1/notas';
 
-  constructor(private readonly http: HttpClient) {
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const port = typeof window !== 'undefined' ? window.location.port : '';
-    if (hostname === 'localhost' && (port === '4200' || port === '5173' || port === '3000')) {
-      this.baseUrl = 'http://localhost:8000/api/v1/notas';
-    } else {
-      this.baseUrl = '/api/v1/notas';
-    }
-  }
+  constructor(private readonly http: HttpClient) {}
 
   listByTurma(turmaId: number, prova?: number): Observable<Nota[]> {
     let params = new HttpParams();

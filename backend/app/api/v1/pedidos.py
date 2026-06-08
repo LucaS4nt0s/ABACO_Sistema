@@ -3,14 +3,16 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, verify_cargo
 from app.db.database import get_db
-from app.schemas.pedido_schema import PedidoCreateSchema, PedidoResponseSchema, PedidoUpdateSchema
+from app.schemas.pedido_schema import PedidoCreateSchema, PedidoEntregaSchema, PedidoResponseSchema, PedidoUpdateSchema
 from app.services.pedido_service import (
     EstoqueNotFoundForPedidoError,
+    PedidoCannotBeDeliveredError,
     PedidoHasDependenciesError,
     PedidoNotFoundError,
     TurmaNotFoundForPedidoError,
     create_pedido,
     delete_pedido,
+    entregar_pedido,
     get_pedido_by_id,
     list_pedidos,
     update_pedido_status,
@@ -53,6 +55,19 @@ def update_pedidos(pedido_id: int, payload: PedidoUpdateSchema, _current_user: d
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
     except PedidoHasDependenciesError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível atualizar o pedido") from exc
+    return PedidoResponseSchema.model_validate(pedido)
+
+
+@router.put("/{pedido_id}/entregar")
+def entregar_pedido_endpoint(pedido_id: int, payload: PedidoEntregaSchema, _current_user: dict = Depends(verify_cargo(1)), db: Session = Depends(get_db)):
+    try:
+        pedido = entregar_pedido(db, pedido_id, payload.quantidade)
+    except PedidoNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
+    except PedidoCannotBeDeliveredError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Pedido precisa estar com status 'Comprado' para ser entregue") from exc
+    except PedidoHasDependenciesError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível entregar o pedido") from exc
     return PedidoResponseSchema.model_validate(pedido)
 
 
