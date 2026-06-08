@@ -45,10 +45,28 @@ export const ADMIN_ROUTES: Routes = [
 					import('../enrollments/pages/enrollments-management/enrollments-management').then(m => m.EnrollmentsManagementComponent)
 			},
 			{
+				path: 'matriculas/:id/notas',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../grades/pages/student-grades/student-grades').then(m => m.StudentGradesComponent)
+			},
+			{
 				path: 'presencas',
 				canActivate: [adminGuard],
 				loadComponent: () =>
 					import('../attendance/pages/attendance-management/attendance-management').then(m => m.AttendanceManagementComponent)
+			},
+			{
+				path: 'notas',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../grades/pages/grades-management/grades-management').then(m => m.GradesManagementComponent)
+			},
+			{
+				path: 'notas/aluno/:id',
+				canActivate: [adminGuard],
+				loadComponent: () =>
+					import('../grades/pages/student-grades/student-grades').then(m => m.StudentGradesComponent)
 			},
 			{
 				path: 'logistico',
