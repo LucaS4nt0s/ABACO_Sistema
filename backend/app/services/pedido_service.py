@@ -83,6 +83,8 @@ def get_pedido_by_id(db: Session, pedido_id: int) -> Pedido:
 
 
 def aprovar_pedido(db: Session, pedido_id: int) -> Pedido:
+    from app.services.estoque_service import EstoqueSaldoInsuficienteError, deduzir_por_pedido
+
     pedido = get_pedido_by_id(db, pedido_id)
 
     if pedido.status != 0:
@@ -91,7 +93,11 @@ def aprovar_pedido(db: Session, pedido_id: int) -> Pedido:
     pedido.status = 1
 
     try:
+        deduzir_por_pedido(db, pedido)
         db.commit()
+    except EstoqueSaldoInsuficienteError as exc:
+        db.rollback()
+        raise PedidoInvalidTransitionError(str(exc)) from exc
     except IntegrityError as exc:
         db.rollback()
         raise PedidoHasDependenciesError from exc
@@ -125,6 +131,8 @@ def comprar_pedido(db: Session, pedido_id: int, payload: PedidoCompraSchema) -> 
 
 
 def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchema) -> Pedido:
+    from app.services.estoque_service import EstoqueSaldoInsuficienteError, deduzir_por_pedido
+
     pedido = get_pedido_by_id(db, pedido_id)
 
     if payload.status not in (1, 2):
@@ -141,7 +149,12 @@ def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchem
     pedido.status = payload.status
 
     try:
+        if payload.status in (1, 2):
+            deduzir_por_pedido(db, pedido)
         db.commit()
+    except EstoqueSaldoInsuficienteError as exc:
+        db.rollback()
+        raise PedidoInvalidTransitionError(str(exc)) from exc
     except IntegrityError as exc:
         db.rollback()
         raise PedidoHasDependenciesError from exc

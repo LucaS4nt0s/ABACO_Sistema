@@ -76,6 +76,17 @@
     </ul>
 
     <div class="admin-nav__user">
+      <button
+        type="button"
+        class="admin-nav__notification"
+        routerLink="/admin/logistico/estoque"
+        title="Alertas de estoque"
+      >
+        <span class="bell-icon">&#128276;</span>
+        <span class="notification-badge" *ngIf="estoqueService.alertasCount() > 0">
+          {{ estoqueService.alertasCount() }}
+        </span>
+      </button>
       <button type="button" class="admin-nav__logout" (click)="logout()">
         Sair
       </button>

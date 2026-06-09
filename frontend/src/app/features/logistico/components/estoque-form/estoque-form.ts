@@ -8,6 +8,7 @@ export interface EstoqueFormSubmit {
   nomeItem: string;
   quantidadeDisponivel: number | null;
   unidade: string | null;
+  estoqueMinimo: number | null;
 }
 
 @Component({
@@ -31,6 +32,7 @@ export class EstoqueFormComponent implements OnChanges {
     nomeItem: ['', [Validators.required]],
     quantidadeDisponivel: [<number | null>null],
     unidade: [''],
+    estoqueMinimo: [<number | null>null],
   });
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -54,6 +56,7 @@ export class EstoqueFormComponent implements OnChanges {
       nomeItem: value.nomeItem.trim(),
       quantidadeDisponivel: value.quantidadeDisponivel ?? null,
       unidade: value.unidade.trim() || null,
+      estoqueMinimo: value.estoqueMinimo ?? null,
     };
 
     this.save.emit(payload);
@@ -65,6 +68,7 @@ export class EstoqueFormComponent implements OnChanges {
         nomeItem: this.item.nomeItem ?? '',
         quantidadeDisponivel: this.item.quantidadeDisponivel ?? null,
         unidade: this.item.unidade ?? '',
+        estoqueMinimo: this.item.estoqueMinimo ?? null,
       });
       return;
     }
@@ -73,6 +77,7 @@ export class EstoqueFormComponent implements OnChanges {
       nomeItem: '',
       quantidadeDisponivel: null,
       unidade: '',
+      estoqueMinimo: null,
     });
   }
 

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError
 
 from app.api.v1.alunos import router as alunos_router
 from app.api.v1.auth import router as auth_router
@@ -16,6 +17,38 @@ from app.api.v1.usuarios import router as usuarios_router
 from app.db.database import engine
 
 app = FastAPI(title="SGA ABACO API")
+
+
+def run_startup_migrations():
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT estoqueminimo FROM estoque LIMIT 0"))
+            conn.commit()
+    except ProgrammingError:
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE estoque ADD COLUMN IF NOT EXISTS estoqueMinimo INTEGER"))
+            conn.commit()
+
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1 FROM movimentacao_estoque LIMIT 0"))
+            conn.commit()
+    except ProgrammingError:
+        with engine.connect() as conn:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS movimentacao_estoque (
+                    idMovimentacao SERIAL PRIMARY KEY,
+                    idItemEstoque INTEGER REFERENCES estoque(idItemEstoque),
+                    quantidade INTEGER NOT NULL,
+                    tipoMovimentacao TEXT NOT NULL,
+                    justificativa TEXT,
+                    dataMovimentacao TIMESTAMP NOT NULL
+                )
+            """))
+            conn.commit()
+
+
+run_startup_migrations()
 
 app.add_middleware(
     CORSMiddleware,

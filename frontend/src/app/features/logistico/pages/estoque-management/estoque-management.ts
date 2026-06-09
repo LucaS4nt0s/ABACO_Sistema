@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 import { Estoque, EstoqueCreatePayload, EstoqueUpdatePayload } from '../../../../core/models/estoque.model';
 import { EstoqueService } from '../../../../core/services/estoque.service';
@@ -11,14 +13,25 @@ import { EstoqueListComponent } from '../../components/estoque-list/estoque-list
 @Component({
   selector: 'app-estoque-management',
   standalone: true,
-  imports: [CommonModule, EstoqueListComponent, EstoqueFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, EstoqueListComponent, EstoqueFormComponent],
   templateUrl: './estoque-management.html',
   styleUrls: ['./estoque-management.scss'],
 })
-export class EstoqueManagementComponent implements OnInit {
+export class EstoqueManagementComponent implements OnInit, OnDestroy {
+  private readonly fb = inject(FormBuilder);
+  private readonly estoqueService = inject(EstoqueService);
+  private readonly notifications = inject(NotificationService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
+  readonly baixaForm = this.fb.nonNullable.group({
+    quantidade: [0, [Validators.required, Validators.min(1)]],
+    justificativa: ['', [Validators.required, Validators.minLength(1)]],
+  });
+
   estoque: Estoque[] = [];
   filteredEstoque: Estoque[] = [];
   pagedEstoque: Estoque[] = [];
+  alertaEstoqueIds: Set<number> = new Set();
 
   searchTerm = '';
   currentPage = 1;
@@ -33,14 +46,26 @@ export class EstoqueManagementComponent implements OnInit {
   deletingEstoqueId: number | null = null;
   localFeedback: string | null = null;
 
-  constructor(
-    private readonly estoqueService: EstoqueService,
-    private readonly notifications: NotificationService,
-    private readonly changeDetectorRef: ChangeDetectorRef,
-  ) {}
+  baixaItem: Estoque | null = null;
+  baixaSaving = false;
+
+  private readonly subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.estoqueService.estoque$.subscribe((items) => {
+        this.estoque = items;
+        this.applyFiltersAndPagination();
+        this.loadingList = false;
+        this.changeDetectorRef.detectChanges();
+      }),
+    );
     this.loadEstoque();
+    this.loadAlertas();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   get totalPages(): number {
@@ -78,6 +103,43 @@ export class EstoqueManagementComponent implements OnInit {
     this.selectedItem = null;
   }
 
+  openBaixa(item: Estoque): void {
+    this.baixaItem = item;
+    this.baixaForm.reset({ quantidade: 0, justificativa: '' });
+    this.baixaSaving = false;
+  }
+
+  closeBaixa(): void {
+    this.baixaItem = null;
+    this.baixaSaving = false;
+  }
+
+  submitBaixa(): void {
+    if (this.baixaForm.invalid || !this.baixaItem) {
+      this.baixaForm.markAllAsTouched();
+      return;
+    }
+
+    this.baixaSaving = true;
+    const { quantidade, justificativa } = this.baixaForm.getRawValue();
+
+    this.estoqueService.baixa(this.baixaItem.idItemEstoque, { quantidade, justificativa }).subscribe({
+      next: () => {
+        this.notifications.clear();
+        this.closeBaixa();
+        this.loadEstoque();
+        this.loadAlertas();
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (err) => {
+        const message = err?.error?.detail || err?.message || 'Erro ao dar baixa no estoque.';
+        this.notifications.error(message);
+        this.baixaSaving = false;
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
   onSave(payload: EstoqueFormSubmit): void {
     this.saving = true;
     this.localFeedback = null;
@@ -87,6 +149,7 @@ export class EstoqueManagementComponent implements OnInit {
         nomeItem: payload.nomeItem,
         quantidadeDisponivel: payload.quantidadeDisponivel,
         unidade: payload.unidade,
+        estoqueMinimo: payload.estoqueMinimo,
       };
 
       this.estoqueService.create(createPayload).subscribe({
@@ -95,6 +158,7 @@ export class EstoqueManagementComponent implements OnInit {
           this.closePanel();
           this.loadEstoque();
           this.saving = false;
+          this.loadAlertas();
           this.changeDetectorRef.detectChanges();
         },
         error: (err) => {
@@ -116,6 +180,7 @@ export class EstoqueManagementComponent implements OnInit {
       nomeItem: payload.nomeItem,
       quantidadeDisponivel: payload.quantidadeDisponivel,
       unidade: payload.unidade,
+      estoqueMinimo: payload.estoqueMinimo,
     };
 
     this.estoqueService.update(this.selectedItem.idItemEstoque, updatePayload).subscribe({
@@ -124,6 +189,7 @@ export class EstoqueManagementComponent implements OnInit {
         this.closePanel();
         this.loadEstoque();
         this.saving = false;
+        this.loadAlertas();
         this.changeDetectorRef.detectChanges();
       },
       error: (err) => {
@@ -147,8 +213,9 @@ export class EstoqueManagementComponent implements OnInit {
     this.estoqueService.delete(item.idItemEstoque).subscribe({
       next: () => {
         this.notifications.clear();
-        this.loadEstoque();
         this.deletingEstoqueId = null;
+        this.loadEstoque();
+        this.loadAlertas();
         this.changeDetectorRef.detectChanges();
       },
       error: (error: HttpErrorResponse) => {
@@ -165,15 +232,13 @@ export class EstoqueManagementComponent implements OnInit {
 
   private loadEstoque(): void {
     this.loadingList = true;
-    this.estoqueService.list().subscribe({
-      next: (items) => {
-        this.estoque = items;
-        this.applyFiltersAndPagination();
-        this.loadingList = false;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: () => {
-        this.loadingList = false;
+    this.estoqueService.loadAll();
+  }
+
+  private loadAlertas(): void {
+    this.estoqueService.getAlertas().subscribe({
+      next: (alertas) => {
+        this.alertaEstoqueIds = new Set(alertas.map((a) => a.idItemEstoque));
         this.changeDetectorRef.detectChanges();
       },
     });
