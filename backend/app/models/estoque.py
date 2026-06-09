@@ -11,3 +11,4 @@ class Estoque(Base):
     nome_item: Mapped[str | None] = mapped_column("nomeitem", String, nullable=True)
     quantidade_disponivel: Mapped[int | None] = mapped_column("quantidadedisponivel", Integer, nullable=True)
     unidade: Mapped[str | None] = mapped_column(String, nullable=True)
+    estoque_minimo: Mapped[int | None] = mapped_column("estoqueminimo", Integer, nullable=True)

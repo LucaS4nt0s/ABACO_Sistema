@@ -61,7 +61,17 @@ CREATE TABLE estoque (
     idItemEstoque SERIAL PRIMARY KEY,
     nomeItem TEXT,
     quantidadeDisponivel INTEGER,
-    unidade TEXT
+    unidade TEXT,
+    estoqueMinimo INTEGER
+);
+
+CREATE TABLE movimentacao_estoque (
+    idMovimentacao SERIAL PRIMARY KEY,
+    idItemEstoque INTEGER REFERENCES estoque(idItemEstoque),
+    quantidade INTEGER NOT NULL,
+    tipoMovimentacao TEXT NOT NULL,
+    justificativa TEXT,
+    dataMovimentacao TIMESTAMP NOT NULL
 );
 
 CREATE TABLE pedido (

@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { EstoqueService } from '../../../../core/services/estoque.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -11,11 +12,24 @@ import { AuthService } from '../../../../core/services/auth.service';
   templateUrl: './admin-layout.html',
   styleUrls: ['./admin-layout.scss'],
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   readonly auth = inject(AuthService);
+  readonly estoqueService = inject(EstoqueService);
   private readonly router = inject(Router);
 
+  private pollInterval: ReturnType<typeof setInterval> | null = null;
+
+  ngOnInit(): void {
+    this.estoqueService.loadAlertasCount();
+    this.pollInterval = setInterval(() => {
+      this.estoqueService.loadAlertasCount();
+    }, 30000);
+  }
+
   logout(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
     this.auth.logout();
     this.router.navigate(['/login']);
   }

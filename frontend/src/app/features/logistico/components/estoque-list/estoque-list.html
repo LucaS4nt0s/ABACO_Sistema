@@ -26,12 +26,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of estoque">
-          <td>{{ item.nomeItem || '-' }}</td>
+        <tr *ngFor="let item of estoque" [class.table-row--alerta]="isAlerta(item)">
+          <td>
+            <span *ngIf="isAlerta(item)" class="alert-icon" aria-label="Estoque baixo">&#9888;</span>
+            {{ item.nomeItem || '-' }}
+          </td>
           <td>{{ item.quantidadeDisponivel ?? '-' }}</td>
           <td>{{ item.unidade || '-' }}</td>
           <td class="actions-col">
             <button type="button" class="btn btn--ghost" (click)="edit.emit(item)" [disabled]="loading">Editar</button>
+            <button type="button" class="btn btn--warning" (click)="baixa.emit(item)" [disabled]="loading">Dar Baixa</button>
             <button
               type="button"
               class="btn btn--danger"

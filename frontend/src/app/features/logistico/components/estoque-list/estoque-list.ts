@@ -16,11 +16,17 @@ export class EstoqueListComponent {
   @Input() currentPage = 1;
   @Input() totalPages = 1;
   @Input() deletingEstoqueId: number | null = null;
+  @Input() alertaEstoqueIds: Set<number> = new Set();
 
   @Output() readonly search = new EventEmitter<string>();
   @Output() readonly edit = new EventEmitter<Estoque>();
   @Output() readonly remove = new EventEmitter<Estoque>();
+  @Output() readonly baixa = new EventEmitter<Estoque>();
   @Output() readonly pageChange = new EventEmitter<number>();
+
+  isAlerta(item: Estoque): boolean {
+    return this.alertaEstoqueIds.has(item.idItemEstoque);
+  }
 
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;

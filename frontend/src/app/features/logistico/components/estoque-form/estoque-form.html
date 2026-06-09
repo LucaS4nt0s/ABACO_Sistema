@@ -21,6 +21,12 @@
       <input formControlName="unidade" type="text" placeholder="un, kg, l, cx..." />
     </label>
 
+    <label>
+      <span>Estoque minimo</span>
+      <input formControlName="estoqueMinimo" type="number" placeholder="Quantidade para alerta" />
+      <small>Quando o saldo atingir este valor, um alerta sera exibido.</small>
+    </label>
+
     <footer>
       <button type="button" class="btn btn--ghost" (click)="cancel.emit()" [disabled]="loading">Cancelar</button>
       <button type="submit" class="btn btn--primary" [disabled]="loading">
