@@ -21,5 +21,5 @@ class UsuarioResponseSchema(BaseModel):
 	id_usuario: int = Field(alias="idUsuario")
 	nome: str | None = None
 	telefone: str | None = None
-	email: EmailStr
+	email: EmailStr | None = None
 	cargo: int | None = None

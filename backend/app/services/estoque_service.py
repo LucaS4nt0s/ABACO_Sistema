@@ -26,16 +26,19 @@ class EstoqueBaixaJustificativaError(Exception):
     pass
 
 
+class EstoqueAlreadyExistsError(Exception):
+    pass
+
+
 def create_estoque(db: Session, payload: EstoqueCreateSchema) -> Estoque:
     existing = db.query(Estoque).filter(
         func.lower(Estoque.nome_item) == func.lower(payload.nomeItem.strip())
     ).first()
 
     if existing:
-        existing.quantidade_disponivel = (existing.quantidade_disponivel or 0) + (payload.quantidadeDisponivel or 0)
-        db.commit()
-        db.refresh(existing)
-        return existing
+        raise EstoqueAlreadyExistsError(
+            f"Item '{payload.nomeItem}' já existe no estoque. Use o endpoint de atualização para modificar a quantidade."
+        )
 
     estoque = Estoque(
         nome_item=payload.nomeItem.strip(),

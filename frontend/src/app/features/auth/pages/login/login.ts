@@ -46,7 +46,6 @@ export class Login {
       })
     ).subscribe({
       next: (res) => {
-        this.auth.setToken(res.token);
         const role = res.role;
         if (role === 'DIRECTOR') {
           this.router.navigate(['/admin']);

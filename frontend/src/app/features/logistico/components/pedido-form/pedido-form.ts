@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 import { Estoque } from '../../../../core/models/estoque.model';
 import { EstoqueService } from '../../../../core/services/estoque.service';
@@ -21,7 +21,8 @@ export interface PedidoFormSubmit {
   templateUrl: './pedido-form.html',
   styleUrls: ['./pedido-form.scss'],
 })
-export class PedidoFormComponent implements OnInit {
+export class PedidoFormComponent implements OnInit, OnDestroy {
+  private readonly subscriptions: Subscription[] = [];
   private readonly fb = inject(FormBuilder);
   private readonly estoqueService = inject(EstoqueService);
   private readonly turmaService = inject(TurmaService);
@@ -142,7 +143,7 @@ export class PedidoFormComponent implements OnInit {
   }
 
   private setupSearch(index: number): void {
-    this.searchTerms[index].pipe(
+    const sub = this.searchTerms[index].pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((term) => {
@@ -154,22 +155,31 @@ export class PedidoFormComponent implements OnInit {
     ).subscribe((items) => {
       this.filteredEstoque[index] = items;
     });
+    this.subscriptions.push(sub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+    this.subscriptions.length = 0;
+    this.searchTerms.forEach((s) => s.complete());
   }
 
   private loadTurmas(): void {
-    this.turmaService.list().subscribe({
+    const sub = this.turmaService.list().subscribe({
       next: (turmas) => {
         this.turmas = turmas;
       },
     });
+    this.subscriptions.push(sub);
   }
 
   private loadEstoque(): void {
-    this.estoqueService.list().subscribe({
+    const sub = this.estoqueService.list().subscribe({
       next: (items) => {
         this.estoqueItems = items;
         this.filteredEstoque = this.filteredEstoque.map(() => [...items]);
       },
     });
+    this.subscriptions.push(sub);
   }
 }

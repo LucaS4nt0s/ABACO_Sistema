@@ -22,7 +22,7 @@
       <tbody>
         <tr *ngFor="let pedido of pedidos">
           <td>{{ pedido.idPedido }}</td>
-          <td>{{ pedido.turma?.capacidade ?? '-' }}</td>
+          <td>{{ pedido.turma?.nomeCurso ?? pedido.turma?.idTurma ?? '-' }}</td>
           <td>{{ pedido.usuario?.nome ?? '-' }}</td>
           <td>{{ pedido.dataPedido ? (pedido.dataPedido | date:'dd/MM/yyyy') : '-' }}</td>
           <td>
