@@ -5,6 +5,7 @@ from app.core.dependencies import verify_cargo
 from app.db.database import get_db
 from app.schemas.nota_schema import MediaTurmaSchema, NotaBatchSchema, NotaResponseSchema
 from app.services.nota_service import (
+    InvalidMatriculasError,
     calcular_media_por_prova,
     create_or_update_notas,
     list_notas_by_matricula,
@@ -22,9 +23,11 @@ def create_notas(
 ):
     if payload.prova < 1:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="O numero da prova deve ser maior ou igual a 1.")
-    notas = create_or_update_notas(db, payload)
+    try:
+        notas = create_or_update_notas(db, payload)
+    except InvalidMatriculasError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
     result = [NotaResponseSchema.model_validate(n) for n in notas]
-    db.commit()
     return result
 
 

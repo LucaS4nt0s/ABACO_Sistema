@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class ItemPedidoCreateSchema(BaseModel):
@@ -65,6 +65,17 @@ class TurmaPedidoInfo(BaseModel):
 
     id_turma: int = Field(alias="idTurma")
     capacidade: int | None = None
+    nome_curso: str | None = Field(None, alias="nomeCurso")
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nome_curso(cls, data):
+        if isinstance(data, dict):
+            return data
+        turma = data
+        if hasattr(turma, "curso") and turma.curso:
+            turma.nome_curso = turma.curso.nome_curso
+        return turma
 
 
 class PedidoResponseSchema(BaseModel):

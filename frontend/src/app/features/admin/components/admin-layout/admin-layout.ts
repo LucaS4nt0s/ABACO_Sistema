@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
@@ -12,7 +12,7 @@ import { EstoqueService } from '../../../../core/services/estoque.service';
   templateUrl: './admin-layout.html',
   styleUrls: ['./admin-layout.scss'],
 })
-export class AdminLayoutComponent implements OnInit {
+export class AdminLayoutComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   readonly estoqueService = inject(EstoqueService);
   private readonly router = inject(Router);
@@ -24,6 +24,13 @@ export class AdminLayoutComponent implements OnInit {
     this.pollInterval = setInterval(() => {
       this.estoqueService.loadAlertasCount();
     }, 30000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
+    }
   }
 
   logout(): void {

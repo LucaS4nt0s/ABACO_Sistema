@@ -31,6 +31,9 @@ def get_historico_by_matricula(db: Session, matricula_id: int) -> dict:
         raise MatriculaNotFoundError
 
     aluno = db.query(Aluno).filter(Aluno.id_aluno == matricula.id_aluno).first()
+    if not aluno:
+        raise MatriculaNotFoundError("Aluno vinculado à matrícula não encontrado")
+
     turma = (
         db.query(Turma)
         .filter(Turma.id_turma == matricula.id_turma)

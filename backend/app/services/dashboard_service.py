@@ -106,7 +106,7 @@ def get_chart_logistica(db: Session) -> dict:
             Estoque.id_item_estoque == MovimentacaoEstoque.id_item_estoque,
         )
         .filter(
-            MovimentacaoEstoque.tipo_movimentacao == "saida",
+            MovimentacaoEstoque.tipo_movimentacao.in_(["baixa_manual", "pedido_aprovado"]),
             MovimentacaoEstoque.data_movimentacao >= primeiro_dia_mes,
             MovimentacaoEstoque.data_movimentacao < primeiro_dia_proximo_mes,
         )

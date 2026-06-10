@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
@@ -8,6 +7,10 @@ from app.models.matricula import Matricula
 from app.models.nota import Nota
 from app.models.turma import Turma
 from app.schemas.nota_schema import MediaProvaSchema, NotaBatchSchema
+
+
+class InvalidMatriculasError(Exception):
+    pass
 
 
 def _base_options():
@@ -32,9 +35,8 @@ def create_or_update_notas(db: Session, payload: NotaBatchSchema) -> list[Nota]:
 
     ids_invalidos = [item.idMatricula for item in payload.notas if item.idMatricula not in matriculas_por_id]
     if ids_invalidos:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Matriculas {ids_invalidos} nao pertencem a turma informada ou nao estao ativas.",
+        raise InvalidMatriculasError(
+            f"Matriculas {ids_invalidos} nao pertencem a turma informada ou nao estao ativas."
         )
 
     criadas: list[Nota] = []
@@ -56,8 +58,8 @@ def create_or_update_notas(db: Session, payload: NotaBatchSchema) -> list[Nota]:
             db.add(nota)
         criadas.append(nota)
 
+    db.commit()
     for n in criadas:
-        db.flush()
         db.refresh(n)
     return criadas
 

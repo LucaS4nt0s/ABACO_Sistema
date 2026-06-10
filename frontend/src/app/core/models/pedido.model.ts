@@ -22,6 +22,7 @@ export interface UsuarioPedidoInfo {
 export interface TurmaPedidoInfo {
   idTurma: number;
   capacidade: number | null;
+  nomeCurso: string | null;
 }
 
 export interface Pedido {

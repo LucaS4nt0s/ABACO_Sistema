@@ -149,7 +149,7 @@ def update_pedido_status(db: Session, pedido_id: int, payload: PedidoUpdateSchem
     pedido.status = payload.status
 
     try:
-        if payload.status in (1, 2):
+        if payload.status == 1:
             deduzir_por_pedido(db, pedido)
         db.commit()
     except EstoqueSaldoInsuficienteError as exc:
