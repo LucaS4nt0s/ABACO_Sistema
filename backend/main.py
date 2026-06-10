@@ -6,6 +6,7 @@ from sqlalchemy.exc import ProgrammingError
 from app.api.v1.alunos import router as alunos_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.cursos import router as cursos_router
+from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.estoque import router as estoque_router
 from app.api.v1.historico import router as historico_router
 from app.api.v1.matriculas import router as matriculas_router
@@ -70,6 +71,7 @@ app.add_middleware(
 app.include_router(alunos_router)
 app.include_router(auth_router)
 app.include_router(cursos_router)
+app.include_router(dashboard_router)
 app.include_router(estoque_router)
 app.include_router(historico_router)
 app.include_router(matriculas_router)

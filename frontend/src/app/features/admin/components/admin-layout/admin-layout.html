@@ -11,6 +11,11 @@
           Inicio
         </a>
       </li>
+      <li *ngIf="auth.authState().role === 'DIRECTOR'">
+        <a routerLink="/admin/dashboard" routerLinkActive="active">
+          Dashboard
+        </a>
+      </li>
     </ul>
 
     <div class="admin-nav__section-label">Academico</div>
