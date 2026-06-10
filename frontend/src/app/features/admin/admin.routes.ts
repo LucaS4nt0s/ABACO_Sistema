@@ -15,6 +15,11 @@ export const ADMIN_ROUTES: Routes = [
 				loadComponent: () => import('./pages/home/home').then(m => m.AdminHome)
 			},
 			{
+				path: 'dashboard',
+				canActivate: [directorGuard],
+				loadComponent: () => import('../dashboard/pages/home/home').then(m => m.Home)
+			},
+			{
 				path: 'usuarios',
 				canActivate: [adminGuard, directorGuard],
 				loadComponent: () =>
