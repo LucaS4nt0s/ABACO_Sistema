@@ -11,10 +11,10 @@ Main requirements:
 - Backend must use Node.js + Express + TypeScript.
 - Frontend must use Next.js + TypeScript + TailwindCSS.
 - Database must use PostgreSQL.
-- Follow the structure defined in docs/project-structure.md.
-- Follow the API defined in docs/api-spec.md.
-- Follow the schema defined in docs/database-schema.sql.
-- Follow the Docker setup defined in docs/docker.md.
+- Follow the structure defined in docs/architecture/project-structure.md.
+- Follow the API defined in docs/architecture/api-spec.md.
+- Follow the schema defined in docs/architecture/database-schema.sql.
+- Follow the Docker setup defined in docs/guides/docker.md.
 - Implement JWT authentication.
 - Implement role-based access control.
 - Keep business rules inside services.
