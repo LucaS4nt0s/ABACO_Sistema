@@ -21,6 +21,13 @@ class Settings(BaseSettings):
 	)
 	jwt_algorithm: str = "HS256"
 	access_token_expire_minutes: int = Field(default=120, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+	reset_token_expire_minutes: int = Field(default=15, alias="RESET_TOKEN_EXPIRE_MINUTES")
+	smtp_host: str = Field(default="localhost", alias="SMTP_HOST")
+	smtp_port: int = Field(default=587, alias="SMTP_PORT")
+	smtp_user: str = Field(default="", alias="SMTP_USER")
+	smtp_password: str = Field(default="", alias="SMTP_PASSWORD")
+	smtp_from: str = Field(default="noreply@abaco.org.br", alias="SMTP_FROM")
+	frontend_url: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
 
 
 @lru_cache(maxsize=1)

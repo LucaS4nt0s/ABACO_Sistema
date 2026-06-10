@@ -1,0 +1,35 @@
+<div class="turmas-page">
+  <header class="turmas-header">
+    <h1>Minhas Turmas</h1>
+  </header>
+
+  <p *ngIf="loading" class="loading">Carregando...</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <div *ngIf="!loading && !error && turmas.length === 0" class="empty">
+    Nenhuma turma atribuída a você.
+  </div>
+
+  <table *ngIf="!loading && !error && turmas.length > 0" class="turmas-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Curso</th>
+        <th>Início</th>
+        <th>Fim</th>
+        <th>Dias</th>
+        <th>Capacidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let turma of turmas">
+        <td>{{ turma.idTurma }}</td>
+        <td>{{ turma.curso?.nomeCurso || '—' }}</td>
+        <td>{{ turma.dataInicio || '—' }}</td>
+        <td>{{ turma.dataFim || '—' }}</td>
+        <td>{{ turma.diasAula || '—' }}</td>
+        <td>{{ turma.capacidade ?? '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

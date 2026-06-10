@@ -76,6 +76,9 @@ interface AuthState {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly loginUrl = `${environment.apiUrl}/api/v1/auth/login`;
+  private readonly registerUrl = `${environment.apiUrl}/api/v1/auth/register`;
+  private readonly forgotPasswordUrl = `${environment.apiUrl}/api/v1/auth/forgot-password`;
+  private readonly resetPasswordUrl = `${environment.apiUrl}/api/v1/auth/reset-password`;
   private readonly TOKEN_KEY = 'abaco_token';
 
   readonly authState = signal<AuthState>({ token: null, userId: null, role: null });
@@ -101,6 +104,33 @@ export class AuthService {
       }),
       catchError((error) => {
         const message = error?.error?.detail || error?.message || 'Credenciais inválidas';
+        return throwError(() => ({ status: error?.status, message }));
+      })
+    );
+  }
+
+  register(nome: string, email: string, telefone: string | null, senha: string, confirmar_senha: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(this.registerUrl, { nome, email, telefone, senha, confirmar_senha }).pipe(
+      catchError((error) => {
+        const message = error?.error?.detail || error?.message || 'Erro ao criar conta';
+        return throwError(() => ({ status: error?.status, message }));
+      })
+    );
+  }
+
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(this.forgotPasswordUrl, { email }).pipe(
+      catchError((error) => {
+        const message = error?.error?.detail || error?.message || 'Erro ao processar solicitação';
+        return throwError(() => ({ status: error?.status, message }));
+      })
+    );
+  }
+
+  resetPassword(token: string, nova_senha: string, confirmar_senha: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(this.resetPasswordUrl, { token, nova_senha, confirmar_senha }).pipe(
+      catchError((error) => {
+        const message = error?.error?.detail || error?.message || 'Erro ao redefinir senha';
         return throwError(() => ({ status: error?.status, message }));
       })
     );

@@ -1,0 +1,36 @@
+<div class="page-center">
+  <div class="login-card" role="region" aria-label="Criar conta">
+    <div class="brand">
+      <img src="/Logo_ABACO.png" alt="ABACO" class="logo" />
+    </div>
+    <h1>Criar Conta</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <label [attr.for]="'nome-' + (form.controls.nome?.id || '')">Nome</label>
+      <input [id]="'nome-' + (form.controls.nome?.id || '')" type="text" [formControl]="form.controls.nome" placeholder="Seu nome completo" />
+      <div class="field-error" *ngIf="form.controls.nome?.touched && form.controls.nome?.invalid">
+        <small>Nome é obrigatório</small>
+      </div>
+
+      <ab-email-field [control]="form.controls.email"></ab-email-field>
+
+      <label [attr.for]="'tel-' + (form.controls.telefone?.id || '')">Telefone</label>
+      <input [id]="'tel-' + (form.controls.telefone?.id || '')" type="text" [formControl]="form.controls.telefone" placeholder="Opcional" />
+
+      <ab-password-field [control]="form.controls.senha" [label]="'Senha'" [placeholder]="'Mínimo de 6 caracteres'"></ab-password-field>
+
+      <ab-password-field [control]="form.controls.confirmar_senha" [label]="'Confirmar Senha'" [placeholder]="'Repita a senha'"></ab-password-field>
+
+      <ab-primary-button [disabled]="form.invalid || loading" [label]="loading ? 'Criando conta...' : 'Criar Conta'">
+        <span *ngIf="loading" class="spinner" aria-hidden="true"></span>
+      </ab-primary-button>
+
+      <div class="error" *ngIf="error">{{ error }}</div>
+      <div class="success" *ngIf="success">{{ success }}</div>
+    </form>
+
+    <div class="auth-links">
+      <a routerLink="/login" class="auth-link">Já tem conta? Fazer login</a>
+    </div>
+  </div>
+</div>
