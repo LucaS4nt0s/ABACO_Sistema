@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Curso } from '../../../../core/models/curso.model';
-import { Turma, TurmaCreatePayload, TurmaUpdatePayload } from '../../../../core/models/turma.model';
+import { Turma, TurmaCreatePayload, TurmaUpdatePayload, Avaliacao } from '../../../../core/models/turma.model';
 import { Usuario } from '../../../../core/models/usuario.model';
 import { CursoService } from '../../../../core/services/curso.service';
 import { DialogService } from '../../../../core/services/dialog.service';
@@ -135,7 +135,7 @@ export class ClassesManagementComponent implements OnInit {
         dataInicio: payload.dataInicio,
         dataFim: payload.dataFim,
         diasAula: payload.diasAula,
-        avaliacoes: payload.avaliacoes ?? null,
+        avaliacoes: (payload.avaliacoes as Avaliacao[]) ?? null,
       };
 
       this.turmaService.create(createPayload).subscribe({

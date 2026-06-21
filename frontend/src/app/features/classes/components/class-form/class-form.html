@@ -62,6 +62,9 @@
 
       <button type="button" class="avaliacoes__add" (click)="addAvaliacao()">+ Adicionar avaliação</button>
     </fieldset>
+
+    <fieldset class="dias-aula">
+      <legend>Dias de aula</legend>
       <div class="dias-aula__grid">
         <label *ngFor="let dia of diasSemana; let i = index" class="dia-checkbox">
           <input type="checkbox" [formControl]="diasAulaControls[i]" (change)="updateContexto()" />
