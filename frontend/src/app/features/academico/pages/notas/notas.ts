@@ -129,12 +129,18 @@ export class NotasPage implements OnInit {
     if (!this.selectedTurma) return;
 
     this.loadingNotas = true;
+    this.students = [];
 
     this.matriculaService.list().subscribe({
       next: (matriculas) => {
         this.matriculas = matriculas.filter(
           (m) => m.idTurma === this.selectedTurma!.idTurma && m.status === 0
         );
+
+        if (this.matriculas.length === 0) {
+          this.loadingNotas = false;
+          return;
+        }
 
         this.notaService.listByTurma(this.selectedTurma!.idTurma, this.prova).subscribe({
           next: (notas) => {
