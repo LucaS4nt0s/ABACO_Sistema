@@ -1,3 +1,14 @@
-.page-placeholder { padding: 2rem; }
-.page-placeholder h2 { margin: 0 0 0.5rem; font-size: 1.5rem; }
-.page-placeholder p { color: #64748b; }
+.alunos-page { padding: 2rem; max-width: 1240px; margin: 0 auto; }
+.alunos-header { margin-bottom: 1.5rem; }
+.alunos-header h1 { margin: 0; font-size: 1.5rem; }
+.loading { color: #64748b; }
+.error { color: #d93025; }
+.empty { color: #64748b; font-style: italic; }
+
+.alunos-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06); }
+.alunos-table th, .alunos-table td { padding: 0.75rem 1rem; text-align: left; }
+.alunos-table thead { background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+.alunos-table th { font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; color: #64748b; }
+.alunos-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+.alunos-table tbody tr:hover { background: #f8fafc; }
+.alunos-table tbody tr:last-child { border-bottom: none; }

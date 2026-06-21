@@ -1,4 +1,31 @@
-<div class="page-placeholder">
-  <h2>Alunos</h2>
-  <p>Funcionalidade em desenvolvimento.</p>
+<div class="alunos-page">
+  <header class="alunos-header">
+    <h1>Alunos</h1>
+  </header>
+
+  <p *ngIf="loading" class="loading">Carregando...</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <div *ngIf="!loading && !error && alunos.length === 0" class="empty">
+    Nenhum aluno matriculado nas suas turmas.
+  </div>
+
+  <table *ngIf="!loading && !error && alunos.length > 0" class="alunos-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Turma</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let aluno of alunos">
+        <td>{{ aluno.nome }}</td>
+        <td>{{ aluno.telefone }}</td>
+        <td>{{ aluno.turma }}</td>
+        <td>{{ aluno.status }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

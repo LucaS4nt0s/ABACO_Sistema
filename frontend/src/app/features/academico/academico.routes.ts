@@ -6,7 +6,7 @@ import { AcademicoLayoutComponent } from './components/academico-layout/academic
 export const ACADEMICO_ROUTES: Routes = [
 	{
 		path: '',
-		canActivate: [authGuard, roleGuard([1, 2])],
+		canActivate: [authGuard, roleGuard([2])],
 		component: AcademicoLayoutComponent,
 		children: [
 			{ path: '', pathMatch: 'full', loadComponent: () => import('./pages/home/home').then(m => m.AcademicoHome) },
