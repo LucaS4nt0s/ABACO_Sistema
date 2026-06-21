@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { Curso, CursoCreatePayload, CursoUpdatePayload } from '../../../../core/models/curso.model';
 import { CursoService } from '../../../../core/services/curso.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CourseFormComponent, CourseFormSubmit } from '../../components/course-form/course-form';
 import { CourseListComponent } from '../../components/course-list/course-list';
@@ -35,6 +36,7 @@ export class CoursesManagementComponent implements OnInit {
 
   constructor(
     private readonly cursoService: CursoService,
+    private readonly dialog: DialogService,
     private readonly notifications: NotificationService,
     private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
@@ -90,6 +92,7 @@ export class CoursesManagementComponent implements OnInit {
       this.cursoService.create(createPayload).subscribe({
         next: () => {
           this.notifications.clear();
+          this.notifications.success('Curso criado com sucesso.');
           this.closePanel();
           this.loadCursos();
           this.saving = false;
@@ -117,6 +120,7 @@ export class CoursesManagementComponent implements OnInit {
     this.cursoService.update(this.selectedCurso.idCurso, updatePayload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Curso atualizado com sucesso.');
         this.closePanel();
         this.loadCursos();
         this.saving = false;
@@ -132,30 +136,32 @@ export class CoursesManagementComponent implements OnInit {
   }
 
   onDelete(curso: Curso): void {
-    const shouldDelete = confirm(`Excluir o curso ${curso.nomeCurso}?`);
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: `Excluir o curso ${curso.nomeCurso}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.deletingCursoId = curso.idCurso;
-    this.localFeedback = null;
+      this.deletingCursoId = curso.idCurso;
+      this.localFeedback = null;
 
-    this.cursoService.delete(curso.idCurso).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadCursos();
-        this.deletingCursoId = null;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 409) {
-          const message = 'Este curso possui turmas vinculadas e nao pode ser excluido.';
-          this.localFeedback = message;
-          this.notifications.error(message);
-        }
-        this.deletingCursoId = null;
-        this.changeDetectorRef.detectChanges();
-      },
+      this.cursoService.delete(curso.idCurso).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Curso excluído com sucesso.');
+          this.loadCursos();
+          this.deletingCursoId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const message = 'Este curso possui turmas vinculadas e nao pode ser excluido.';
+            this.localFeedback = message;
+            this.notifications.error(message);
+          }
+          this.deletingCursoId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -170,6 +176,7 @@ export class CoursesManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingList = false;
+        this.notifications.error('Erro ao carregar. Tente novamente.');
         this.changeDetectorRef.detectChanges();
       },
     });

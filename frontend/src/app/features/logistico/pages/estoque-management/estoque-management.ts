@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 
 import { Estoque, EstoqueCreatePayload, EstoqueUpdatePayload } from '../../../../core/models/estoque.model';
 import { EstoqueService } from '../../../../core/services/estoque.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { EstoqueFormComponent, EstoqueFormSubmit } from '../../components/estoque-form/estoque-form';
 import { EstoqueListComponent } from '../../components/estoque-list/estoque-list';
@@ -20,6 +21,7 @@ import { EstoqueListComponent } from '../../components/estoque-list/estoque-list
 export class EstoqueManagementComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly estoqueService = inject(EstoqueService);
+  private readonly dialog = inject(DialogService);
   private readonly notifications = inject(NotificationService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -126,6 +128,7 @@ export class EstoqueManagementComponent implements OnInit, OnDestroy {
     this.estoqueService.baixa(this.baixaItem.idItemEstoque, { quantidade, justificativa }).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Baixa realizada com sucesso.');
         this.closeBaixa();
         this.loadEstoque();
         this.loadAlertas();
@@ -155,6 +158,7 @@ export class EstoqueManagementComponent implements OnInit, OnDestroy {
       this.estoqueService.create(createPayload).subscribe({
         next: () => {
           this.notifications.clear();
+          this.notifications.success('Item criado com sucesso.');
           this.closePanel();
           this.loadEstoque();
           this.saving = false;
@@ -186,6 +190,7 @@ export class EstoqueManagementComponent implements OnInit, OnDestroy {
     this.estoqueService.update(this.selectedItem.idItemEstoque, updatePayload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Item atualizado com sucesso.');
         this.closePanel();
         this.loadEstoque();
         this.saving = false;
@@ -202,31 +207,33 @@ export class EstoqueManagementComponent implements OnInit, OnDestroy {
   }
 
   onDelete(item: Estoque): void {
-    const shouldDelete = confirm(`Excluir o item ${item.nomeItem}?`);
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: `Excluir o item ${item.nomeItem}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.deletingEstoqueId = item.idItemEstoque;
-    this.localFeedback = null;
+      this.deletingEstoqueId = item.idItemEstoque;
+      this.localFeedback = null;
 
-    this.estoqueService.delete(item.idItemEstoque).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.deletingEstoqueId = null;
-        this.loadEstoque();
-        this.loadAlertas();
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 409) {
-          const message = 'Este item possui pedidos vinculados e nao pode ser excluido.';
-          this.localFeedback = message;
-          this.notifications.error(message);
-        }
-        this.deletingEstoqueId = null;
-        this.changeDetectorRef.detectChanges();
-      },
+      this.estoqueService.delete(item.idItemEstoque).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Item excluído com sucesso.');
+          this.deletingEstoqueId = null;
+          this.loadEstoque();
+          this.loadAlertas();
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const message = 'Este item possui pedidos vinculados e nao pode ser excluido.';
+            this.localFeedback = message;
+            this.notifications.error(message);
+          }
+          this.deletingEstoqueId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 

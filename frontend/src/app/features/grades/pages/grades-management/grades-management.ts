@@ -98,7 +98,7 @@ export class GradesManagementComponent implements OnInit {
 
     this.notaService.create(payload).subscribe({
       next: () => {
-        this.notifications.clear();
+        this.notifications.success('Notas salvas com sucesso.');
         this.saving = false;
         this.changeDetectorRef.detectChanges();
       },
@@ -122,6 +122,7 @@ export class GradesManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingTurmas = false;
+        this.notifications.error('Erro ao carregar turmas.');
         this.changeDetectorRef.detectChanges();
       },
     });
@@ -133,7 +134,9 @@ export class GradesManagementComponent implements OnInit {
         this.matriculas = matriculas;
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {},
+      error: () => {
+        this.notifications.error('Erro ao carregar matrículas.');
+      },
     });
   }
 
@@ -154,6 +157,7 @@ export class GradesManagementComponent implements OnInit {
         this.notasExistentes = [];
         this.buildStudentList();
         this.loadingNotas = false;
+        this.notifications.error('Erro ao carregar notas.');
         this.changeDetectorRef.detectChanges();
       },
     });

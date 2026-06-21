@@ -167,12 +167,12 @@ export class AttendanceManagementComponent implements OnInit {
 
     this.presencaService.create(payload).subscribe({
       next: () => {
-        this.notifications.clear();
+        this.notifications.success('Presenças salvas com sucesso.');
         this.saving = false;
         this.changeDetectorRef.detectChanges();
       },
       error: (err: HttpErrorResponse) => {
-        const message = err?.error?.detail || err?.message || 'Erro ao registrar presencas.';
+        const message = err?.error?.detail || err?.message || 'Erro ao registrar presenças.';
         this.localFeedback = message;
         this.notifications.error(message);
         this.saving = false;
@@ -191,6 +191,7 @@ export class AttendanceManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingTurmas = false;
+        this.notifications.error('Erro ao carregar turmas.');
         this.changeDetectorRef.detectChanges();
       },
     });
@@ -202,7 +203,9 @@ export class AttendanceManagementComponent implements OnInit {
         this.matriculas = matriculas;
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {},
+      error: () => {
+        this.notifications.error('Erro ao carregar matrículas.');
+      },
     });
   }
 
@@ -223,6 +226,7 @@ export class AttendanceManagementComponent implements OnInit {
         this.presencasExistentes = [];
         this.buildStudentList();
         this.loadingPresencas = false;
+        this.notifications.error('Erro ao carregar presenças.');
         this.changeDetectorRef.detectChanges();
       },
     });

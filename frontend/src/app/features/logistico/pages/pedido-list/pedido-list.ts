@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService, decodePayload, getStoredToken } from '../../../../core/services/auth.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { Pedido, PedidoCompraPayload, getPedidoStatusLabel, getPedidoStatusClass } from '../../../../core/models/pedido.model';
 import { PedidoService } from '../../../../core/services/pedido.service';
@@ -25,6 +26,7 @@ export class PedidoListComponent implements OnInit {
   constructor(
     private readonly pedidoService: PedidoService,
     private readonly authService: AuthService,
+    private readonly dialog: DialogService,
     private readonly notifications: NotificationService,
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly router: Router,
@@ -55,22 +57,24 @@ export class PedidoListComponent implements OnInit {
   }
 
   onApprove(pedido: Pedido): void {
-    const shouldApprove = confirm(`Aprovar o pedido #${pedido.idPedido}?`);
-    if (!shouldApprove) {
-      return;
-    }
+    this.dialog.confirm({ message: `Aprovar o pedido #${pedido.idPedido}?`, confirmLabel: 'Aprovar' }).subscribe(shouldApprove => {
+      if (!shouldApprove) {
+        return;
+      }
 
-    this.pedidoService.aprovar(pedido.idPedido).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadPedidos();
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (err) => {
-        const message = err?.error?.detail || err?.message || 'Erro ao aprovar pedido.';
-        this.notifications.error(message);
-        this.changeDetectorRef.detectChanges();
-      },
+      this.pedidoService.aprovar(pedido.idPedido).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Pedido aprovado com sucesso.');
+          this.loadPedidos();
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (err) => {
+          const message = err?.error?.detail || err?.message || 'Erro ao aprovar pedido.';
+          this.notifications.error(message);
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -79,6 +83,7 @@ export class PedidoListComponent implements OnInit {
     this.pedidoService.comprar(event.pedido.idPedido, payload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Compra confirmada com sucesso.');
         this.loadPedidos();
         this.changeDetectorRef.detectChanges();
       },
@@ -91,42 +96,46 @@ export class PedidoListComponent implements OnInit {
   }
 
   onDeliver(pedido: Pedido): void {
-    const shouldDeliver = confirm(`Entregar pedido #${pedido.idPedido}? Os itens serao adicionados ao estoque.`);
-    if (!shouldDeliver) {
-      return;
-    }
+    this.dialog.confirm({ message: `Entregar pedido #${pedido.idPedido}? Os itens serão adicionados ao estoque.`, confirmLabel: 'Entregar' }).subscribe(shouldDeliver => {
+      if (!shouldDeliver) {
+        return;
+      }
 
-    this.pedidoService.entregar(pedido.idPedido).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadPedidos();
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (err) => {
-        const message = err?.error?.detail || err?.message || 'Erro ao entregar pedido.';
-        this.notifications.error(message);
-        this.changeDetectorRef.detectChanges();
-      },
+      this.pedidoService.entregar(pedido.idPedido).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Pedido entregue com sucesso.');
+          this.loadPedidos();
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (err) => {
+          const message = err?.error?.detail || err?.message || 'Erro ao entregar pedido.';
+          this.notifications.error(message);
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
   onDelete(pedido: Pedido): void {
-    const shouldDelete = confirm(`Excluir o pedido #${pedido.idPedido}?`);
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: `Excluir o pedido #${pedido.idPedido}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.pedidoService.delete(pedido.idPedido).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadPedidos();
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (err) => {
-        const message = err?.error?.detail || err?.message || 'Erro ao excluir pedido.';
-        this.notifications.error(message);
-        this.changeDetectorRef.detectChanges();
-      },
+      this.pedidoService.delete(pedido.idPedido).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Pedido excluído com sucesso.');
+          this.loadPedidos();
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (err) => {
+          const message = err?.error?.detail || err?.message || 'Erro ao excluir pedido.';
+          this.notifications.error(message);
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -144,6 +153,7 @@ export class PedidoListComponent implements OnInit {
       },
       error: () => {
         this.loadingList = false;
+        this.notifications.error('Erro ao carregar. Tente novamente.');
         this.changeDetectorRef.detectChanges();
       },
     });
