@@ -144,10 +144,14 @@ def _seed_test_data(db, hash_password_func):
     db.flush()
 
     turmas = [
-        Turma(id_curso=cursos[0].id_curso, id_professor=prof1.id_usuario, capacidade=20, data_inicio=date(2026, 6, 1), data_fim=date(2026, 9, 30), dias_aula="1,3,5"),
-        Turma(id_curso=cursos[0].id_curso, id_professor=prof1.id_usuario, capacidade=25, data_inicio=date(2026, 8, 1), data_fim=date(2026, 12, 15), dias_aula="2,4"),
-        Turma(id_curso=cursos[1].id_curso, id_professor=prof2.id_usuario, capacidade=15, data_inicio=date(2026, 5, 1), data_fim=date(2026, 8, 30), dias_aula="1,3,5"),
-        Turma(id_curso=cursos[2].id_curso, id_professor=prof3.id_usuario, capacidade=30, data_inicio=date(2026, 7, 1), data_fim=date(2026, 10, 30), dias_aula="2,4,6"),
+        Turma(id_curso=cursos[0].id_curso, id_professor=prof1.id_usuario, capacidade=20, data_inicio=date(2026, 6, 1), data_fim=date(2026, 9, 30), dias_aula="1,3,5",
+              avaliacoes=[{"nome": "Prova 1", "tipo": "prova", "peso": 10}, {"nome": "Prova 2", "tipo": "prova", "peso": 10}, {"nome": "Trabalho Final", "tipo": "trabalho", "peso": 10}]),
+        Turma(id_curso=cursos[0].id_curso, id_professor=prof1.id_usuario, capacidade=25, data_inicio=date(2026, 8, 1), data_fim=date(2026, 12, 15), dias_aula="2,4",
+              avaliacoes=[{"nome": "Prova 1", "tipo": "prova", "peso": 10}, {"nome": "Prova 2", "tipo": "prova", "peso": 10}]),
+        Turma(id_curso=cursos[1].id_curso, id_professor=prof2.id_usuario, capacidade=15, data_inicio=date(2026, 5, 1), data_fim=date(2026, 8, 30), dias_aula="1,3,5",
+              avaliacoes=[{"nome": "Prova Única", "tipo": "prova", "peso": 10}, {"nome": "Trabalho Prático", "tipo": "trabalho", "peso": 10}]),
+        Turma(id_curso=cursos[2].id_curso, id_professor=prof3.id_usuario, capacidade=30, data_inicio=date(2026, 7, 1), data_fim=date(2026, 10, 30), dias_aula="2,4,6",
+              avaliacoes=[{"nome": "Prova 1", "tipo": "prova", "peso": 10}, {"nome": "Prova 2", "tipo": "prova", "peso": 10}, {"nome": "Prova 3", "tipo": "prova", "peso": 10}, {"nome": "Prova 4", "tipo": "prova", "peso": 10}]),
     ]
     db.add_all(turmas)
     db.flush()

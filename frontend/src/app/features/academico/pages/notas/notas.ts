@@ -9,6 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { Turma } from '../../../../core/models/turma.model';
 import { Matricula } from '../../../../core/models/matricula.model';
 import { NotaItem } from '../../../../core/models/nota.model';
+import { Avaliacao } from '../../../../core/models/turma.model';
 
 interface GradeRow {
   idMatricula: number;
@@ -34,6 +35,22 @@ export class NotasPage implements OnInit {
   loadingNotas = false;
   saving = false;
   feedback: string | null = null;
+
+  get provaOptions(): { value: number; label: string; peso: number }[] {
+    const avs = this.selectedTurma?.avaliacoes;
+    if (avs?.length) {
+      return avs.map((a: Avaliacao, i: number) => ({
+        value: i + 1,
+        label: a.nome || `Avaliação ${i + 1}`,
+        peso: a.peso || 0,
+      }));
+    }
+    return [1, 2, 3, 4].map((n) => ({
+      value: n,
+      label: `${n}ª Prova`,
+      peso: 10,
+    }));
+  }
 
   constructor(
     private readonly turmaService: TurmaService,

@@ -16,10 +16,7 @@
     <label *ngIf="selectedTurma">
       Prova:
       <select [ngModel]="prova" (ngModelChange)="onProvaChange($event)">
-        <option [value]="1">Prova 1</option>
-        <option [value]="2">Prova 2</option>
-        <option [value]="3">Prova 3</option>
-        <option [value]="4">Prova 4</option>
+        <option *ngFor="let opt of provaOptions" [value]="opt.value">{{ opt.label }} {{ opt.peso ? '(peso ' + opt.peso + ')' : '' }}</option>
       </select>
     </label>
   </div>

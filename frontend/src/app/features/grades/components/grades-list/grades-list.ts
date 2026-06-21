@@ -1,10 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Avaliacao } from '../../../../core/models/turma.model';
 
 export interface GradeStudentRow {
   idMatricula: number;
   nomeAluno: string;
   nota: number | null;
+}
+
+interface ProvaOption {
+  value: number;
+  label: string;
+  peso: number;
 }
 
 @Component({
@@ -20,9 +27,25 @@ export class GradesListComponent {
   @Input() turmaNome = '';
   @Input() prova = 1;
   @Input() saving = false;
+  @Input() avaliacoes: Avaliacao[] | null = null;
 
   @Output() readonly notaChange = new EventEmitter<{ idMatricula: number; nota: number | null }>();
   @Output() readonly provaChange = new EventEmitter<number>();
+
+  get provaOptions(): ProvaOption[] {
+    if (this.avaliacoes?.length) {
+      return this.avaliacoes.map((a, i) => ({
+        value: i + 1,
+        label: a.nome || `Avaliação ${i + 1}`,
+        peso: a.peso || 0,
+      }));
+    }
+    return [1, 2, 3, 4].map((n) => ({
+      value: n,
+      label: `${n}ª Prova`,
+      peso: 10,
+    }));
+  }
 
   onProvaChange(event: Event): void {
     const target = event.target as HTMLSelectElement;

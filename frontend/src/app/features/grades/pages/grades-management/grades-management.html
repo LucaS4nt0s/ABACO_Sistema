@@ -35,6 +35,7 @@
     [turmaNome]="selectedTurma?.curso?.nomeCurso ?? ''"
     [prova]="prova"
     [saving]="saving"
+    [avaliacoes]="selectedTurma?.avaliacoes ?? null"
     (notaChange)="onNotaChange($event)"
     (provaChange)="onProvaChange($event)"
   ></app-grades-list>

@@ -135,6 +135,7 @@ export class ClassesManagementComponent implements OnInit {
         dataInicio: payload.dataInicio,
         dataFim: payload.dataFim,
         diasAula: payload.diasAula,
+        avaliacoes: payload.avaliacoes ?? null,
       };
 
       this.turmaService.create(createPayload).subscribe({
@@ -168,6 +169,7 @@ export class ClassesManagementComponent implements OnInit {
       dataInicio: payload.dataInicio,
       dataFim: payload.dataFim,
       diasAula: payload.diasAula,
+      avaliacoes: payload.avaliacoes ?? null,
     };
 
     this.turmaService.update(this.selectedTurma.idTurma, updatePayload).subscribe({

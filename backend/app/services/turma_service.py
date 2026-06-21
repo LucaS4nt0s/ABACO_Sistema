@@ -50,6 +50,7 @@ def create_turma(db: Session, payload: TurmaCreateSchema) -> Turma:
         id_curso=payload.idCurso,
         id_professor=payload.idProfessor,
         dias_aula=payload.diasAula,
+        avaliacoes=payload.avaliacoes,
     )
     db.add(turma)
     db.commit()
@@ -91,6 +92,8 @@ def update_turma(db: Session, turma_id: int, payload: TurmaUpdateSchema) -> Turm
         turma.data_fim = payload.dataFim
     if payload.diasAula is not None:
         turma.dias_aula = payload.diasAula
+    if payload.avaliacoes is not None:
+        turma.avaliacoes = payload.avaliacoes
 
     try:
         db.commit()

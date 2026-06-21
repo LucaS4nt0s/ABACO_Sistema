@@ -39,8 +39,29 @@
       <input formControlName="dataFim" type="date" />
     </label>
 
-    <fieldset class="dias-aula">
-      <legend>Dias de aula</legend>
+    <fieldset class="avaliacoes">
+      <legend>Avaliações</legend>
+      <p class="avaliacoes__hint">Configure as provas e trabalhos desta turma. Deixe vazio para usar o padrão (4 provas).</p>
+
+      <div class="avaliacoes__header" *ngIf="avaliacoesArray.length > 0">
+        <span>Nome</span>
+        <span>Tipo</span>
+        <span>Peso</span>
+        <span></span>
+      </div>
+
+      <div class="avaliacao-row" *ngFor="let av of avaliacoesArray.controls; let i = index" [formGroup]="av">
+        <input type="text" formControlName="nome" placeholder="Ex: Prova 1" />
+        <select formControlName="tipo">
+          <option value="prova">Prova</option>
+          <option value="trabalho">Trabalho</option>
+        </select>
+        <input type="number" formControlName="peso" min="1" max="100" placeholder="10" />
+        <button type="button" class="avaliacao-row__remove" (click)="removeAvaliacao(i)" title="Remover">✕</button>
+      </div>
+
+      <button type="button" class="avaliacoes__add" (click)="addAvaliacao()">+ Adicionar avaliação</button>
+    </fieldset>
       <div class="dias-aula__grid">
         <label *ngFor="let dia of diasSemana; let i = index" class="dia-checkbox">
           <input type="checkbox" [formControl]="diasAulaControls[i]" (change)="updateContexto()" />

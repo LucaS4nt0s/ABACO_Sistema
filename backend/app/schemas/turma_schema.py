@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -10,6 +11,7 @@ class TurmaCreateSchema(BaseModel):
     idCurso: int
     idProfessor: int | None = None
     diasAula: str | None = None
+    avaliacoes: list[dict[str, Any]] | None = None
 
 
 class TurmaUpdateSchema(BaseModel):
@@ -19,6 +21,7 @@ class TurmaUpdateSchema(BaseModel):
     idCurso: int | None = None
     idProfessor: int | None = None
     diasAula: str | None = None
+    avaliacoes: list[dict[str, Any]] | None = None
 
 
 class TurmaCursoInfo(BaseModel):
@@ -46,5 +49,6 @@ class TurmaResponseSchema(BaseModel):
     id_professor: int | None = Field(None, alias="idProfessor")
     dias_aula: str | None = Field(None, alias="diasAula")
     vagas_ocupadas: int | None = Field(None, alias="vagasOcupadas")
+    avaliacoes: list[dict[str, Any]] | None = None
     curso: TurmaCursoInfo | None = None
     professor: TurmaProfessorInfo | None = None

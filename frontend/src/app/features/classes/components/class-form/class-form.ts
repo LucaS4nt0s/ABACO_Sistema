@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Curso } from '../../../../core/models/curso.model';
 import { Turma } from '../../../../core/models/turma.model';
@@ -14,6 +14,7 @@ export interface ClassFormSubmit {
   idCurso: number;
   idProfessor: number | null;
   diasAula: string | null;
+  avaliacoes: { nome: string; tipo: string; peso: number }[] | null;
 }
 
 interface DiaSemana {
@@ -62,6 +63,7 @@ export class ClassFormComponent implements OnChanges {
     dataInicio: [''],
     dataFim: [''],
     diasAula: this.fb.array(this.diasSemana.map(() => false)),
+    avaliacoes: this.fb.array<FormGroup>([]),
   });
 
   get diasAulaArray(): FormArray {
@@ -77,6 +79,22 @@ export class ClassFormComponent implements OnChanges {
       .map((checked: boolean, i: number) => checked ? this.diasSemana[i].value : null)
       .filter((v: number | null) => v !== null);
     return selected.length > 0 ? selected.join(',') : null;
+  }
+
+  get avaliacoesArray(): FormArray<FormGroup> {
+    return this.form.controls.avaliacoes as FormArray<FormGroup>;
+  }
+
+  addAvaliacao(): void {
+    this.avaliacoesArray.push(this.fb.nonNullable.group({
+      nome: [''],
+      tipo: ['prova'],
+      peso: [10],
+    }));
+  }
+
+  removeAvaliacao(index: number): void {
+    this.avaliacoesArray.removeAt(index);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -154,12 +172,21 @@ export class ClassFormComponent implements OnChanges {
       dataInicio: value.dataInicio || null,
       dataFim: value.dataFim || null,
       diasAula: this.diasAulaString,
+      avaliacoes: this.avaliacoesArray.value.length > 0
+        ? this.avaliacoesArray.value.map((a: { nome: string; tipo: string; peso: number }) => ({
+            nome: a.nome || `Avaliação`,
+            tipo: a.tipo || 'prova',
+            peso: a.peso || 10,
+          }))
+        : null,
     };
 
     this.save.emit(payload);
   }
 
   private patchForm(): void {
+    this.avaliacoesArray.clear();
+
     if (this.mode === 'edit' && this.turma) {
       const diasSelecionados = (this.turma.diasAula ?? '').split(',').map(Number);
       const diasArray = this.diasSemana.map((d) => diasSelecionados.includes(d.value));
@@ -172,6 +199,16 @@ export class ClassFormComponent implements OnChanges {
         dataFim: this.turma.dataFim ?? '',
       });
       this.diasAulaArray.patchValue(diasArray);
+
+      if (this.turma.avaliacoes?.length) {
+        for (const a of this.turma.avaliacoes) {
+          this.avaliacoesArray.push(this.fb.nonNullable.group({
+            nome: [a.nome || ''],
+            tipo: [a.tipo || 'prova'],
+            peso: [a.peso || 10],
+          }));
+        }
+      }
       return;
     }
 

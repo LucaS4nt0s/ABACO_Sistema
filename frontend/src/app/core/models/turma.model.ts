@@ -8,6 +8,12 @@ export interface TurmaProfessorInfo {
   nome: string | null;
 }
 
+export interface Avaliacao {
+  nome: string;
+  tipo: 'prova' | 'trabalho';
+  peso: number;
+}
+
 export interface Turma {
   idTurma: number;
   capacidade: number | null;
@@ -17,6 +23,7 @@ export interface Turma {
   idProfessor: number | null;
   diasAula: string | null;
   vagasOcupadas: number | null;
+  avaliacoes: Avaliacao[] | null;
   curso: TurmaCursoInfo | null;
   professor: TurmaProfessorInfo | null;
 }
@@ -28,6 +35,7 @@ export interface TurmaCreatePayload {
   idCurso: number;
   idProfessor: number | null;
   diasAula: string | null;
+  avaliacoes: Avaliacao[] | null;
 }
 
 export interface TurmaUpdatePayload {
@@ -37,4 +45,5 @@ export interface TurmaUpdatePayload {
   idCurso: number | null;
   idProfessor: number | null;
   diasAula: string | null;
+  avaliacoes: Avaliacao[] | null;
 }
