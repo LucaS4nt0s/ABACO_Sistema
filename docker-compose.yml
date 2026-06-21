@@ -33,7 +33,7 @@ services:
       PORT: 8000
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@database:5432/sga_abacos
       JWT_SECRET: development_secret_change_me
-      SMTP_HOST: smtp.gmail.com
+      SMTP_HOST: localhost
       SMTP_PORT: 587
       SMTP_USER: ""
       SMTP_PASSWORD: ""

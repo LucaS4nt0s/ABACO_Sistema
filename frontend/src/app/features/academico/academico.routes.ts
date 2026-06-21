@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
+import { roleGuard } from '../../core/guards/role.guard';
 import { AcademicoLayoutComponent } from './components/academico-layout/academico-layout';
 
 export const ACADEMICO_ROUTES: Routes = [
 	{
 		path: '',
-		canActivate: [authGuard],
+		canActivate: [authGuard, roleGuard([1, 2])],
 		component: AcademicoLayoutComponent,
 		children: [
 			{ path: '', pathMatch: 'full', loadComponent: () => import('./pages/home/home').then(m => m.AcademicoHome) },

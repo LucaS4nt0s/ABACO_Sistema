@@ -24,8 +24,8 @@ export class ResetPassword implements OnInit {
 
   constructor(private fb: FormBuilder, private auth: AuthService, private route: ActivatedRoute, private router: Router) {
     this.form = this.fb.group({
-      nova_senha: ['', [Validators.required, Validators.minLength(6)]],
-      confirmar_senha: ['', [Validators.required, Validators.minLength(6)]],
+      nova_senha: ['', [Validators.required, Validators.minLength(8)]],
+      confirmar_senha: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 

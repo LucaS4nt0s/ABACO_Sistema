@@ -17,7 +17,7 @@
       <label [attr.for]="'tel-' + (form.controls.telefone?.id || '')">Telefone</label>
       <input [id]="'tel-' + (form.controls.telefone?.id || '')" type="text" [formControl]="form.controls.telefone" placeholder="Opcional" />
 
-      <ab-password-field [control]="form.controls.senha" [label]="'Senha'" [placeholder]="'Mínimo de 6 caracteres'"></ab-password-field>
+      <ab-password-field [control]="form.controls.senha" [label]="'Senha'" [placeholder]="'Mínimo de 8 caracteres'"></ab-password-field>
 
       <ab-password-field [control]="form.controls.confirmar_senha" [label]="'Confirmar Senha'" [placeholder]="'Repita a senha'"></ab-password-field>
 

@@ -1,8 +1,11 @@
+import logging
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from app.core.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 def send_reset_email(to_email: str, reset_token: str) -> None:
@@ -11,7 +14,7 @@ def send_reset_email(to_email: str, reset_token: str) -> None:
     reset_link = f"{settings.frontend_url}/reset-password?token={reset_token}"
 
     if not settings.smtp_user:
-        print(f"\n[ABACO] Link de recuperação para {to_email}: {reset_link}\n")
+        logger.info("SMTP não configurado. Link de recuperação para %s: %s", to_email, reset_link)
         return
 
     subject = "SGA ABACO - Recuperação de Senha"
@@ -37,22 +40,20 @@ Equipe SGA ABACO
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain", "utf-8"))
 
-    smtp_kwargs: dict = {"host": settings.smtp_host, "port": settings.smtp_port}
-    if settings.smtp_port == 465:
-        smtp_kwargs["local_hostname"] = "abaco-smtp"
-    else:
-        pass
-
-    if settings.smtp_port == 465:
-        with smtplib.SMTP_SSL(**smtp_kwargs) as server:
-            if settings.smtp_user and settings.smtp_password:
-                server.login(settings.smtp_user, settings.smtp_password)
-            server.send_message(msg)
-    else:
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            if settings.smtp_user and settings.smtp_password:
-                server.login(settings.smtp_user, settings.smtp_password)
-            server.send_message(msg)
+    try:
+        if settings.smtp_port == 465:
+            with smtplib.SMTP_SSL(host=settings.smtp_host, port=settings.smtp_port) as server:
+                if settings.smtp_user and settings.smtp_password:
+                    server.login(settings.smtp_user, settings.smtp_password)
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+                if settings.smtp_user and settings.smtp_password:
+                    server.login(settings.smtp_user, settings.smtp_password)
+                server.send_message(msg)
+    except smtplib.SMTPException as e:
+        logger.error("Falha ao enviar email para %s: %s", to_email, e)
+        raise

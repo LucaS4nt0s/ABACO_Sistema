@@ -27,8 +27,8 @@ export class Register {
       nome: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       telefone: [''],
-      senha: ['', [Validators.required, Validators.minLength(6)]],
-      confirmar_senha: ['', [Validators.required, Validators.minLength(6)]],
+      senha: ['', [Validators.required, Validators.minLength(8)]],
+      confirmar_senha: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 

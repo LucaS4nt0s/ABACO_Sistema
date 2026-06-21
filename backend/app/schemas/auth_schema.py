@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 
 class LoginRequest(BaseModel):
@@ -10,8 +10,14 @@ class RegisterRequest(BaseModel):
     nome: str = Field(min_length=1)
     email: EmailStr
     telefone: str | None = None
-    senha: str = Field(min_length=6)
-    confirmar_senha: str = Field(min_length=6)
+    senha: str = Field(min_length=8)
+    confirmar_senha: str = Field(min_length=8)
+
+    @model_validator(mode="after")
+    def check_passwords_match(self):
+        if self.senha != self.confirmar_senha:
+            raise ValueError("As senhas não conferem")
+        return self
 
 
 class ForgotPasswordRequest(BaseModel):
@@ -20,8 +26,14 @@ class ForgotPasswordRequest(BaseModel):
 
 class ResetPasswordRequest(BaseModel):
     token: str = Field(min_length=1)
-    nova_senha: str = Field(min_length=6)
-    confirmar_senha: str = Field(min_length=6)
+    nova_senha: str = Field(min_length=8)
+    confirmar_senha: str = Field(min_length=8)
+
+    @model_validator(mode="after")
+    def check_passwords_match(self):
+        if self.nova_senha != self.confirmar_senha:
+            raise ValueError("As senhas não conferem")
+        return self
 
 
 class UsuarioResponse(BaseModel):

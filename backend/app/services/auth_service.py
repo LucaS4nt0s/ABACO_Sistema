@@ -1,3 +1,4 @@
+from jwt import PyJWTError
 from sqlalchemy.orm import Session
 
 from app.core.security import create_access_token, create_reset_token, decode_reset_token, hash_password, verify_password
@@ -86,7 +87,7 @@ def process_reset_password(db: Session, token: str, nova_senha: str, confirmar_s
 
     try:
         payload = decode_reset_token(token)
-    except Exception:
+    except PyJWTError:
         raise InvalidResetTokenError
 
     email = payload.get("sub")
