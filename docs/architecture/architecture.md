@@ -72,7 +72,7 @@ The system must include:
 
 - PostgreSQL container
 - FastAPI backend container
-- Next.js frontend container
+- Angular frontend container
 
 The backend must connect to PostgreSQL using:
 
