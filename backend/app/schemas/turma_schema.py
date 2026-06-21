@@ -45,5 +45,6 @@ class TurmaResponseSchema(BaseModel):
     id_curso: int = Field(alias="idCurso")
     id_professor: int | None = Field(None, alias="idProfessor")
     dias_aula: str | None = Field(None, alias="diasAula")
+    vagas_ocupadas: int | None = Field(None, alias="vagasOcupadas")
     curso: TurmaCursoInfo | None = None
     professor: TurmaProfessorInfo | None = None

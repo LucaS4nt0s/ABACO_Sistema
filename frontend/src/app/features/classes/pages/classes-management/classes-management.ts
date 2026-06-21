@@ -11,12 +11,12 @@ import { TurmaService } from '../../../../core/services/turma.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ClassFormComponent, ClassFormSubmit } from '../../components/class-form/class-form';
-import { ClassListComponent } from '../../components/class-list/class-list';
+import { TurmaCardComponent, getStatusTurma } from '../../components/turma-card/turma-card';
 
 @Component({
   selector: 'app-classes-management',
   standalone: true,
-  imports: [CommonModule, ClassListComponent, ClassFormComponent],
+  imports: [CommonModule, TurmaCardComponent, ClassFormComponent],
   templateUrl: './classes-management.html',
   styleUrls: ['./classes-management.scss'],
 })
@@ -229,15 +229,26 @@ export class ClassesManagementComponent implements OnInit {
   }
 
   private applyFiltersAndPagination(): void {
-    this.filteredTurmas = this.turmas.filter((turma) => {
-      if (!this.searchTerm) {
-        return true;
-      }
+    const statusOrder: Record<string, number> = {
+      em_andamento: 0,
+      futura: 1,
+      encerrada: 2,
+    };
 
-      const cursoNome = (turma.curso?.nomeCurso ?? '').toLowerCase();
-      const profNome = (turma.professor?.nome ?? '').toLowerCase();
-      return cursoNome.includes(this.searchTerm) || profNome.includes(this.searchTerm);
-    });
+    this.filteredTurmas = this.turmas
+      .filter((turma) => {
+        if (!this.searchTerm) {
+          return true;
+        }
+        const cursoNome = (turma.curso?.nomeCurso ?? '').toLowerCase();
+        const profNome = (turma.professor?.nome ?? '').toLowerCase();
+        return cursoNome.includes(this.searchTerm) || profNome.includes(this.searchTerm);
+      })
+      .sort((a, b) => {
+        const statusA = getStatusTurma(a.dataInicio, a.dataFim);
+        const statusB = getStatusTurma(b.dataInicio, b.dataFim);
+        return (statusOrder[statusA] ?? 99) - (statusOrder[statusB] ?? 99);
+      });
 
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages;

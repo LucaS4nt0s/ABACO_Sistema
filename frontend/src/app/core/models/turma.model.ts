@@ -16,6 +16,7 @@ export interface Turma {
   idCurso: number;
   idProfessor: number | null;
   diasAula: string | null;
+  vagasOcupadas: number | null;
   curso: TurmaCursoInfo | null;
   professor: TurmaProfessorInfo | null;
 }

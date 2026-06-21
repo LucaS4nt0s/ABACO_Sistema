@@ -20,3 +20,7 @@ class Turma(Base):
     curso = relationship("Curso", lazy="joined")
     professor = relationship("Usuario", lazy="joined")
     matriculas = relationship("Matricula", back_populates="turma", lazy="selectin")
+
+    @property
+    def vagas_ocupadas(self) -> int:
+        return sum(1 for m in self.matriculas if m.status == 0)
