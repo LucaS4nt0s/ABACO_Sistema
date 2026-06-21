@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } 
 
 import { Curso } from '../../../../core/models/curso.model';
 import { Turma } from '../../../../core/models/turma.model';
+import { getStatusTurma } from '../turma-card/turma-card';
 import { Usuario } from '../../../../core/models/usuario.model';
 
 export interface ClassFormSubmit {
@@ -34,10 +35,15 @@ export class ClassFormComponent implements OnChanges {
   @Input() turma: Turma | null = null;
   @Input() cursos: Curso[] = [];
   @Input() professores: Usuario[] = [];
+  @Input() allTurmas: Turma[] = [];
   @Input() loading = false;
 
   @Output() readonly save = new EventEmitter<ClassFormSubmit>();
   @Output() readonly cancel = new EventEmitter<void>();
+
+  cursoContextLabel: string | null = null;
+  professorContextLabel: string | null = null;
+  conflitoLabel: string | null = null;
 
   readonly diasSemana: DiaSemana[] = [
     { label: 'Dom', value: 0 },
@@ -80,6 +86,57 @@ export class ClassFormComponent implements OnChanges {
 
     if (changes['loading']) {
       this.toggleFormState();
+    }
+  }
+
+  onCursoChange(): void {
+    this.updateContexto();
+  }
+
+  onProfessorChange(): void {
+    this.updateContexto();
+  }
+
+  private updateContexto(): void {
+    const cursoId = this.form.controls.idCurso.value;
+    const profId = this.form.controls.idProfessor.value;
+    this.cursoContextLabel = null;
+    this.professorContextLabel = null;
+    this.conflitoLabel = null;
+
+    if (!cursoId) return;
+
+    const turmasDoCurso = this.allTurmas.filter((t) => t.idCurso === Number(cursoId));
+    const noSemestre = turmasDoCurso.length;
+    if (noSemestre > 0) {
+      const cursoNome = this.cursos.find((c) => c.idCurso === Number(cursoId))?.nomeCurso ?? 'curso';
+      this.cursoContextLabel = `Já existem ${noSemestre} ${noSemestre === 1 ? 'turma' : 'turmas'} de ${cursoNome}`;
+    }
+
+    if (!profId || Number(profId) === 0) return;
+
+    const turmasDoProf = this.allTurmas.filter((t) => t.idProfessor === Number(profId));
+    if (turmasDoProf.length > 0) {
+      const profNome = this.professores.find((p) => p.idUsuario === Number(profId))?.nome ?? 'professor';
+      this.professorContextLabel = `${profNome} já tem ${turmasDoProf.length} ${turmasDoProf.length === 1 ? 'turma' : 'turmas'} neste semestre`;
+    }
+
+    const inicio = this.form.controls.dataInicio.value;
+    const fim = this.form.controls.dataFim.value;
+    const diasAulaStr = this.diasAulaString;
+
+    if (inicio && fim && diasAulaStr && Number(profId) > 0) {
+      const conflitos = this.allTurmas.filter((t) => {
+        if (t.idProfessor !== Number(profId)) return false;
+        if (this.mode === 'edit' && this.turma && t.idTurma === this.turma.idTurma) return false;
+        if (!t.dataInicio || !t.dataFim || !t.diasAula) return false;
+        const sobrepoe = inicio <= t.dataFim && fim >= t.dataInicio;
+        return sobrepoe && t.diasAula === diasAulaStr;
+      });
+
+      if (conflitos.length > 0) {
+        this.conflitoLabel = `Atenção: o professor já tem ${conflitos.length} ${conflitos.length === 1 ? 'turma' : 'turmas'} no mesmo período e dias`;
+      }
     }
   }
 

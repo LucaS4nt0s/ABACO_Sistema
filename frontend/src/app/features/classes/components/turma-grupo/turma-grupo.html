@@ -12,6 +12,7 @@
       [deleting]="deletingTurmaId === turma.idTurma"
       (edit)="edit.emit($event)"
       (remove)="remove.emit($event)"
+      (duplicate)="duplicate.emit($event)"
     ></app-turma-card>
   </div>
 </div>

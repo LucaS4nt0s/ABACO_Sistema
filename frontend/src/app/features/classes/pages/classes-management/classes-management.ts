@@ -184,6 +184,13 @@ export class ClassesManagementComponent implements OnInit {
     });
   }
 
+  onDuplicate(turma: Turma): void {
+    this.formMode = 'create';
+    this.selectedTurma = turma;
+    this.localFeedback = null;
+    this.panelOpen = true;
+  }
+
   onDelete(turma: Turma): void {
     const displayName = turma.curso?.nomeCurso ?? `Turma #${turma.idTurma}`;
     this.dialog.confirm({ message: `Excluir a turma de ${displayName}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {

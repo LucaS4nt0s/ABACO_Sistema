@@ -23,4 +23,5 @@ export class TurmaGrupoComponent {
   @Output() toggle = new EventEmitter<string>();
   @Output() edit = new EventEmitter<Turma>();
   @Output() remove = new EventEmitter<Turma>();
+  @Output() duplicate = new EventEmitter<Turma>();
 }
