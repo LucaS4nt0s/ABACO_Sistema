@@ -4,17 +4,23 @@ import { ActivatedRoute, Router } from '@angular/router';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { Historico } from '../../../../core/models/historico.model';
 import { HistoricoService } from '../../../../core/services/historico.service';
 
 @Component({
   selector: 'app-transcript-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BreadcrumbComponent],
   templateUrl: './transcript-view.html',
   styleUrls: ['./transcript-view.scss'],
 })
 export class TranscriptViewComponent implements OnInit {
+  breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Admin', link: '/admin' },
+    { label: 'Matrículas', link: '/admin/matriculas' },
+    { label: 'Histórico Escolar' },
+  ];
   historico: Historico | null = null;
   loading = false;
   error: string | null = null;

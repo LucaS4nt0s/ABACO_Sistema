@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../../shared/components/breadcrumb/breadcrumb';
 import { Matricula } from '../../../../core/models/matricula.model';
 import { Nota } from '../../../../core/models/nota.model';
 import { MatriculaService } from '../../../../core/services/matricula.service';
@@ -10,11 +11,16 @@ import { NotaService } from '../../../../core/services/nota.service';
 @Component({
   selector: 'app-student-grades',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, BreadcrumbComponent],
   templateUrl: './student-grades.html',
   styleUrls: ['./student-grades.scss'],
 })
 export class StudentGradesComponent implements OnInit {
+  breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Admin', link: '/admin' },
+    { label: 'Matrículas', link: '/admin/matriculas' },
+    { label: 'Notas do Aluno' },
+  ];
   notas: Nota[] = [];
   alunoNome = '';
   turmaNome = '';
