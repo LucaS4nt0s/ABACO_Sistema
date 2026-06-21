@@ -25,8 +25,8 @@ def create_notas(
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="O numero da prova deve ser maior ou igual a 1.")
     try:
         notas = create_or_update_notas(db, payload)
-    except InvalidMatriculasError as exc:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+    except InvalidMatriculasError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Algumas matrículas informadas não pertencem à turma")
     result = [NotaResponseSchema.model_validate(n) for n in notas]
     return result
 

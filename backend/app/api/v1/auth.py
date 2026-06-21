@@ -24,12 +24,14 @@ from app.services.auth_service import (
     process_reset_password,
     register_user,
 )
+from app.core.limiter import limiter
 from app.services.email_service import send_reset_email
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit("5/minute")
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     try:
         usuario = authenticate_user(db, payload.email, payload.senha)
@@ -46,6 +48,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("3/minute")
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     try:
         register_user(db, payload.nome, payload.email, payload.senha, payload.confirmar_senha, payload.telefone)
@@ -64,6 +67,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/forgot-password", response_model=MessageResponse)
+@limiter.limit("3/minute")
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
     try:
         token = process_forgot_password(db, payload.email)
@@ -82,6 +86,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
 
 
 @router.post("/reset-password", response_model=MessageResponse)
+@limiter.limit("5/minute")
 def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
     if payload.nova_senha != payload.confirmar_senha:
         raise HTTPException(

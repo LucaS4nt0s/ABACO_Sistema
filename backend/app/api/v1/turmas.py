@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_current_user, verify_cargo
+from app.core.dependencies import verify_cargo
 from app.db.database import get_db
 from app.schemas.turma_schema import TurmaCreateSchema, TurmaResponseSchema, TurmaUpdateSchema
 from app.services.turma_service import (
@@ -26,7 +26,7 @@ def read_turmas(_current_user: dict = Depends(verify_cargo(1, 3)), db: Session =
 
 
 @router.get("/me")
-def read_minhas_turmas(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+def read_minhas_turmas(current_user: dict = Depends(verify_cargo(1, 2)), db: Session = Depends(get_db)):
     professor_id = int(current_user.get("sub", 0))
     return [TurmaResponseSchema.model_validate(turma) for turma in list_turmas_by_professor(db, professor_id)]
 

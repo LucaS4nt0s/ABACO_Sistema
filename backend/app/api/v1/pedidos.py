@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_current_user, verify_cargo
+from app.core.dependencies import verify_cargo
 from app.db.database import get_db
 from app.schemas.pedido_schema import PedidoCompraSchema, PedidoCreateSchema, PedidoResponseSchema, PedidoUpdateSchema
 from app.services.pedido_service import (
@@ -38,7 +38,7 @@ def read_pedido(pedido_id: int, _current_user: dict = Depends(verify_cargo(1, 2,
 
 
 @router.post("")
-def create_pedidos(payload: PedidoCreateSchema, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_pedidos(payload: PedidoCreateSchema, current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
     usuario_id = int(current_user.get("sub", 0))
     try:
         pedido = create_pedido(db, payload, usuario_id)
@@ -53,8 +53,8 @@ def aprovar_pedido_endpoint(pedido_id: int, _current_user: dict = Depends(verify
         pedido = aprovar_pedido(db, pedido_id)
     except PedidoNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
-    except PedidoInvalidTransitionError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except PedidoInvalidTransitionError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Não é possível aprovar este pedido no momento")
     except PedidoHasDependenciesError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível aprovar o pedido") from exc
     return PedidoResponseSchema.model_validate(pedido)
@@ -66,8 +66,8 @@ def comprar_pedido_endpoint(pedido_id: int, payload: PedidoCompraSchema, _curren
         pedido = comprar_pedido(db, pedido_id, payload)
     except PedidoNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
-    except PedidoInvalidTransitionError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except PedidoInvalidTransitionError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Não é possível marcar este pedido como comprado no momento")
     except PedidoHasDependenciesError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível marcar o pedido como comprado") from exc
     return PedidoResponseSchema.model_validate(pedido)
@@ -79,8 +79,8 @@ def update_pedidos(pedido_id: int, payload: PedidoUpdateSchema, _current_user: d
         pedido = update_pedido_status(db, pedido_id, payload)
     except PedidoNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido não encontrado") from exc
-    except PedidoInvalidTransitionError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except PedidoInvalidTransitionError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Não é possível alterar o status deste pedido")
     except PedidoHasDependenciesError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível atualizar o pedido") from exc
     return PedidoResponseSchema.model_validate(pedido)

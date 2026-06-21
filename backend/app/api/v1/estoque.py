@@ -91,8 +91,8 @@ def baixa_estoque_item(
         item = dar_baixa(db, estoque_id, payload.quantidade, payload.justificativa)
     except EstoqueNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item de estoque não encontrado") from exc
-    except EstoqueSaldoInsuficienteError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except EstoqueSaldoInsuficienteError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Saldo insuficiente no estoque para esta operação")
     except EstoqueHasDependenciesError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Não foi possível dar baixa no estoque") from exc
     return EstoqueResponseSchema.model_validate(item)
