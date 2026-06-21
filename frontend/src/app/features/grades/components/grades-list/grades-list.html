@@ -7,7 +7,7 @@
     </div>
     <label class="table-card__search">
       <span>Prova</span>
-      <select [value]="prova" (change)="onProvaChange($event)" [disabled]="loading || saving">
+      <select [(ngModel)]="prova" (ngModelChange)="provaChange.emit($event)" [disabled]="loading || saving">
         <option *ngFor="let opt of provaOptions" [value]="opt.value">{{ opt.label }} {{ opt.peso ? '(peso ' + opt.peso + ')' : '' }}</option>
       </select>
     </label>

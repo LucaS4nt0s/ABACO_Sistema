@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Avaliacao } from '../../../../core/models/turma.model';
 
 export interface GradeStudentRow {
@@ -17,7 +18,7 @@ interface ProvaOption {
 @Component({
   selector: 'app-grades-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './grades-list.html',
   styleUrls: ['./grades-list.scss'],
 })

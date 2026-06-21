@@ -23,7 +23,7 @@
       <select (change)="onTurmaChange($event)" [disabled]="loadingTurmas || saving">
         <option [value]="0" selected>Selecione uma turma</option>
         <option *ngFor="let turma of turmas" [value]="turma.idTurma">
-          {{ turma.curso?.nomeCurso ?? 'Turma #' + turma.idTurma }}
+          #{{ turma.idTurma }} — {{ turma.curso?.nomeCurso ?? 'Sem curso' }} — {{ turma.professor?.nome ?? 'Sem professor' }} {{ turma.dataInicio ? '(' + (turma.dataInicio | slice:0:10) + ')' : '' }}
         </option>
       </select>
     </label>
