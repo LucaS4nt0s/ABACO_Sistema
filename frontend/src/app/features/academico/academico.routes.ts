@@ -14,6 +14,8 @@ export const ACADEMICO_ROUTES: Routes = [
 			{ path: 'alunos', loadComponent: () => import('./pages/alunos/alunos').then(m => m.AlunosPage) },
 			{ path: 'presencas', loadComponent: () => import('./pages/presencas/presencas').then(m => m.PresencasPage) },
 			{ path: 'notas', loadComponent: () => import('./pages/notas/notas').then(m => m.NotasPage) },
+			{ path: 'pedidos/novo', loadComponent: () => import('../logistico/pages/pedido-form/pedido-form').then(m => m.PedidoFormPageComponent) },
+			{ path: 'pedidos', loadComponent: () => import('../logistico/pages/pedido-list/pedido-list').then(m => m.PedidoListComponent) },
 		]
 	}
 ];
