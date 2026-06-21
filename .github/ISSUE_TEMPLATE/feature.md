@@ -1,6 +1,6 @@
 ---
 name: Feature
-about: Nova funcionalidade do Simples Editor
+about: Nova funcionalidade do SGA ABACO
 labels: feature
 ---
 
@@ -15,9 +15,9 @@ labels: feature
 - [ ] Critério 2
 
 ## Stack afetado
-- [ ] Frontend
-- [ ] Backend
-- [ ] Compilador
+- [ ] Frontend (Angular)
+- [ ] Backend (FastAPI)
+- [ ] Banco de dados
 - [ ] Docker/Infra
 
 ## Estimativa

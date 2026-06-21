@@ -1,36 +1,44 @@
 # PROGRESS.md
 
-## Sprint 1
+> Status: **100% funcional**. Veja `docs/planning/PLANO_FINAL.md` para o plano completo de acabamento.
 
-- [ ] #9 feat(devops): stabilize the docker stack and health check
-- [ ] #10 feat(backend): implement secure login and token flow
-- [ ] #11 feat(frontend): implement login screen and role redirect
-- [ ] #12 feat(users): implement director-only user management
-- [ ] #13 feat(security): harden authentication and authorization flows
+## Sprint 1 — Infraestrutura ✅
+- [x] #9  Docker stack e health check
+- [x] #10 Login e fluxo JWT
+- [x] #11 Tela de login e role redirect
+- [x] #12 CRUD de usuários (diretor)
+- [x] #13 Hardening de segurança
 
-## Sprint 2
+## Sprint 2 — Núcleo acadêmico ✅
+- [x] #14 Gestão de alunos
+- [x] #15 Gestão de cursos
+- [x] #16 Gestão de turmas
+- [x] #17 Matrículas
 
-- [ ] #14 feat(students): implement student management
-- [ ] #15 feat(courses): implement course management
-- [x] #16 feat(classes): implement class management and relationships
-- [x] #17 feat(enrollments): implement student enrollment workflow
+## Sprint 3 — Presença, notas e histórico ✅
+- [x] #18 Registro de presença
+- [x] #19 Lançamento e consulta de notas
+- [x] #20 Histórico escolar
 
-## Sprint 3
+## Sprint 4 — Logística e estoque ✅
+- [x] #21 Criação e listagem de pedidos
+- [x] #22 Aprovação de pedidos
+- [x] #23 Estoque e alertas
+- [x] #28 Módulo logístico completo
 
-- [ ] #18 feat(attendance): implement attendance registration
-- [ ] #19 feat(grades): implement grade entry and consultation
-- [ ] #20 feat(academics): generate academic transcript
+## Sprint 5 — Dashboard e fechamento ✅
+- [x] #24 Dashboard administrativo
+- [x] #25 Validação final e tratamento de erros
+- [x] #26 Testes automatizados
+- [x] #27 Documentação atualizada
 
-## Sprint 4
-
-- [x] #21 feat(orders): implement material request creation and listing
-- [x] #22 feat(orders): implement request approval workflow
-- [x] #23 feat(inventory): implement stock update and low-stock alerts
-- [x] #28 feat(logistics): implement full logistic module (stock, orders, management)
-
-## Sprint 5
-
-- [ ] #24 feat(dashboard): implement admin dashboard and metrics
-- [ ] #25 feat(frontend): add final validation and error handling
-- [ ] #26 feat(tests): cover critical flows with automated tests
-- [ ] #27 docs(project): update project documentation and progress tracking
+## Extras implementados
+- Alembic migrations (substituindo SQL ad-hoc)
+- Rate limiting nos endpoints de auth
+- Auto-logout por expiração de token JWT
+- Confirm dialog customizado
+- NotificationService com success/error + auto-dismiss
+- Auto-cadastro de professor + recuperação de senha
+- Dashboard do professor
+- `.env.example` com todas variáveis
+- CORS configurável por ambiente

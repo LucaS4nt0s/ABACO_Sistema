@@ -29,7 +29,29 @@ logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
-app = FastAPI(title="SGA ABACO API")
+app = FastAPI(
+    title="SGA ABACO API",
+    description="API do Sistema de Gestão Acadêmica da Associação ABACO. "
+                "Gerencia alunos, cursos, turmas, matrículas, presenças, notas, "
+                "histórico escolar, pedidos de material e estoque.",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {"name": "auth", "description": "Autenticação — login, registro, recuperação de senha"},
+        {"name": "alunos", "description": "Cadastro e gestão de alunos"},
+        {"name": "cursos", "description": "Cadastro e gestão de cursos"},
+        {"name": "turmas", "description": "Cadastro e gestão de turmas"},
+        {"name": "matriculas", "description": "Matrícula de alunos em turmas"},
+        {"name": "presencas", "description": "Registro e consulta de presenças"},
+        {"name": "notas", "description": "Lançamento e consulta de notas e médias"},
+        {"name": "historico", "description": "Geração de histórico escolar"},
+        {"name": "usuarios", "description": "Gestão de usuários (restrito à diretoria)"},
+        {"name": "dashboard", "description": "Indicadores e gráficos administrativos"},
+        {"name": "estoque", "description": "Gestão de estoque e baixa de itens"},
+        {"name": "pedidos", "description": "Pedidos de material — criar, aprovar, comprar, entregar"},
+    ],
+)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

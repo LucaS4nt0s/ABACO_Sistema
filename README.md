@@ -14,7 +14,8 @@
   <img src="https://img.shields.io/badge/SQLAlchemy-2.0-333333?logo=python&logoColor=white" alt="SQLAlchemy 2.0" />
   <img src="https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens&logoColor=white" alt="JWT Auth" />
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
-  <img src="https://img.shields.io/badge/status-em%20desenvolvimento-yellow" alt="Status" />
+  <img src="https://img.shields.io/badge/status-concluído-brightgreen" alt="Status" />
+  <img src="https://img.shields.io/badge/testes-107%20passing-brightgreen" alt="Testes" />
 </p>
 
 ---
