@@ -7,19 +7,21 @@
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <label>
       <span>Curso *</span>
-      <select formControlName="idCurso">
+      <select formControlName="idCurso" (change)="onCursoChange()">
         <option [value]="0" disabled>Selecione um curso</option>
         <option *ngFor="let curso of cursos" [value]="curso.idCurso">{{ curso.nomeCurso }}</option>
       </select>
-      <small class="error" *ngIf="form.controls.idCurso.invalid && form.controls.idCurso.touched">Curso e obrigatorio.</small>
+      <small class="error" *ngIf="form.controls.idCurso.invalid && form.controls.idCurso.touched">Curso é obrigatório.</small>
+      <small class="hint" *ngIf="cursoContextLabel">{{ cursoContextLabel }}</small>
     </label>
 
     <label>
       <span>Professor</span>
-      <select formControlName="idProfessor">
+      <select formControlName="idProfessor" (change)="onProfessorChange()">
         <option [value]="0">Selecione um professor</option>
         <option *ngFor="let prof of professores" [value]="prof.idUsuario">{{ prof.nome }}</option>
       </select>
+      <small class="hint" *ngIf="professorContextLabel">{{ professorContextLabel }}</small>
     </label>
 
     <label>
@@ -41,11 +43,15 @@
       <legend>Dias de aula</legend>
       <div class="dias-aula__grid">
         <label *ngFor="let dia of diasSemana; let i = index" class="dia-checkbox">
-          <input type="checkbox" [formControl]="diasAulaControls[i]" />
+          <input type="checkbox" [formControl]="diasAulaControls[i]" (change)="updateContexto()" />
           <span>{{ dia.label }}</span>
         </label>
       </div>
     </fieldset>
+
+    <div class="conflito-alert" *ngIf="conflitoLabel">
+      ⚠️ {{ conflitoLabel }}
+    </div>
 
     <footer>
       <button type="button" class="btn btn--ghost" (click)="cancel.emit()" [disabled]="loading">Cancelar</button>

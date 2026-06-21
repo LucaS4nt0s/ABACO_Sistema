@@ -55,6 +55,7 @@
       (toggle)="onToggleGrupo($event)"
       (edit)="openEdit($event)"
       (remove)="onDelete($event)"
+      (duplicate)="onDuplicate($event)"
     ></app-turma-grupo>
 
     <app-class-form
@@ -63,6 +64,7 @@
       [turma]="selectedTurma"
       [cursos]="cursos"
       [professores]="professores"
+      [allTurmas]="turmas"
       [loading]="saving"
       (save)="onSave($event)"
       (cancel)="closePanel()"

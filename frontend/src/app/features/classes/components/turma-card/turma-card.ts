@@ -53,6 +53,7 @@ export class TurmaCardComponent {
 
   @Output() edit = new EventEmitter<Turma>();
   @Output() remove = new EventEmitter<Turma>();
+  @Output() duplicate = new EventEmitter<Turma>();
 
   get status(): TurmaStatus {
     return getStatusTurma(this.turma.dataInicio, this.turma.dataFim);
