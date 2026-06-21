@@ -2,25 +2,49 @@
   <header class="classes-management__topbar">
     <div>
       <h1>Turmas</h1>
-      <p>Painel administrativo para cadastro e gestao de turmas.</p>
+      <p>Painel administrativo para cadastro e gestão de turmas.</p>
     </div>
     <button type="button" class="new-class-btn" (click)="openCreate()" [disabled]="saving || loadingList">Nova turma</button>
   </header>
 
+  <label class="classes-management__search">
+    <span>Pesquisar</span>
+    <input
+      type="search"
+      placeholder="Buscar por curso ou professor"
+      (input)="onSearch(($event.target as HTMLInputElement).value)"
+      [disabled]="loadingList"
+    />
+  </label>
+
   <p class="local-feedback" *ngIf="localFeedback">{{ localFeedback }}</p>
 
   <section class="classes-management__layout">
-    <app-class-list
-      [turmas]="pagedTurmas"
-      [loading]="loadingList || saving"
-      [currentPage]="currentPage"
-      [totalPages]="totalPages"
-      [deletingTurmaId]="deletingTurmaId"
-      (search)="onSearch($event)"
-      (edit)="openEdit($event)"
-      (remove)="onDelete($event)"
-      (pageChange)="onPageChange($event)"
-    ></app-class-list>
+    <p *ngIf="loadingList" class="loading">Carregando turmas...</p>
+
+    <div *ngIf="!loadingList && pagedTurmas.length === 0" class="empty">
+      Nenhuma turma encontrada para o filtro aplicado.
+    </div>
+
+    <div class="turmas-grid" *ngIf="!loadingList && pagedTurmas.length > 0">
+      <app-turma-card
+        *ngFor="let turma of pagedTurmas"
+        [turma]="turma"
+        [deleting]="deletingTurmaId === turma.idTurma"
+        (edit)="openEdit($event)"
+        (remove)="onDelete($event)"
+      ></app-turma-card>
+    </div>
+
+    <footer class="pagination" *ngIf="totalPages > 1">
+      <button type="button" class="btn btn--ghost" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1 || loadingList">
+        Anterior
+      </button>
+      <span>Página {{ currentPage }} de {{ totalPages }}</span>
+      <button type="button" class="btn btn--ghost" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages || loadingList">
+        Próxima
+      </button>
+    </footer>
 
     <app-class-form
       *ngIf="panelOpen"
