@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import AUTH_ERROR_HEADERS
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 @router.post("/login", response_model=TokenResponse)
 @limiter.limit("5/minute")
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
+def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)):
     try:
         usuario = authenticate_user(db, payload.email, payload.senha)
     except InvalidCredentialsError:
@@ -49,7 +49,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("3/minute")
-def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+def register(request: Request, payload: RegisterRequest, db: Session = Depends(get_db)):
     try:
         register_user(db, payload.nome, payload.email, payload.senha, payload.confirmar_senha, payload.telefone)
     except EmailAlreadyExistsError:
@@ -68,7 +68,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/forgot-password", response_model=MessageResponse)
 @limiter.limit("3/minute")
-def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+def forgot_password(request: Request, payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
     try:
         token = process_forgot_password(db, payload.email)
     except EmailNotFoundError:
@@ -87,7 +87,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
 
 @router.post("/reset-password", response_model=MessageResponse)
 @limiter.limit("5/minute")
-def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+def reset_password(request: Request, payload: ResetPasswordRequest, db: Session = Depends(get_db)):
     if payload.nova_senha != payload.confirmar_senha:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
