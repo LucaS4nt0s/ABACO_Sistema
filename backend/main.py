@@ -131,14 +131,14 @@ def _seed_test_data(db, hash_password_func):
     db.flush()
 
     alunos = [
-        Aluno(nome="Pedro Alves", telefone="11911112222", nascimento=date(2000, 3, 15)),
-        Aluno(nome="Carla Mendes", telefone="11922223333", nascimento=date(1998, 7, 22)),
-        Aluno(nome="Lucas Oliveira", telefone="11933334444", nascimento=date(2002, 11, 8)),
-        Aluno(nome="Juliana Freitas", telefone="11944445555", nascimento=date(1999, 1, 30)),
-        Aluno(nome="Rafael Souza", telefone="11955556666", nascimento=date(2001, 5, 12)),
-        Aluno(nome="Beatriz Lima", telefone="11966667777", nascimento=date(2000, 9, 3)),
-        Aluno(nome="Gabriel Torres", telefone="11977778888", nascimento=date(2003, 4, 18)),
-        Aluno(nome="Mariana Rocha", telefone="11988889999", nascimento=date(1997, 12, 25)),
+        Aluno(nome="Pedro Alves", telefone="11911112222", data_nascimento=date(2000, 3, 15)),
+        Aluno(nome="Carla Mendes", telefone="11922223333", data_nascimento=date(1998, 7, 22)),
+        Aluno(nome="Lucas Oliveira", telefone="11933334444", data_nascimento=date(2002, 11, 8)),
+        Aluno(nome="Juliana Freitas", telefone="11944445555", data_nascimento=date(1999, 1, 30)),
+        Aluno(nome="Rafael Souza", telefone="11955556666", data_nascimento=date(2001, 5, 12)),
+        Aluno(nome="Beatriz Lima", telefone="11966667777", data_nascimento=date(2000, 9, 3)),
+        Aluno(nome="Gabriel Torres", telefone="11977778888", data_nascimento=date(2003, 4, 18)),
+        Aluno(nome="Mariana Rocha", telefone="11988889999", data_nascimento=date(1997, 12, 25)),
     ]
     db.add_all(alunos)
     db.flush()
