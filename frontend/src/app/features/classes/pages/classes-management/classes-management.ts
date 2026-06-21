@@ -31,6 +31,8 @@ export class ClassesManagementComponent implements OnInit {
   professores: Usuario[] = [];
 
   searchTerm = '';
+  semestreSelecionado = 'atual';
+  semestres: { label: string; value: string }[] = [];
 
   panelOpen = false;
   formMode: 'create' | 'edit' = 'create';
@@ -58,6 +60,24 @@ export class ClassesManagementComponent implements OnInit {
 
   onSearch(term: string): void {
     this.searchTerm = term.trim().toLowerCase();
+    this.applyFiltersAndPagination();
+  }
+
+  getSemestreAtual(): string {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    return hoje.getMonth() < 6 ? `${ano}.1` : `${ano}.2`;
+  }
+
+  getSemestre(dataStr: string | null): string {
+    if (!dataStr) return 'sem_data';
+    const mes = parseInt(dataStr.split('-')[1], 10);
+    const ano = dataStr.split('-')[0];
+    return mes <= 6 ? `${ano}.1` : `${ano}.2`;
+  }
+
+  onSemestreChange(value: string): void {
+    this.semestreSelecionado = value;
     this.applyFiltersAndPagination();
   }
 
@@ -200,6 +220,8 @@ export class ClassesManagementComponent implements OnInit {
     this.turmaService.list().subscribe({
       next: (turmas) => {
         this.turmas = turmas;
+        this.buildSemestres(turmas);
+        this.semestreSelecionado = this.getSemestreAtual();
         this.applyFiltersAndPagination();
         this.loadingList = false;
         this.changeDetectorRef.detectChanges();
@@ -210,6 +232,20 @@ export class ClassesManagementComponent implements OnInit {
         this.changeDetectorRef.detectChanges();
       },
     });
+  }
+
+  private buildSemestres(turmas: Turma[]): void {
+    const set = new Set<string>();
+    for (const t of turmas) {
+      if (t.dataInicio) set.add(this.getSemestre(t.dataInicio));
+    }
+    const atual = this.getSemestreAtual();
+    const sorted = Array.from(set).sort().reverse();
+    this.semestres = [
+      { label: 'Semestre atual', value: 'atual' },
+      ...sorted.map((s) => ({ label: s, value: s })),
+      { label: 'Todos', value: 'todos' },
+    ];
   }
 
   private loadCursos(): void {
@@ -243,8 +279,15 @@ export class ClassesManagementComponent implements OnInit {
       encerrada: 2,
     };
 
+    const semestreAlvo = this.semestreSelecionado === 'atual'
+      ? this.getSemestreAtual()
+      : this.semestreSelecionado;
+
     this.filteredTurmas = this.turmas
       .filter((turma) => {
+        if (semestreAlvo !== 'todos') {
+          if (this.getSemestre(turma.dataInicio) !== semestreAlvo) return false;
+        }
         if (!this.searchTerm) return true;
         const cursoNome = (turma.curso?.nomeCurso ?? '').toLowerCase();
         const profNome = (turma.professor?.nome ?? '').toLowerCase();
