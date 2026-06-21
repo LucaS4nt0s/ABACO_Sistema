@@ -170,8 +170,8 @@ ABACO_Sistema/
 | Gerenciamento de Turmas | ✅ Implementado |
 | Matrículas | ✅ Implementado |
 | Registro de Presença | ✅ Implementado |
-| Lançamento de Notas | ⬜ Pendente |
-| Histórico Escolar | ⬜ Pendente |
+| Lançamento de Notas | ✅ Implementado |
+| Histórico Escolar | ✅ Implementado |
 
 ### Logístico
 | Funcionalidade | Status |
@@ -184,7 +184,7 @@ ABACO_Sistema/
 | Funcionalidade | Status |
 |---|---|
 | Gestão de Usuários | ✅ Implementado |
-| Dashboards | ⬜ Pendente |
+| Dashboards | ✅ Implementado |
 
 ---
 
