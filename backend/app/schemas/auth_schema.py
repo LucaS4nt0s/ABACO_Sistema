@@ -1,4 +1,9 @@
+import re
+
 from pydantic import BaseModel, EmailStr, Field, model_validator
+
+
+SENHA_PATTERN = re.compile(r"^(?=.*[A-Za-z])(?=.*\d).+$")
 
 
 class LoginRequest(BaseModel):
@@ -17,6 +22,8 @@ class RegisterRequest(BaseModel):
     def check_passwords_match(self):
         if self.senha != self.confirmar_senha:
             raise ValueError("As senhas não conferem")
+        if not SENHA_PATTERN.match(self.senha):
+            raise ValueError("A senha deve conter pelo menos uma letra e um número")
         return self
 
 
@@ -33,6 +40,8 @@ class ResetPasswordRequest(BaseModel):
     def check_passwords_match(self):
         if self.nova_senha != self.confirmar_senha:
             raise ValueError("As senhas não conferem")
+        if not SENHA_PATTERN.match(self.nova_senha):
+            raise ValueError("A senha deve conter pelo menos uma letra e um número")
         return self
 
 

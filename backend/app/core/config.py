@@ -32,6 +32,8 @@ class Settings(BaseSettings):
 		default="http://localhost:3000,http://127.0.0.1:3000,http://localhost:4200,http://localhost:8000",
 		alias="CORS_ORIGINS",
 	)
+	rate_limit_auth: str = Field(default="5/minute", alias="RATE_LIMIT_AUTH")
+	rate_limit_default: str = Field(default="60/minute", alias="RATE_LIMIT_DEFAULT")
 
 	@property
 	def cors_origin_list(self) -> list[str]:

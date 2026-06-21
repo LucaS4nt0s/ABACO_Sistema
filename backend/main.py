@@ -1,5 +1,11 @@
-from fastapi import FastAPI
+import logging
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from sqlalchemy import text
 
 from app.api.v1.alunos import router as alunos_router
@@ -15,11 +21,19 @@ from app.api.v1.presencas import router as presencas_router
 from app.api.v1.turmas import router as turmas_router
 from app.api.v1.usuarios import router as usuarios_router
 from app.core.config import get_settings
+from app.core.limiter import limiter
 from app.db.database import engine
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
 app = FastAPI(title="SGA ABACO API")
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +42,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc, exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Erro interno do servidor. Tente novamente mais tarde."},
+    )
+
 
 app.include_router(alunos_router)
 app.include_router(auth_router)

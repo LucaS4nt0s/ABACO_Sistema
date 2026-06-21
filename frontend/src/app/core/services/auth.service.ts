@@ -83,6 +83,8 @@ export class AuthService {
 
   readonly authState = signal<AuthState>({ token: null, userId: null, role: null });
 
+  private tokenExpiryTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor(private http: HttpClient) {
     this.restoreSession();
   }
@@ -101,6 +103,7 @@ export class AuthService {
           userId: payload.sub ? Number(payload.sub) : null,
           role: res.role,
         });
+        this.scheduleAutoLogout(res.token);
       }),
       catchError((error) => {
         const message = error?.error?.detail || error?.message || 'Credenciais inválidas';
@@ -137,6 +140,7 @@ export class AuthService {
   }
 
   logout(): void {
+    this.clearAutoLogout();
     clearStoredToken();
     this.authState.set({ token: null, userId: null, role: null });
   }
@@ -172,6 +176,30 @@ export class AuthService {
     return mapCargoToRole(payload.cargo ?? null);
   }
 
+  private scheduleAutoLogout(token: string): void {
+    this.clearAutoLogout();
+    const payload = decodePayload(token);
+    if (!payload.exp) return;
+
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const remainingMs = (payload.exp - nowSeconds) * 1000;
+    if (remainingMs <= 0) {
+      this.logout();
+      return;
+    }
+
+    this.tokenExpiryTimer = setTimeout(() => {
+      this.logout();
+    }, remainingMs);
+  }
+
+  private clearAutoLogout(): void {
+    if (this.tokenExpiryTimer !== null) {
+      clearTimeout(this.tokenExpiryTimer);
+      this.tokenExpiryTimer = null;
+    }
+  }
+
   private restoreSession(): void {
     const token = getStoredToken();
     if (!token) return;
@@ -187,5 +215,6 @@ export class AuthService {
       userId: payload.sub ? Number(payload.sub) : null,
       role: mapCargoToRole(payload.cargo ?? null),
     });
+    this.scheduleAutoLogout(token);
   }
 }
