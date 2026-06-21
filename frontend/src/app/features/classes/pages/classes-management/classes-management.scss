@@ -43,6 +43,22 @@
   cursor: not-allowed;
 }
 
+.classes-management__filters {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.classes-management__filter-label {
+  display: block;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.82rem;
+  margin-bottom: 0.3rem;
+}
+
 .classes-management__search {
   display: flex;
   flex-direction: column;
@@ -88,6 +104,40 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.semestre-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.semestre-pill {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.semestre-pill:hover {
+  background: #f1f5f9;
+}
+
+.semestre-pill--active {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
+.grupos-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .turmas-grid {

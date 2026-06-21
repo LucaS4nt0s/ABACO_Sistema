@@ -7,15 +7,32 @@
     <button type="button" class="new-class-btn" (click)="openCreate()" [disabled]="saving || loadingList">Nova turma</button>
   </header>
 
-  <label class="classes-management__search">
-    <span>Pesquisar</span>
-    <input
-      type="search"
-      placeholder="Buscar por curso ou professor"
-      (input)="onSearch(($event.target as HTMLInputElement).value)"
-      [disabled]="loadingList"
-    />
-  </label>
+  <div class="classes-management__filters">
+    <label class="classes-management__search">
+      <span>Pesquisar</span>
+      <input
+        type="search"
+        placeholder="Buscar por curso ou professor"
+        (input)="onSearch(($event.target as HTMLInputElement).value)"
+        [disabled]="loadingList"
+      />
+    </label>
+
+    <div class="classes-management__semestre" *ngIf="semestres.length > 0">
+      <span class="classes-management__filter-label">Semestre</span>
+      <div class="semestre-pills">
+        <button
+          *ngFor="let sem of semestres"
+          type="button"
+          class="semestre-pill"
+          [class.semestre-pill--active]="semestreSelecionado === sem.value"
+          (click)="onSemestreChange(sem.value)"
+        >
+          {{ sem.label }}
+        </button>
+      </div>
+    </div>
+  </div>
 
   <p class="local-feedback" *ngIf="localFeedback">{{ localFeedback }}</p>
 
