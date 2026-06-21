@@ -7,23 +7,20 @@ import { AlunoService } from '../../../../core/services/aluno.service';
 import { DialogService } from '../../../../core/services/dialog.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { StudentFormComponent, StudentFormSubmit } from '../../components/student-form/student-form';
-import { StudentListComponent } from '../../components/student-list/student-list';
+import { StudentCardComponent } from '../../components/student-card/student-card';
 
 @Component({
   selector: 'app-students-management',
   standalone: true,
-  imports: [CommonModule, StudentListComponent, StudentFormComponent],
+  imports: [CommonModule, StudentCardComponent, StudentFormComponent],
   templateUrl: './students-management.html',
   styleUrls: ['./students-management.scss'],
 })
 export class StudentsManagementComponent implements OnInit {
   alunos: Aluno[] = [];
   filteredAlunos: Aluno[] = [];
-  pagedAlunos: Aluno[] = [];
 
   searchTerm = '';
-  currentPage = 1;
-  readonly pageSize = 8;
 
   panelOpen = false;
   formMode: 'create' | 'edit' = 'create';
@@ -45,20 +42,13 @@ export class StudentsManagementComponent implements OnInit {
     this.loadAlunos();
   }
 
-  get totalPages(): number {
-    const pages = Math.ceil(this.filteredAlunos.length / this.pageSize);
-    return pages > 0 ? pages : 1;
+  onSearchInput(event: Event): void {
+    this.onSearch((event.target as HTMLInputElement).value);
   }
 
   onSearch(term: string): void {
     this.searchTerm = term.trim().toLowerCase();
-    this.currentPage = 1;
-    this.applyFiltersAndPagination();
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.applyFiltersAndPagination();
+    this.applyFilters();
   }
 
   openCreate(): void {
@@ -180,7 +170,7 @@ export class StudentsManagementComponent implements OnInit {
     this.alunoService.list().subscribe({
       next: (alunos) => {
         this.alunos = alunos;
-        this.applyFiltersAndPagination();
+        this.applyFilters();
         this.loadingList = false;
         this.changeDetectorRef.detectChanges();
       },
@@ -192,21 +182,12 @@ export class StudentsManagementComponent implements OnInit {
     });
   }
 
-  private applyFiltersAndPagination(): void {
+  private applyFilters(): void {
     this.filteredAlunos = this.alunos.filter((aluno) => {
       if (!this.searchTerm) {
         return true;
       }
-
-      const nome = aluno.nome.toLowerCase();
-      return nome.includes(this.searchTerm);
+      return aluno.nome.toLowerCase().includes(this.searchTerm);
     });
-
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.pagedAlunos = this.filteredAlunos.slice(start, start + this.pageSize);
   }
 }

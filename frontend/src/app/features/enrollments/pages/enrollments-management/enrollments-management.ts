@@ -12,26 +12,23 @@ import { MatriculaService } from '../../../../core/services/matricula.service';
 import { TurmaService } from '../../../../core/services/turma.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { EnrollmentFormComponent, EnrollmentFormSubmit } from '../../components/enrollment-form/enrollment-form';
-import { EnrollmentListComponent } from '../../components/enrollment-list/enrollment-list';
+import { EnrollmentCardComponent } from '../../components/enrollment-card/enrollment-card';
 
 @Component({
   selector: 'app-enrollments-management',
   standalone: true,
-  imports: [CommonModule, EnrollmentListComponent, EnrollmentFormComponent],
+  imports: [CommonModule, EnrollmentCardComponent, EnrollmentFormComponent],
   templateUrl: './enrollments-management.html',
   styleUrls: ['./enrollments-management.scss'],
 })
 export class EnrollmentsManagementComponent implements OnInit {
   matriculas: Matricula[] = [];
   filteredMatriculas: Matricula[] = [];
-  pagedMatriculas: Matricula[] = [];
 
   alunos: Aluno[] = [];
   turmas: Turma[] = [];
 
   searchTerm = '';
-  currentPage = 1;
-  readonly pageSize = 8;
 
   panelOpen = false;
   formMode: 'create' | 'edit' = 'create';
@@ -58,20 +55,13 @@ export class EnrollmentsManagementComponent implements OnInit {
     this.loadTurmas();
   }
 
-  get totalPages(): number {
-    const pages = Math.ceil(this.filteredMatriculas.length / this.pageSize);
-    return pages > 0 ? pages : 1;
+  onSearchInput(event: Event): void {
+    this.onSearch((event.target as HTMLInputElement).value);
   }
 
   onSearch(term: string): void {
     this.searchTerm = term.trim().toLowerCase();
-    this.currentPage = 1;
-    this.applyFiltersAndPagination();
-  }
-
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.applyFiltersAndPagination();
+    this.applyFilters();
   }
 
   openCreate(): void {
@@ -198,7 +188,7 @@ export class EnrollmentsManagementComponent implements OnInit {
     this.matriculaService.list().subscribe({
       next: (matriculas) => {
         this.matriculas = matriculas;
-        this.applyFiltersAndPagination();
+        this.applyFilters();
         this.loadingList = false;
         this.changeDetectorRef.detectChanges();
       },
@@ -234,7 +224,7 @@ export class EnrollmentsManagementComponent implements OnInit {
     });
   }
 
-  private applyFiltersAndPagination(): void {
+  private applyFilters(): void {
     this.filteredMatriculas = this.matriculas.filter((m) => {
       if (!this.searchTerm) {
         return true;
@@ -244,12 +234,5 @@ export class EnrollmentsManagementComponent implements OnInit {
       const turmaCurso = (m.turma?.curso?.nomeCurso ?? '').toLowerCase();
       return alunoNome.includes(this.searchTerm) || turmaCurso.includes(this.searchTerm);
     });
-
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.pagedMatriculas = this.filteredMatriculas.slice(start, start + this.pageSize);
   }
 }
