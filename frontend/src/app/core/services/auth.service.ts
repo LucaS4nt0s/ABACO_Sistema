@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, catchError, map, throwError, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -84,6 +85,7 @@ export class AuthService {
   readonly authState = signal<AuthState>({ token: null, userId: null, role: null });
 
   private tokenExpiryTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly router = inject(Router);
 
   constructor(private http: HttpClient) {
     this.restoreSession();
@@ -145,6 +147,11 @@ export class AuthService {
     this.authState.set({ token: null, userId: null, role: null });
   }
 
+  logoutAndRedirect(): void {
+    this.logout();
+    this.router.navigate(['/login']);
+  }
+
   isAuthenticated(): boolean {
     const token = getStoredToken();
     if (!token) return false;
@@ -184,12 +191,12 @@ export class AuthService {
     const nowSeconds = Math.floor(Date.now() / 1000);
     const remainingMs = (payload.exp - nowSeconds) * 1000;
     if (remainingMs <= 0) {
-      this.logout();
+      this.logoutAndRedirect();
       return;
     }
 
     this.tokenExpiryTimer = setTimeout(() => {
-      this.logout();
+      this.logoutAndRedirect();
     }, remainingMs);
   }
 

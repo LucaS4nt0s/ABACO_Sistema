@@ -19,6 +19,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./features/auth/pages/reset-password/reset-password').then(m => m.ResetPassword)
 	},
 	{
+		path: 'acesso-negado',
+		loadComponent: () => import('./features/errors/pages/access-denied/access-denied').then(m => m.AccessDenied)
+	},
+	{
 		path: 'academico',
 		loadChildren: () => import('./features/academico/academico.routes').then(m => m.ACADEMICO_ROUTES)
 	},
@@ -26,5 +30,8 @@ export const routes: Routes = [
 		path: 'admin',
 		loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
 	},
-	{ path: '**', redirectTo: 'login' }
+	{
+		path: '**',
+		loadComponent: () => import('./features/errors/pages/not-found/not-found').then(m => m.NotFound)
+	}
 ];

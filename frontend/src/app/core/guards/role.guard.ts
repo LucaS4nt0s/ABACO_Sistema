@@ -21,7 +21,7 @@ export function roleGuard(allowedCargos: number[]): CanActivateFn {
     const cargo = payload.cargo ?? null;
 
     if (cargo === null || !allowedCargos.includes(cargo)) {
-      return router.parseUrl('/login');
+      return router.parseUrl('/acesso-negado');
     }
 
     return true;
