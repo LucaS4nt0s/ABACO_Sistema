@@ -61,7 +61,7 @@ export class AdminHome implements OnInit, OnDestroy {
     this.loading = true;
     this.dashboardError = false;
 
-    const requests = [
+    const requests: any[] = [
       this.dashboardService.getKpis().pipe(takeUntil(this.destroy$), timeout(15000)),
     ];
 
@@ -73,9 +73,8 @@ export class AdminHome implements OnInit, OnDestroy {
     }
 
     forkJoin(requests).subscribe({
-      next: (results) => {
-        const kpis = results[0] as Kpis;
-        this.kpis = kpis;
+      next: (results: any[]) => {
+        this.kpis = results[0] as Kpis;
 
         if (this.isDirector && results.length > 1) {
           this.buildAcademicoCharts(results[1] as ChartAcademico);
