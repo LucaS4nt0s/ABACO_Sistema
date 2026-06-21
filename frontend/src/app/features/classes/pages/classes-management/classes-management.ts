@@ -58,6 +58,10 @@ export class ClassesManagementComponent implements OnInit {
     this.loadProfessores();
   }
 
+  onSearchInput(event: Event): string {
+    return (event.target as HTMLInputElement).value;
+  }
+
   onSearch(term: string): void {
     this.searchTerm = term.trim().toLowerCase();
     this.applyFiltersAndPagination();

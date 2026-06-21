@@ -13,7 +13,7 @@
       <input
         type="search"
         placeholder="Buscar por curso ou professor"
-        (input)="onSearch(($event.target as HTMLInputElement).value)"
+        (input)="onSearch(onSearchInput($event))"
         [disabled]="loadingList"
       />
     </label>
