@@ -7,6 +7,7 @@ import { Aluno } from '../../../../core/models/aluno.model';
 import { Matricula, MatriculaCreatePayload, MatriculaUpdatePayload } from '../../../../core/models/matricula.model';
 import { Turma } from '../../../../core/models/turma.model';
 import { AlunoService } from '../../../../core/services/aluno.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { MatriculaService } from '../../../../core/services/matricula.service';
 import { TurmaService } from '../../../../core/services/turma.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -46,6 +47,7 @@ export class EnrollmentsManagementComponent implements OnInit {
     private readonly matriculaService: MatriculaService,
     private readonly alunoService: AlunoService,
     private readonly turmaService: TurmaService,
+    private readonly dialog: DialogService,
     private readonly notifications: NotificationService,
     private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
@@ -114,6 +116,7 @@ export class EnrollmentsManagementComponent implements OnInit {
       this.matriculaService.create(createPayload).subscribe({
         next: () => {
           this.notifications.clear();
+          this.notifications.success('Matrícula criada com sucesso.');
           this.closePanel();
           this.loadMatriculas();
           this.saving = false;
@@ -144,6 +147,7 @@ export class EnrollmentsManagementComponent implements OnInit {
     this.matriculaService.update(this.selectedMatricula.idMatricula, updatePayload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Matrícula atualizada com sucesso.');
         this.closePanel();
         this.loadMatriculas();
         this.saving = false;
@@ -160,30 +164,32 @@ export class EnrollmentsManagementComponent implements OnInit {
 
   onDelete(matricula: Matricula): void {
     const alunoNome = matricula.aluno?.nome ?? 'Matricula #' + matricula.idMatricula;
-    const shouldDelete = confirm('Excluir matricula de ' + alunoNome + '?');
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: 'Excluir matrícula de ' + alunoNome + '?', confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.deletingMatriculaId = matricula.idMatricula;
-    this.localFeedback = null;
+      this.deletingMatriculaId = matricula.idMatricula;
+      this.localFeedback = null;
 
-    this.matriculaService.delete(matricula.idMatricula).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadMatriculas();
-        this.deletingMatriculaId = null;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 409) {
-          const message = 'Esta matricula possui vinculos e nao pode ser excluida.';
-          this.localFeedback = message;
-          this.notifications.error(message);
-        }
-        this.deletingMatriculaId = null;
-        this.changeDetectorRef.detectChanges();
-      },
+      this.matriculaService.delete(matricula.idMatricula).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Matrícula excluída com sucesso.');
+          this.loadMatriculas();
+          this.deletingMatriculaId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const message = 'Esta matricula possui vinculos e nao pode ser excluida.';
+            this.localFeedback = message;
+            this.notifications.error(message);
+          }
+          this.deletingMatriculaId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -210,7 +216,9 @@ export class EnrollmentsManagementComponent implements OnInit {
         this.alunos = alunos;
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {},
+      error: () => {
+        this.notifications.error('Erro ao carregar alunos.');
+      },
     });
   }
 
@@ -220,7 +228,9 @@ export class EnrollmentsManagementComponent implements OnInit {
         this.turmas = turmas;
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {},
+      error: () => {
+        this.notifications.error('Erro ao carregar turmas.');
+      },
     });
   }
 

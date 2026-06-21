@@ -16,6 +16,7 @@ import type {
 } from 'ng-apexcharts';
 
 import { DashboardService } from '../../services/dashboard.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import type { Kpis, ChartAcademico, ChartLogistica } from '../../models/dashboard.model';
 
 @Component({
@@ -27,6 +28,7 @@ import type { Kpis, ChartAcademico, ChartLogistica } from '../../models/dashboar
 })
 export class Home implements OnInit, OnDestroy {
   private readonly dashboardService = inject(DashboardService);
+  private readonly notifications = inject(NotificationService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroy$ = new Subject<void>();
 
@@ -129,6 +131,7 @@ export class Home implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         timeout(15000),
         catchError(() => {
+          this.notifications.error('Erro ao carregar indicadores.');
           this.decrementPending();
           return EMPTY;
         }),
@@ -144,6 +147,7 @@ export class Home implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         timeout(15000),
         catchError(() => {
+          this.notifications.error('Erro ao carregar gráficos acadêmicos.');
           this.decrementPending();
           return EMPTY;
         }),
@@ -160,6 +164,7 @@ export class Home implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         timeout(15000),
         catchError(() => {
+          this.notifications.error('Erro ao carregar gráficos de logística.');
           this.decrementPending();
           return EMPTY;
         }),

@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { Aluno, AlunoCreatePayload, AlunoUpdatePayload } from '../../../../core/models/aluno.model';
 import { AlunoService } from '../../../../core/services/aluno.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { StudentFormComponent, StudentFormSubmit } from '../../components/student-form/student-form';
 import { StudentListComponent } from '../../components/student-list/student-list';
@@ -35,6 +36,7 @@ export class StudentsManagementComponent implements OnInit {
 
   constructor(
     private readonly alunoService: AlunoService,
+    private readonly dialog: DialogService,
     private readonly notifications: NotificationService,
     private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
@@ -95,6 +97,7 @@ export class StudentsManagementComponent implements OnInit {
       this.alunoService.create(createPayload).subscribe({
         next: () => {
           this.notifications.clear();
+          this.notifications.success('Aluno criado com sucesso.');
           this.closePanel();
           this.loadAlunos();
           this.saving = false;
@@ -127,6 +130,7 @@ export class StudentsManagementComponent implements OnInit {
     this.alunoService.update(this.selectedAluno.idAluno, updatePayload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Aluno atualizado com sucesso.');
         this.closePanel();
         this.loadAlunos();
         this.saving = false;
@@ -142,30 +146,32 @@ export class StudentsManagementComponent implements OnInit {
   }
 
   onDelete(aluno: Aluno): void {
-    const shouldDelete = confirm(`Excluir o aluno ${aluno.nome}?`);
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: `Excluir o aluno ${aluno.nome}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.deletingAlunoId = aluno.idAluno;
-    this.localFeedback = null;
+      this.deletingAlunoId = aluno.idAluno;
+      this.localFeedback = null;
 
-    this.alunoService.delete(aluno.idAluno).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadAlunos();
-        this.deletingAlunoId = null;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 409) {
-          const message = 'Este aluno possui vinculos historicos em turmas e nao pode ser excluido.';
-          this.localFeedback = message;
-          this.notifications.error(message);
-        }
-        this.deletingAlunoId = null;
-        this.changeDetectorRef.detectChanges();
-      },
+      this.alunoService.delete(aluno.idAluno).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Aluno excluído com sucesso.');
+          this.loadAlunos();
+          this.deletingAlunoId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const message = 'Este aluno possui vinculos historicos em turmas e nao pode ser excluido.';
+            this.localFeedback = message;
+            this.notifications.error(message);
+          }
+          this.deletingAlunoId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -180,6 +186,7 @@ export class StudentsManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingList = false;
+        this.notifications.error('Erro ao carregar. Tente novamente.');
         this.changeDetectorRef.detectChanges();
       },
     });

@@ -6,6 +6,7 @@ import { Curso } from '../../../../core/models/curso.model';
 import { Turma, TurmaCreatePayload, TurmaUpdatePayload } from '../../../../core/models/turma.model';
 import { Usuario } from '../../../../core/models/usuario.model';
 import { CursoService } from '../../../../core/services/curso.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { TurmaService } from '../../../../core/services/turma.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -44,6 +45,7 @@ export class ClassesManagementComponent implements OnInit {
     private readonly turmaService: TurmaService,
     private readonly cursoService: CursoService,
     private readonly usuarioService: UsuarioService,
+    private readonly dialog: DialogService,
     private readonly notifications: NotificationService,
     private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
@@ -106,6 +108,7 @@ export class ClassesManagementComponent implements OnInit {
       this.turmaService.create(createPayload).subscribe({
         next: () => {
           this.notifications.clear();
+          this.notifications.success('Turma criada com sucesso.');
           this.closePanel();
           this.loadTurmas();
           this.saving = false;
@@ -138,6 +141,7 @@ export class ClassesManagementComponent implements OnInit {
     this.turmaService.update(this.selectedTurma.idTurma, updatePayload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Turma atualizada com sucesso.');
         this.closePanel();
         this.loadTurmas();
         this.saving = false;
@@ -154,30 +158,32 @@ export class ClassesManagementComponent implements OnInit {
 
   onDelete(turma: Turma): void {
     const displayName = turma.curso?.nomeCurso ?? `Turma #${turma.idTurma}`;
-    const shouldDelete = confirm(`Excluir a turma de ${displayName}?`);
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: `Excluir a turma de ${displayName}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.deletingTurmaId = turma.idTurma;
-    this.localFeedback = null;
+      this.deletingTurmaId = turma.idTurma;
+      this.localFeedback = null;
 
-    this.turmaService.delete(turma.idTurma).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadTurmas();
-        this.deletingTurmaId = null;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 409) {
-          const message = 'Esta turma possui matriculas ou pedidos vinculados e nao pode ser excluida.';
-          this.localFeedback = message;
-          this.notifications.error(message);
-        }
-        this.deletingTurmaId = null;
-        this.changeDetectorRef.detectChanges();
-      },
+      this.turmaService.delete(turma.idTurma).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Turma excluída com sucesso.');
+          this.loadTurmas();
+          this.deletingTurmaId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const message = 'Esta turma possui matriculas ou pedidos vinculados e nao pode ser excluida.';
+            this.localFeedback = message;
+            this.notifications.error(message);
+          }
+          this.deletingTurmaId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -192,6 +198,7 @@ export class ClassesManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingList = false;
+        this.notifications.error('Erro ao carregar. Tente novamente.');
         this.changeDetectorRef.detectChanges();
       },
     });
@@ -203,7 +210,9 @@ export class ClassesManagementComponent implements OnInit {
         this.cursos = cursos;
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {},
+      error: () => {
+        this.notifications.error('Erro ao carregar cursos.');
+      },
     });
   }
 
@@ -213,7 +222,9 @@ export class ClassesManagementComponent implements OnInit {
         this.professores = usuarios.filter((u) => u.cargo === 2);
         this.changeDetectorRef.detectChanges();
       },
-      error: () => {},
+      error: () => {
+        this.notifications.error('Erro ao carregar professores.');
+      },
     });
   }
 

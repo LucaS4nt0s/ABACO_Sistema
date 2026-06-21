@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { CargoNivel, Usuario, UsuarioCreatePayload, UsuarioUpdatePayload } from '../../../../core/models/usuario.model';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DialogService } from '../../../../core/services/dialog.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { UsuarioFormComponent, UsuarioFormSubmit } from '../../components/usuario-form/usuario-form';
 import { UsuariosListComponent } from '../../components/usuarios-list/usuarios-list';
@@ -35,6 +36,7 @@ export class UsersManagementComponent implements OnInit {
 
   constructor(
     private readonly usuarioService: UsuarioService,
+    private readonly dialog: DialogService,
     private readonly notifications: NotificationService,
     private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
@@ -94,6 +96,7 @@ export class UsersManagementComponent implements OnInit {
       this.usuarioService.create(createPayload).subscribe({
         next: () => {
           this.notifications.clear();
+          this.notifications.success('Usuário criado com sucesso.');
           this.closePanel();
           this.loadUsuarios();
           this.saving = false;
@@ -123,6 +126,7 @@ export class UsersManagementComponent implements OnInit {
     this.usuarioService.update(this.selectedUsuario.idUsuario, updatePayload).subscribe({
       next: () => {
         this.notifications.clear();
+        this.notifications.success('Usuário atualizado com sucesso.');
         this.closePanel();
         this.loadUsuarios();
         this.saving = false;
@@ -138,30 +142,32 @@ export class UsersManagementComponent implements OnInit {
   }
 
   onDelete(usuario: Usuario): void {
-    const shouldDelete = confirm(`Excluir o usuario ${usuario.nome || usuario.email}?`);
-    if (!shouldDelete) {
-      return;
-    }
+    this.dialog.confirm({ message: `Excluir o usuário ${usuario.nome || usuario.email}?`, confirmLabel: 'Excluir' }).subscribe(shouldDelete => {
+      if (!shouldDelete) {
+        return;
+      }
 
-    this.deletingUserId = usuario.idUsuario;
-    this.localFeedback = null;
+      this.deletingUserId = usuario.idUsuario;
+      this.localFeedback = null;
 
-    this.usuarioService.delete(usuario.idUsuario).subscribe({
-      next: () => {
-        this.notifications.clear();
-        this.loadUsuarios();
-        this.deletingUserId = null;
-        this.changeDetectorRef.detectChanges();
-      },
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 409) {
-          const message = 'Este usuario possui vinculos historicos em turmas ou pedidos e nao pode ser excluido.';
-          this.localFeedback = message;
-          this.notifications.error(message);
-        }
-        this.deletingUserId = null;
-        this.changeDetectorRef.detectChanges();
-      },
+      this.usuarioService.delete(usuario.idUsuario).subscribe({
+        next: () => {
+          this.notifications.clear();
+          this.notifications.success('Usuário excluído com sucesso.');
+          this.loadUsuarios();
+          this.deletingUserId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 409) {
+            const message = 'Este usuario possui vinculos historicos em turmas ou pedidos e nao pode ser excluido.';
+            this.localFeedback = message;
+            this.notifications.error(message);
+          }
+          this.deletingUserId = null;
+          this.changeDetectorRef.detectChanges();
+        },
+      });
     });
   }
 
@@ -176,6 +182,7 @@ export class UsersManagementComponent implements OnInit {
       },
       error: () => {
         this.loadingList = false;
+        this.notifications.error('Erro ao carregar. Tente novamente.');
         this.changeDetectorRef.detectChanges();
       },
     });

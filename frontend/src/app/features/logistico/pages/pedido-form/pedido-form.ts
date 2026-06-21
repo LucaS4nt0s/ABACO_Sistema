@@ -40,7 +40,7 @@ export class PedidoFormPageComponent {
 
     this.pedidoService.create(createPayload).subscribe({
       next: () => {
-        this.notifications.clear();
+        this.notifications.success('Pedido criado com sucesso.');
         this.saving = false;
         this.changeDetectorRef.detectChanges();
         this.router.navigate(['/admin/logistico/pedidos']);
