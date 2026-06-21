@@ -97,7 +97,7 @@ export class ClassFormComponent implements OnChanges {
     this.updateContexto();
   }
 
-  private updateContexto(): void {
+  updateContexto(): void {
     const cursoId = this.form.controls.idCurso.value;
     const profId = this.form.controls.idProfessor.value;
     this.cursoContextLabel = null;

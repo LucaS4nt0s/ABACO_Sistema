@@ -11,13 +11,13 @@ import { TurmaService } from '../../../../core/services/turma.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ClassFormComponent, ClassFormSubmit } from '../../components/class-form/class-form';
-import { TurmaCardComponent, getStatusTurma } from '../../components/turma-card/turma-card';
 import { TurmaGrupoComponent, TurmaGrupo } from '../../components/turma-grupo/turma-grupo';
+import { getStatusTurma } from '../../components/turma-card/turma-card';
 
 @Component({
   selector: 'app-classes-management',
   standalone: true,
-  imports: [CommonModule, TurmaCardComponent, TurmaGrupoComponent, ClassFormComponent],
+  imports: [CommonModule, TurmaGrupoComponent, ClassFormComponent],
   templateUrl: './classes-management.html',
   styleUrls: ['./classes-management.scss'],
 })

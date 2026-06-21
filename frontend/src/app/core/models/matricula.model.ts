@@ -1,6 +1,7 @@
 ﻿export interface MatriculaAlunoInfo {
   idAluno: number;
   nome: string | null;
+  telefone: string | null;
 }
 
 export interface MatriculaCursoInfo {

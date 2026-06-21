@@ -61,7 +61,7 @@ export class AdminHome implements OnInit, OnDestroy {
     }
   }
 
-  private loadDashboard(): void {
+  loadDashboard(): void {
     this.loading = true;
     this.dashboardError = false;
 

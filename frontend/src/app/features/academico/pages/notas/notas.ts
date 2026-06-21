@@ -89,7 +89,7 @@ export class NotasPage implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.feedback = err?.error?.detail || 'Erro ao registrar notas.';
-        this.notifications.error(this.feedback);
+        this.notifications.error(this.feedback!);
         this.saving = false;
       },
     });

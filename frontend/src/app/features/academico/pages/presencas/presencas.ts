@@ -86,7 +86,7 @@ export class PresencasPage implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.feedback = err?.error?.detail || 'Erro ao registrar presenças.';
-        this.notifications.error(this.feedback);
+        this.notifications.error(this.feedback!);
         this.saving = false;
       },
     });
