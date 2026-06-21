@@ -22,7 +22,7 @@ from app.api.v1.turmas import router as turmas_router
 from app.api.v1.usuarios import router as usuarios_router
 from app.core.config import get_settings
 from app.core.limiter import limiter
-from app.db.database import engine
+from app.db.database import SessionLocal, engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -73,6 +73,29 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "Erro interno do servidor. Tente novamente mais tarde."},
     )
+
+
+@app.on_event("startup")
+def seed_admin_user():
+    if settings.admin_seed_email and settings.admin_seed_password:
+        from app.core.security import hash_password
+        from app.models.usuario import Usuario
+
+        db = SessionLocal()
+        try:
+            existing = db.query(Usuario).filter(Usuario.email == settings.admin_seed_email).first()
+            if not existing:
+                admin = Usuario(
+                    nome="Administrador",
+                    email=settings.admin_seed_email,
+                    senha_hash=hash_password(settings.admin_seed_password),
+                    cargo=1,
+                )
+                db.add(admin)
+                db.commit()
+                logger.info("Admin user seeded: %s", settings.admin_seed_email)
+        finally:
+            db.close()
 
 
 app.include_router(alunos_router)
