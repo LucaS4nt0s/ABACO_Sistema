@@ -3,7 +3,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.db.database import Base
+from app.models.aluno import Aluno
+from app.models.curso import Curso
 from app.models.estoque import Estoque
+from app.models.matricula import Matricula
+from app.models.turma import Turma
+from app.models.usuario import Usuario
 
 
 @pytest.fixture
@@ -17,6 +22,75 @@ def db_session():
     finally:
         session.close()
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def usuario(db_session: Session) -> Usuario:
+    u = Usuario(
+        nome="Teste Usuario",
+        email="teste@abaco.org.br",
+        senha_hash="$2b$12$LJ3m4ys3Lk7TSw0fhVBXB.2Ml7rP5tpj9k0.0GQxq7LhM30Bh2B9G",
+        cargo=1,
+    )
+    db_session.add(u)
+    db_session.commit()
+    db_session.refresh(u)
+    return u
+
+
+@pytest.fixture
+def usuario_professor(db_session: Session) -> Usuario:
+    u = Usuario(
+        nome="Professor Teste",
+        email="prof@abaco.org.br",
+        senha_hash="$2b$12$LJ3m4ys3Lk7TSw0fhVBXB.2Ml7rP5tpj9k0.0GQxq7LhM30Bh2B9G",
+        cargo=2,
+    )
+    db_session.add(u)
+    db_session.commit()
+    db_session.refresh(u)
+    return u
+
+
+@pytest.fixture
+def aluno(db_session: Session) -> Aluno:
+    a = Aluno(nome="Aluno Teste", telefone="11999999999")
+    db_session.add(a)
+    db_session.commit()
+    db_session.refresh(a)
+    return a
+
+
+@pytest.fixture
+def curso(db_session: Session) -> Curso:
+    c = Curso(nome_curso="Curso Teste")
+    db_session.add(c)
+    db_session.commit()
+    db_session.refresh(c)
+    return c
+
+
+@pytest.fixture
+def turma(db_session: Session, curso: Curso, usuario_professor: Usuario) -> Turma:
+    t = Turma(
+        capacidade=30,
+        id_curso=curso.id_curso,
+        id_professor=usuario_professor.id_usuario,
+        dias_aula="Seg/Qua/Sex",
+    )
+    db_session.add(t)
+    db_session.commit()
+    db_session.refresh(t)
+    return t
+
+
+@pytest.fixture
+def matricula_ativa(db_session: Session, aluno: Aluno, turma: Turma) -> Matricula:
+    m = Matricula(id_aluno=aluno.id_aluno, id_turma=turma.id_turma, status=0)
+    db_session.add(m)
+    db_session.commit()
+    db_session.refresh(m)
+    return m
 
 
 @pytest.fixture
