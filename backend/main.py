@@ -111,7 +111,9 @@ def _seed_test_data(db, hash_password_func):
     from app.models.aluno import Aluno
     from app.models.curso import Curso
     from app.models.estoque import Estoque
+    from app.models.item_pedido import ItemPedido
     from app.models.matricula import Matricula
+    from app.models.pedido import Pedido
     from app.models.turma import Turma
     from app.models.usuario import Usuario
     from datetime import date
@@ -120,14 +122,21 @@ def _seed_test_data(db, hash_password_func):
         Curso(nome_curso="Informática Básica"),
         Curso(nome_curso="Corte e Costura"),
         Curso(nome_curso="Administração"),
+        Curso(nome_curso="Inglês Básico"),
+        Curso(nome_curso="Espanhol"),
     ]
     db.add_all(cursos)
+    db.flush()
+
+    admin_user = Usuario(nome="Carlos Admin", email="admin2@abaco.org.br", senha_hash=hash_password_func("admin123"), cargo=3, telefone="11999990000")
+    db.add(admin_user)
     db.flush()
 
     prof1 = Usuario(nome="Maria Silva", email="maria@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11988887777")
     prof2 = Usuario(nome="João Santos", email="joao@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11977776666")
     prof3 = Usuario(nome="Ana Costa", email="ana@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11966665555")
-    db.add_all([prof1, prof2, prof3])
+    prof4 = Usuario(nome="Paulo Lima", email="paulo@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11955554444")
+    db.add_all([prof1, prof2, prof3, prof4])
     db.flush()
 
     alunos = [
@@ -139,6 +148,10 @@ def _seed_test_data(db, hash_password_func):
         Aluno(nome="Beatriz Lima", telefone="11966667777", data_nascimento=date(2000, 9, 3)),
         Aluno(nome="Gabriel Torres", telefone="11977778888", data_nascimento=date(2003, 4, 18)),
         Aluno(nome="Mariana Rocha", telefone="11988889999", data_nascimento=date(1997, 12, 25)),
+        Aluno(nome="Fernando Dias", telefone="11912344321", data_nascimento=date(1999, 8, 10)),
+        Aluno(nome="Patrícia Neves", telefone="11923455432", data_nascimento=date(2001, 2, 14)),
+        Aluno(nome="Ricardo Moura", telefone="11934566543", data_nascimento=date(2000, 6, 30)),
+        Aluno(nome="Tatiane Borges", telefone="11945677654", data_nascimento=date(2002, 10, 5)),
     ]
     db.add_all(alunos)
     db.flush()
@@ -152,6 +165,10 @@ def _seed_test_data(db, hash_password_func):
               avaliacoes=[{"nome": "Prova Única", "tipo": "prova", "peso": 10}, {"nome": "Trabalho Prático", "tipo": "trabalho", "peso": 10}]),
         Turma(id_curso=cursos[2].id_curso, id_professor=prof3.id_usuario, capacidade=30, data_inicio=date(2026, 7, 1), data_fim=date(2026, 10, 30), dias_aula="2,4,6",
               avaliacoes=[{"nome": "Prova 1", "tipo": "prova", "peso": 10}, {"nome": "Prova 2", "tipo": "prova", "peso": 10}, {"nome": "Prova 3", "tipo": "prova", "peso": 10}, {"nome": "Prova 4", "tipo": "prova", "peso": 10}]),
+        Turma(id_curso=cursos[3].id_curso, id_professor=prof2.id_usuario, capacidade=18, data_inicio=date(2026, 6, 15), data_fim=date(2026, 12, 15), dias_aula="2,4",
+              avaliacoes=[{"nome": "Listening", "tipo": "prova", "peso": 5}, {"nome": "Speaking", "tipo": "trabalho", "peso": 5}, {"nome": "Written Test", "tipo": "prova", "peso": 10}]),
+        Turma(id_curso=cursos[4].id_curso, id_professor=prof4.id_usuario, capacidade=12, data_inicio=date(2026, 8, 1), data_fim=date(2026, 11, 30), dias_aula="1,3",
+              avaliacoes=[{"nome": "Prova Oral", "tipo": "trabalho", "peso": 10}, {"nome": "Prova Escrita", "tipo": "prova", "peso": 10}]),
     ]
     db.add_all(turmas)
     db.flush()
@@ -165,9 +182,30 @@ def _seed_test_data(db, hash_password_func):
         Matricula(id_aluno=alunos[5].id_aluno, id_turma=turmas[2].id_turma, data_matricula=date(2026, 4, 15), status=0),
         Matricula(id_aluno=alunos[6].id_aluno, id_turma=turmas[2].id_turma, data_matricula=date(2026, 4, 16), status=0),
         Matricula(id_aluno=alunos[7].id_aluno, id_turma=turmas[2].id_turma, data_matricula=date(2026, 4, 17), status=0),
+        Matricula(id_aluno=alunos[8].id_aluno, id_turma=turmas[3].id_turma, data_matricula=date(2026, 6, 25), status=0),
+        Matricula(id_aluno=alunos[9].id_aluno, id_turma=turmas[3].id_turma, data_matricula=date(2026, 6, 26), status=0),
+        Matricula(id_aluno=alunos[10].id_aluno, id_turma=turmas[4].id_turma, data_matricula=date(2026, 6, 10), status=0),
+        Matricula(id_aluno=alunos[11].id_aluno, id_turma=turmas[4].id_turma, data_matricula=date(2026, 6, 12), status=0),
     ]
     db.add_all(matriculas)
     db.flush()
+
+    pedidos = [
+        Pedido(id_usuario=prof1.id_usuario, id_turma=turmas[0].id_turma, data_pedido=date(2026, 6, 10), status=0),
+        Pedido(id_usuario=prof2.id_usuario, id_turma=turmas[2].id_turma, data_pedido=date(2026, 5, 20), status=1),
+        Pedido(id_usuario=prof3.id_usuario, id_turma=turmas[3].id_turma, data_pedido=date(2026, 7, 5), status=2),
+    ]
+    db.add_all(pedidos)
+    db.flush()
+
+    itens_pedido = [
+        ItemPedido(id_pedido=pedidos[0].id_pedido, nome_item="Caneta esferográfica", quantidade=50, id_item_estoque=1),
+        ItemPedido(id_pedido=pedidos[0].id_pedido, nome_item="Caderno universitário", quantidade=30, id_item_estoque=2),
+        ItemPedido(id_pedido=pedidos[1].id_pedido, nome_item="Lápis HB", quantidade=40, id_item_estoque=3),
+        ItemPedido(id_pedido=pedidos[1].id_pedido, nome_item="Tesoura escolar", quantidade=15, id_item_estoque=6),
+        ItemPedido(id_pedido=pedidos[2].id_pedido, nome_item="Papel sulfite A4 (resma)", quantidade=8, id_item_estoque=5),
+    ]
+    db.add_all(itens_pedido)
 
     estoque = [
         Estoque(nome_item="Caneta esferográfica", quantidade_disponivel=200, unidade="un", estoque_minimo=50),
