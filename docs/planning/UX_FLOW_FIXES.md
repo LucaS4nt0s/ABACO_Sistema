@@ -16,7 +16,7 @@
 
 ---
 
-## Sprint 7 — Correções de fluxo e navegação
+## Sprint 7 — Correções de fluxo e navegação ✅ (PR #57)
 
 ### 7.1 🔴 Página 403 "Acesso Negado"
 
@@ -199,15 +199,15 @@ A rota wildcard atual redireciona para `/login`. Seria melhor uma página 404 am
 
 | # | Issue | Severidade | Esforço |
 |---|-------|-----------|---------|
-| 7.1 | Página 403 "Acesso Negado" | 🔴 Crítico | Médio |
-| 7.2 | Páginas do Professor (3 stubs) | 🔴 Crítico | Médio |
-| 7.3 | Auto-logout sem redirecionamento | 🔴 Crítico | Baixo |
-| 7.4 | Diretor acessa área do professor | 🟡 Importante | Baixo |
-| 7.5 | Breadcrumbs em páginas profundas | 🟡 Importante | Médio |
-| 7.6 | Link "Logístico" no menu lateral | 🟢 Menor | Baixo |
-| 7.7 | Remover código morto | 🟢 Menor | Baixo |
-| 7.8 | Guard redundante em /usuarios | 🟢 Menor | Baixo |
-| B1 | 401 no interceptor → logout | 🟡 Importante | Baixo |
-| B2 | Página 404 amigável | 🟢 Menor | Baixo |
+| 7.1 | Página 403 "Acesso Negado" | ✅ Concluído | PR #57 |
+| 7.2 | Páginas do Professor (3 stubs) | ✅ Concluído | PR #57 |
+| 7.3 | Auto-logout sem redirecionamento | ✅ Concluído | PR #57 |
+| 7.4 | Diretor acessa área do professor | ✅ Concluído | PR #57 |
+| 7.5 | Breadcrumbs em páginas profundas | ⏸️ Pendente | Baixa prioridade |
+| 7.6 | Link "Logístico" no menu lateral | ✅ Concluído | PR #57 |
+| 7.7 | Remover código morto | ✅ Concluído | PR #56 |
+| 7.8 | Guard redundante em /usuarios | ✅ Concluído | PR #57 |
+| B1 | 401 no interceptor → logout | ✅ Concluído | PR #57 |
+| B2 | Página 404 amigável | ✅ Concluído | PR #57 |
 
 **Total: 10 issues, ~8-10h estimadas**
