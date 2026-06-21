@@ -1,51 +1,116 @@
-<div class="dashboard">
-  <header class="dashboard__header">
-    <h1>Painel Administrativo</h1>
-    <p>Bem-vindo ao sistema de gestao ABACO.</p>
+<div class="admin-home">
+  <header class="admin-home__header">
+    <h1>{{ isDirector ? 'Painel Gerencial' : 'Painel Administrativo' }}</h1>
+    <p>Bem-vindo ao sistema de gestão ABACO.</p>
   </header>
 
-  <section class="dashboard__section">
-    <h2 class="dashboard__section-title">Academico</h2>
-    <div class="dashboard__cards">
-      <a class="card" routerLink="/admin/alunos">
-        <h2>Alunos</h2>
-        <p>Cadastro e gerenciamento de alunos</p>
-      </a>
+  <!-- ===== DIRETORA: Dashboard completo ===== -->
+  <ng-container *ngIf="isDirector">
+    <div *ngIf="loading" class="loading">Carregando dashboard...</div>
 
-      <a class="card" routerLink="/admin/cursos">
-        <h2>Cursos</h2>
-        <p>Cadastro e gerenciamento de cursos</p>
-      </a>
-
-      <a class="card" routerLink="/admin/turmas">
-        <h2>Turmas</h2>
-        <p>Cadastro e gerenciamento de turmas</p>
-      </a>
-
-      <a class="card" routerLink="/admin/matriculas">
-        <h2>Matriculas</h2>
-        <p>Gerenciamento de matriculas em turmas</p>
-      </a>
-
-      <a class="card" routerLink="/admin/notas">
-        <h2>Notas</h2>
-        <p>Lancamento de notas por turma e prova</p>
-      </a>
+    <div *ngIf="dashboardError && !loading" class="dashboard-error">
+      Não foi possível carregar os dados do dashboard. <button (click)="loadDashboard()">Tentar novamente</button>
     </div>
-  </section>
 
-  <section class="dashboard__section">
-    <h2 class="dashboard__section-title">Logistico</h2>
-    <div class="dashboard__cards">
-      <a class="card" routerLink="/admin/logistico/estoque">
-        <h2>Estoque</h2>
-        <p>Controle de itens e materiais disponiveis</p>
-      </a>
+    <ng-container *ngIf="!loading && !dashboardError">
+      <div class="kpi-grid">
+        <a class="kpi-card" routerLink="/admin/alunos">
+          <div class="kpi-card__icon kpi-card__icon--blue">👤</div>
+          <div class="kpi-card__info">
+            <span class="kpi-card__value">{{ kpis.total_alunos_ativos }}</span>
+            <span class="kpi-card__label">Alunos Ativos</span>
+          </div>
+        </a>
+        <a class="kpi-card" routerLink="/admin/turmas">
+          <div class="kpi-card__icon kpi-card__icon--green">📚</div>
+          <div class="kpi-card__info">
+            <span class="kpi-card__value">{{ kpis.total_turmas_vigentes }}</span>
+            <span class="kpi-card__label">Turmas Vigentes</span>
+          </div>
+        </a>
+        <a class="kpi-card" routerLink="/admin/logistico/pedidos">
+          <div class="kpi-card__icon kpi-card__icon--amber">📋</div>
+          <div class="kpi-card__info">
+            <span class="kpi-card__value">{{ kpis.total_pedidos_pendentes }}</span>
+            <span class="kpi-card__label">Pedidos Pendentes</span>
+          </div>
+        </a>
+        <a class="kpi-card" routerLink="/admin/logistico/estoque">
+          <div class="kpi-card__icon kpi-card__icon--red">📦</div>
+          <div class="kpi-card__info">
+            <span class="kpi-card__value">{{ kpis.total_estoque_critico }}</span>
+            <span class="kpi-card__label">Estoque Crítico</span>
+          </div>
+        </a>
+      </div>
 
-      <a class="card" routerLink="/admin/logistico/pedidos">
-        <h2>Pedidos</h2>
-        <p>Solicitacao e aprovacao de materiais</p>
-      </a>
-    </div>
-  </section>
+      <section class="home-section">
+        <h2 class="home-section__title">Ações rápidas</h2>
+        <div class="actions-grid">
+          <a class="action-card" routerLink="/admin/turmas" (click)="$event.stopPropagation()">
+            <span class="action-card__icon">＋</span>
+            <span class="action-card__label">Nova Turma</span>
+          </a>
+          <a class="action-card" routerLink="/admin/matriculas" (click)="$event.stopPropagation()">
+            <span class="action-card__icon">＋</span>
+            <span class="action-card__label">Nova Matrícula</span>
+          </a>
+          <a class="action-card" routerLink="/admin/alunos" (click)="$event.stopPropagation()">
+            <span class="action-card__icon">＋</span>
+            <span class="action-card__label">Novo Aluno</span>
+          </a>
+          <a class="action-card" routerLink="/admin/logistico/pedidos/novo">
+            <span class="action-card__icon">＋</span>
+            <span class="action-card__label">Novo Pedido</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="home-section" *ngIf="kpis.total_pedidos_pendentes > 0 || kpis.total_estoque_critico > 0">
+        <h2 class="home-section__title">Pendências</h2>
+        <div class="alert-grid">
+          <a *ngIf="kpis.total_pedidos_pendentes > 0" class="alert-card alert-card--warning" routerLink="/admin/logistico/pedidos">
+            📋 {{ kpis.total_pedidos_pendentes }} {{ kpis.total_pedidos_pendentes === 1 ? 'pedido aguardando' : 'pedidos aguardando' }} aprovação
+          </a>
+          <a *ngIf="kpis.total_estoque_critico > 0" class="alert-card alert-card--danger" routerLink="/admin/logistico/estoque">
+            📦 {{ kpis.total_estoque_critico }} {{ kpis.total_estoque_critico === 1 ? 'item com' : 'itens com' }} estoque crítico
+          </a>
+        </div>
+      </section>
+
+      <section class="home-section" *ngIf="donutSeries.length > 0">
+        <h2 class="home-section__title">Visão Acadêmica</h2>
+        <div class="charts-grid">
+          <div class="chart-box">
+            <apx-chart [series]="donutSeries" [chart]="donutChart" [labels]="donutLabels" [dataLabels]="donutDataLabels" [legend]="donutLegend" [responsive]="donutResponsive"></apx-chart>
+          </div>
+          <div class="chart-box">
+            <apx-chart [series]="barSeries" [chart]="barChart" [xaxis]="barXaxis" [dataLabels]="barDataLabels" [plotOptions]="barPlotOptions" [fill]="fill" [title]="barTitle"></apx-chart>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </ng-container>
+
+  <!-- ===== ADMIN: Cards de navegação ===== -->
+  <ng-container *ngIf="!isDirector">
+    <section class="home-section">
+      <h2 class="home-section__title">Acadêmico</h2>
+      <div class="card-grid">
+        <a class="nav-card" routerLink="/admin/alunos"><h3>Alunos</h3><p>Cadastro e gerenciamento de alunos</p></a>
+        <a class="nav-card" routerLink="/admin/cursos"><h3>Cursos</h3><p>Cadastro e gerenciamento de cursos</p></a>
+        <a class="nav-card" routerLink="/admin/turmas"><h3>Turmas</h3><p>Cadastro e gerenciamento de turmas</p></a>
+        <a class="nav-card" routerLink="/admin/matriculas"><h3>Matrículas</h3><p>Gerenciamento de matrículas</p></a>
+        <a class="nav-card" routerLink="/admin/notas"><h3>Notas</h3><p>Lançamento de notas por prova</p></a>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <h2 class="home-section__title">Logístico</h2>
+      <div class="card-grid">
+        <a class="nav-card" routerLink="/admin/logistico/estoque"><h3>Estoque</h3><p>Controle de itens e materiais</p></a>
+        <a class="nav-card" routerLink="/admin/logistico/pedidos"><h3>Pedidos</h3><p>Solicitação e aprovação de materiais</p></a>
+      </div>
+    </section>
+  </ng-container>
 </div>

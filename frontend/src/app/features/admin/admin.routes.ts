@@ -17,7 +17,7 @@ export const ADMIN_ROUTES: Routes = [
 			{
 				path: 'dashboard',
 				canActivate: [directorGuard],
-				loadComponent: () => import('../dashboard/pages/home/home').then(m => m.Home)
+				redirectTo: 'home',
 			},
 			{
 				path: 'usuarios',
