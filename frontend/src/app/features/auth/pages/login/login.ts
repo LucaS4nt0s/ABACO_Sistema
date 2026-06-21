@@ -4,14 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { EmailField } from '../../../../shared/components/email-field/email-field';
-import { PasswordField } from '../../../../shared/components/password-field/password-field';
-import { PrimaryButton } from '../../../../shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmailField, PasswordField, PrimaryButton],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
@@ -21,21 +18,22 @@ export class Login {
   loading = false;
   error: string | null = null;
   showPassword = false;
+  shake = false;
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required]],
     });
   }
 
-  toggleShow() {
-    this.showPassword = !this.showPassword;
-  }
-
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error = null;
+    this.shake = false;
     this.loading = true;
     this.form.disable();
     const { email, password } = this.form.value as { email: string; password: string };
@@ -58,8 +56,10 @@ export class Login {
         }
       },
       error: (err) => {
-        this.error = err?.message || 'Credenciais inválidas';
-      }
+        this.error = err?.message || 'E-mail ou senha incorretos';
+        this.shake = true;
+        setTimeout(() => this.shake = false, 500);
+      },
     });
   }
 }
