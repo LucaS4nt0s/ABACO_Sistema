@@ -29,6 +29,7 @@ export class AdminHome implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   isDirector = false;
+  hoje = new Date();
   kpis: Kpis = { total_alunos_ativos: 0, total_turmas_vigentes: 0, total_pedidos_pendentes: 0, total_estoque_critico: 0 };
   loading = true;
   dashboardError = false;
@@ -53,27 +54,34 @@ export class AdminHome implements OnInit, OnDestroy {
   ngOnInit(): void {
     const role = this.auth.getRoleFromToken();
     this.isDirector = role === 'DIRECTOR';
-
-    if (this.isDirector) {
-      this.loadDashboard();
-    } else {
-      this.loading = false;
-    }
+    this.loadDashboard();
   }
 
   loadDashboard(): void {
     this.loading = true;
     this.dashboardError = false;
 
-    forkJoin([
+    const requests = [
       this.dashboardService.getKpis().pipe(takeUntil(this.destroy$), timeout(15000)),
-      this.dashboardService.getChartAcademico().pipe(takeUntil(this.destroy$), timeout(15000)),
-      this.dashboardService.getChartLogistica().pipe(takeUntil(this.destroy$), timeout(15000)),
-    ]).subscribe({
-      next: ([kpis, academico, logistica]) => {
+    ];
+
+    if (this.isDirector) {
+      requests.push(
+        this.dashboardService.getChartAcademico().pipe(takeUntil(this.destroy$), timeout(15000)),
+        this.dashboardService.getChartLogistica().pipe(takeUntil(this.destroy$), timeout(15000)),
+      );
+    }
+
+    forkJoin(requests).subscribe({
+      next: (results) => {
+        const kpis = results[0] as Kpis;
         this.kpis = kpis;
-        this.buildAcademicoCharts(academico);
-        this.buildLogisticaChart(logistica);
+
+        if (this.isDirector && results.length > 1) {
+          this.buildAcademicoCharts(results[1] as ChartAcademico);
+          this.buildLogisticaChart(results[2] as ChartLogistica);
+        }
+
         this.loading = false;
         this.cdr.detectChanges();
       },
