@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000
+CMD alembic upgrade head 2>/dev/null; alembic stamp head 2>/dev/null; uvicorn main:app --host 0.0.0.0 --port 8000
