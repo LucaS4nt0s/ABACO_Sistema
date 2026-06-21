@@ -109,12 +109,18 @@ export class PresencasPage implements OnInit {
     if (!this.selectedTurma || !this.dataAula) return;
 
     this.loadingPresencas = true;
+    this.students = [];
 
     this.matriculaService.list().subscribe({
       next: (matriculas) => {
         this.matriculas = matriculas.filter(
           (m) => m.idTurma === this.selectedTurma!.idTurma && m.status === 0
         );
+
+        if (this.matriculas.length === 0) {
+          this.loadingPresencas = false;
+          return;
+        }
 
         this.presencaService.listByTurma(this.selectedTurma!.idTurma, this.dataAula).subscribe({
           next: (presencas) => {

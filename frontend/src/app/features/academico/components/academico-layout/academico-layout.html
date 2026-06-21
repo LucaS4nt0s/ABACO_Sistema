@@ -40,12 +40,12 @@
     <div class="academico-nav__section-label">Logistico</div>
     <ul class="academico-nav__links">
       <li>
-        <a routerLink="/academico/pedidos/novo" routerLinkActive="active">
+        <a routerLink="/academico/pedidos/novo" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           Novo Pedido
         </a>
       </li>
       <li>
-        <a routerLink="/academico/pedidos" routerLinkActive="active">
+        <a routerLink="/academico/pedidos" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           Meus Pedidos
         </a>
       </li>
