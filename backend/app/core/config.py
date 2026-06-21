@@ -28,6 +28,14 @@ class Settings(BaseSettings):
 	smtp_password: str = Field(default="", alias="SMTP_PASSWORD")
 	smtp_from: str = Field(default="noreply@abaco.org.br", alias="SMTP_FROM")
 	frontend_url: str = Field(default="http://localhost:3000", alias="FRONTEND_URL")
+	cors_origins: str = Field(
+		default="http://localhost:3000,http://127.0.0.1:3000,http://localhost:4200,http://localhost:8000",
+		alias="CORS_ORIGINS",
+	)
+
+	@property
+	def cors_origin_list(self) -> list[str]:
+		return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 @lru_cache(maxsize=1)

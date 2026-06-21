@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-from sqlalchemy.exc import ProgrammingError
 
 from app.api.v1.alunos import router as alunos_router
 from app.api.v1.auth import router as auth_router
@@ -15,54 +14,16 @@ from app.api.v1.pedidos import router as pedidos_router
 from app.api.v1.presencas import router as presencas_router
 from app.api.v1.turmas import router as turmas_router
 from app.api.v1.usuarios import router as usuarios_router
+from app.core.config import get_settings
 from app.db.database import engine
+
+settings = get_settings()
 
 app = FastAPI(title="SGA ABACO API")
 
-
-def run_startup_migrations():
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT estoqueminimo FROM estoque LIMIT 0"))
-            conn.commit()
-    except ProgrammingError:
-        with engine.connect() as conn:
-            conn.execute(text("ALTER TABLE estoque ADD COLUMN IF NOT EXISTS estoqueMinimo INTEGER"))
-            conn.commit()
-
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1 FROM movimentacao_estoque LIMIT 0"))
-            conn.commit()
-    except ProgrammingError:
-        with engine.connect() as conn:
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS movimentacao_estoque (
-                    idMovimentacao SERIAL PRIMARY KEY,
-                    idItemEstoque INTEGER REFERENCES estoque(idItemEstoque),
-                    quantidade INTEGER NOT NULL,
-                    tipoMovimentacao TEXT NOT NULL,
-                    justificativa TEXT,
-                    dataMovimentacao TIMESTAMP NOT NULL
-                )
-            """))
-            conn.commit()
-
-
-run_startup_migrations()
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:4200",
-        "http://127.0.0.1:4200",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
