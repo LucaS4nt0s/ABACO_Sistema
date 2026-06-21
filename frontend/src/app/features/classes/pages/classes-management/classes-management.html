@@ -22,29 +22,23 @@
   <section class="classes-management__layout">
     <p *ngIf="loadingList" class="loading">Carregando turmas...</p>
 
-    <div *ngIf="!loadingList && pagedTurmas.length === 0" class="empty">
+    <div *ngIf="!loadingList && filteredTurmas.length === 0" class="empty">
       Nenhuma turma encontrada para o filtro aplicado.
     </div>
 
-    <div class="turmas-grid" *ngIf="!loadingList && pagedTurmas.length > 0">
-      <app-turma-card
-        *ngFor="let turma of pagedTurmas"
-        [turma]="turma"
-        [deleting]="deletingTurmaId === turma.idTurma"
-        (edit)="openEdit($event)"
-        (remove)="onDelete($event)"
-      ></app-turma-card>
+    <div *ngIf="!loadingList && grupos.length > 0" class="grupos-actions">
+      <button type="button" class="btn btn--ghost" (click)="expandirTodos()">Expandir todos</button>
+      <button type="button" class="btn btn--ghost" (click)="recolherTodos()">Recolher todos</button>
     </div>
 
-    <footer class="pagination" *ngIf="totalPages > 1">
-      <button type="button" class="btn btn--ghost" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1 || loadingList">
-        Anterior
-      </button>
-      <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button type="button" class="btn btn--ghost" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages || loadingList">
-        Próxima
-      </button>
-    </footer>
+    <app-turma-grupo
+      *ngFor="let grupo of grupos"
+      [grupo]="grupo"
+      [deletingTurmaId]="deletingTurmaId"
+      (toggle)="onToggleGrupo($event)"
+      (edit)="openEdit($event)"
+      (remove)="onDelete($event)"
+    ></app-turma-grupo>
 
     <app-class-form
       *ngIf="panelOpen"

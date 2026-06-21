@@ -12,25 +12,25 @@ import { UsuarioService } from '../../../../core/services/usuario.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ClassFormComponent, ClassFormSubmit } from '../../components/class-form/class-form';
 import { TurmaCardComponent, getStatusTurma } from '../../components/turma-card/turma-card';
+import { TurmaGrupoComponent, TurmaGrupo } from '../../components/turma-grupo/turma-grupo';
 
 @Component({
   selector: 'app-classes-management',
   standalone: true,
-  imports: [CommonModule, TurmaCardComponent, ClassFormComponent],
+  imports: [CommonModule, TurmaCardComponent, TurmaGrupoComponent, ClassFormComponent],
   templateUrl: './classes-management.html',
   styleUrls: ['./classes-management.scss'],
 })
 export class ClassesManagementComponent implements OnInit {
   turmas: Turma[] = [];
   filteredTurmas: Turma[] = [];
-  pagedTurmas: Turma[] = [];
+  grupos: TurmaGrupo[] = [];
+  expandedCursos = new Set<string>();
 
   cursos: Curso[] = [];
   professores: Usuario[] = [];
 
   searchTerm = '';
-  currentPage = 1;
-  readonly pageSize = 8;
 
   panelOpen = false;
   formMode: 'create' | 'edit' = 'create';
@@ -56,20 +56,28 @@ export class ClassesManagementComponent implements OnInit {
     this.loadProfessores();
   }
 
-  get totalPages(): number {
-    const pages = Math.ceil(this.filteredTurmas.length / this.pageSize);
-    return pages > 0 ? pages : 1;
-  }
-
   onSearch(term: string): void {
     this.searchTerm = term.trim().toLowerCase();
-    this.currentPage = 1;
     this.applyFiltersAndPagination();
   }
 
-  onPageChange(page: number): void {
-    this.currentPage = page;
-    this.applyFiltersAndPagination();
+  onToggleGrupo(cursoNome: string): void {
+    if (this.expandedCursos.has(cursoNome)) {
+      this.expandedCursos.delete(cursoNome);
+    } else {
+      this.expandedCursos.add(cursoNome);
+    }
+    this.rebuildGrupos();
+  }
+
+  expandirTodos(): void {
+    this.grupos.forEach((g) => this.expandedCursos.add(g.cursoNome));
+    this.rebuildGrupos();
+  }
+
+  recolherTodos(): void {
+    this.expandedCursos.clear();
+    this.rebuildGrupos();
   }
 
   openCreate(): void {
@@ -237,9 +245,7 @@ export class ClassesManagementComponent implements OnInit {
 
     this.filteredTurmas = this.turmas
       .filter((turma) => {
-        if (!this.searchTerm) {
-          return true;
-        }
+        if (!this.searchTerm) return true;
         const cursoNome = (turma.curso?.nomeCurso ?? '').toLowerCase();
         const profNome = (turma.professor?.nome ?? '').toLowerCase();
         return cursoNome.includes(this.searchTerm) || profNome.includes(this.searchTerm);
@@ -250,11 +256,23 @@ export class ClassesManagementComponent implements OnInit {
         return (statusOrder[statusA] ?? 99) - (statusOrder[statusB] ?? 99);
       });
 
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
+    this.rebuildGrupos();
+  }
+
+  private rebuildGrupos(): void {
+    const map = new Map<string, Turma[]>();
+    for (const turma of this.filteredTurmas) {
+      const key = turma.curso?.nomeCurso ?? 'Sem curso';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(turma);
     }
 
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.pagedTurmas = this.filteredTurmas.slice(start, start + this.pageSize);
+    this.grupos = Array.from(map.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([cursoNome, turmas]) => ({
+        cursoNome,
+        turmas,
+        expandido: this.expandedCursos.has(cursoNome),
+      }));
   }
 }
