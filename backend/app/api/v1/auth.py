@@ -3,8 +3,28 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import AUTH_ERROR_HEADERS
 from app.db.database import get_db
-from app.schemas.auth_schema import LoginRequest, TokenResponse, UsuarioResponse
-from app.services.auth_service import InvalidCredentialsError, authenticate_user, build_login_response
+from app.schemas.auth_schema import (
+    ForgotPasswordRequest,
+    LoginRequest,
+    MessageResponse,
+    RegisterRequest,
+    ResetPasswordRequest,
+    TokenResponse,
+    UsuarioResponse,
+)
+from app.services.auth_service import (
+    EmailAlreadyExistsError,
+    EmailNotFoundError,
+    InvalidCredentialsError,
+    InvalidResetTokenError,
+    PasswordsDoNotMatchError,
+    authenticate_user,
+    build_login_response,
+    process_forgot_password,
+    process_reset_password,
+    register_user,
+)
+from app.services.email_service import send_reset_email
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
@@ -23,3 +43,58 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     response = build_login_response(usuario)
     response["usuario"] = UsuarioResponse(**response["usuario"])
     return response
+
+
+@router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
+def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+    try:
+        register_user(db, payload.nome, payload.email, payload.senha, payload.confirmar_senha, payload.telefone)
+    except EmailAlreadyExistsError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Este e-mail já está cadastrado",
+        )
+    except PasswordsDoNotMatchError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="As senhas não conferem",
+        )
+
+    return {"message": "Conta criada com sucesso. Você já pode fazer login."}
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    try:
+        token = process_forgot_password(db, payload.email)
+    except EmailNotFoundError:
+        return {"message": "Se o e-mail estiver cadastrado, um link de recuperação será enviado"}
+
+    try:
+        send_reset_email(payload.email, token)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao enviar e-mail de recuperação. Tente novamente mais tarde.",
+        )
+
+    return {"message": "Se o e-mail estiver cadastrado, um link de recuperação será enviado"}
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    if payload.nova_senha != payload.confirmar_senha:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="As senhas não conferem",
+        )
+
+    try:
+        process_reset_password(db, payload.token, payload.nova_senha, payload.confirmar_senha)
+    except InvalidResetTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Token inválido ou expirado",
+        )
+
+    return {"message": "Senha redefinida com sucesso. Você já pode fazer login com a nova senha."}

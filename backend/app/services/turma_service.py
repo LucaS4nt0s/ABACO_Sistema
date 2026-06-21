@@ -61,6 +61,10 @@ def list_turmas(db: Session) -> list[Turma]:
     return db.query(Turma).order_by(Turma.id_turma.desc()).all()
 
 
+def list_turmas_by_professor(db: Session, professor_id: int) -> list[Turma]:
+    return db.query(Turma).filter(Turma.id_professor == professor_id).order_by(Turma.id_turma.desc()).all()
+
+
 def get_turma_by_id(db: Session, turma_id: int) -> Turma:
     turma = db.query(Turma).filter(Turma.id_turma == turma_id).first()
     if not turma:

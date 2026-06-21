@@ -1,10 +1,27 @@
+from jwt import PyJWTError
 from sqlalchemy.orm import Session
 
-from app.core.security import create_access_token, verify_password
+from app.core.security import create_access_token, create_reset_token, decode_reset_token, hash_password, verify_password
 from app.models.usuario import Usuario
 
 
 class InvalidCredentialsError(Exception):
+    pass
+
+
+class EmailAlreadyExistsError(Exception):
+    pass
+
+
+class EmailNotFoundError(Exception):
+    pass
+
+
+class PasswordsDoNotMatchError(Exception):
+    pass
+
+
+class InvalidResetTokenError(Exception):
     pass
 
 
@@ -32,3 +49,54 @@ def build_login_response(usuario: Usuario) -> dict:
             "cargo": usuario.cargo,
         },
     }
+
+
+def register_user(db: Session, nome: str, email: str, senha: str, confirmar_senha: str, telefone: str | None) -> Usuario:
+    if senha != confirmar_senha:
+        raise PasswordsDoNotMatchError
+
+    existing = db.query(Usuario).filter(Usuario.email == email).first()
+    if existing:
+        raise EmailAlreadyExistsError
+
+    usuario = Usuario(
+        nome=nome,
+        email=email,
+        telefone=telefone,
+        senha_hash=hash_password(senha),
+        cargo=2,
+    )
+    db.add(usuario)
+    db.commit()
+    db.refresh(usuario)
+    return usuario
+
+
+def process_forgot_password(db: Session, email: str) -> str:
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    if not usuario:
+        raise EmailNotFoundError
+
+    token = create_reset_token(email=email)
+    return token
+
+
+def process_reset_password(db: Session, token: str, nova_senha: str, confirmar_senha: str) -> None:
+    if nova_senha != confirmar_senha:
+        raise PasswordsDoNotMatchError
+
+    try:
+        payload = decode_reset_token(token)
+    except PyJWTError:
+        raise InvalidResetTokenError
+
+    email = payload.get("sub")
+    if not email:
+        raise InvalidResetTokenError
+
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    if not usuario:
+        raise InvalidResetTokenError
+
+    usuario.senha_hash = hash_password(nova_senha)
+    db.commit()

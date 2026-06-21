@@ -22,3 +22,18 @@ def create_access_token(*, subject: str, cargo: int, expires_delta: timedelta | 
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=settings.access_token_expire_minutes))
     payload = {"sub": subject, "cargo": cargo, "exp": expire}
     return jwt.encode(payload, settings.secret_key, algorithm=settings.jwt_algorithm)
+
+
+def create_reset_token(*, email: str, expires_delta: timedelta | None = None) -> str:
+    settings = get_settings()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=settings.reset_token_expire_minutes))
+    payload = {"sub": email, "type": "password_reset", "exp": expire}
+    return jwt.encode(payload, settings.secret_key, algorithm=settings.jwt_algorithm)
+
+
+def decode_reset_token(token: str) -> dict:
+    settings = get_settings()
+    payload = jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
+    if payload.get("type") != "password_reset":
+        raise jwt.PyJWTError("Invalid token type")
+    return payload

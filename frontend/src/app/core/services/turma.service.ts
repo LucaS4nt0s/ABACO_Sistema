@@ -14,6 +14,10 @@ export class TurmaService {
     return this.http.get<Turma[]>(this.baseUrl);
   }
 
+  listMine(): Observable<Turma[]> {
+    return this.http.get<Turma[]>(`${this.baseUrl}/me`);
+  }
+
   create(payload: TurmaCreatePayload): Observable<Turma> {
     return this.http.post<Turma>(this.baseUrl, payload);
   }
