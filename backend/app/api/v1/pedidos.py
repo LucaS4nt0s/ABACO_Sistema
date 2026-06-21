@@ -38,7 +38,7 @@ def read_pedido(pedido_id: int, _current_user: dict = Depends(verify_cargo(1, 2,
 
 
 @router.post("")
-def create_pedidos(payload: PedidoCreateSchema, current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+def create_pedidos(payload: PedidoCreateSchema, current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
     usuario_id = int(current_user.get("sub", 0))
     try:
         pedido = create_pedido(db, payload, usuario_id)
