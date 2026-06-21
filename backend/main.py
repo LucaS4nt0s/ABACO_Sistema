@@ -77,25 +77,107 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 @app.on_event("startup")
 def seed_admin_user():
-    if settings.admin_seed_email and settings.admin_seed_password:
-        from app.core.security import hash_password
-        from app.models.usuario import Usuario
+    if not settings.admin_seed_email or not settings.admin_seed_password:
+        return
 
-        db = SessionLocal()
-        try:
-            existing = db.query(Usuario).filter(Usuario.email == settings.admin_seed_email).first()
-            if not existing:
-                admin = Usuario(
-                    nome="Administrador",
-                    email=settings.admin_seed_email,
-                    senha_hash=hash_password(settings.admin_seed_password),
-                    cargo=1,
-                )
-                db.add(admin)
-                db.commit()
-                logger.info("Admin user seeded: %s", settings.admin_seed_email)
-        finally:
-            db.close()
+    from app.core.security import hash_password
+    from app.models.curso import Curso
+    from app.models.usuario import Usuario
+
+    db = SessionLocal()
+    try:
+        existing = db.query(Usuario).filter(Usuario.email == settings.admin_seed_email).first()
+        if not existing:
+            admin = Usuario(
+                nome="Administrador",
+                email=settings.admin_seed_email,
+                senha_hash=hash_password(settings.admin_seed_password),
+                cargo=1,
+            )
+            db.add(admin)
+            db.commit()
+            logger.info("Admin user seeded: %s", settings.admin_seed_email)
+
+        if db.query(Curso).count() > 0:
+            return
+
+        logger.info("Empty database detected, seeding test data...")
+        _seed_test_data(db, hash_password)
+    finally:
+        db.close()
+
+
+def _seed_test_data(db, hash_password_func):
+    from app.models.aluno import Aluno
+    from app.models.curso import Curso
+    from app.models.estoque import Estoque
+    from app.models.matricula import Matricula
+    from app.models.turma import Turma
+    from app.models.usuario import Usuario
+    from datetime import date
+
+    cursos = [
+        Curso(nome_curso="Informática Básica"),
+        Curso(nome_curso="Corte e Costura"),
+        Curso(nome_curso="Administração"),
+    ]
+    db.add_all(cursos)
+    db.flush()
+
+    prof1 = Usuario(nome="Maria Silva", email="maria@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11988887777")
+    prof2 = Usuario(nome="João Santos", email="joao@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11977776666")
+    prof3 = Usuario(nome="Ana Costa", email="ana@abaco.org.br", senha_hash=hash_password_func("prof12345"), cargo=2, telefone="11966665555")
+    db.add_all([prof1, prof2, prof3])
+    db.flush()
+
+    alunos = [
+        Aluno(nome="Pedro Alves", telefone="11911112222", nascimento=date(2000, 3, 15)),
+        Aluno(nome="Carla Mendes", telefone="11922223333", nascimento=date(1998, 7, 22)),
+        Aluno(nome="Lucas Oliveira", telefone="11933334444", nascimento=date(2002, 11, 8)),
+        Aluno(nome="Juliana Freitas", telefone="11944445555", nascimento=date(1999, 1, 30)),
+        Aluno(nome="Rafael Souza", telefone="11955556666", nascimento=date(2001, 5, 12)),
+        Aluno(nome="Beatriz Lima", telefone="11966667777", nascimento=date(2000, 9, 3)),
+        Aluno(nome="Gabriel Torres", telefone="11977778888", nascimento=date(2003, 4, 18)),
+        Aluno(nome="Mariana Rocha", telefone="11988889999", nascimento=date(1997, 12, 25)),
+    ]
+    db.add_all(alunos)
+    db.flush()
+
+    turmas = [
+        Turma(id_curso=cursos[0].id_curso, id_professor=prof1.id_usuario, capacidade=20, data_inicio=date(2026, 6, 1), data_fim=date(2026, 9, 30), dias_aula="1,3,5"),
+        Turma(id_curso=cursos[0].id_curso, id_professor=prof1.id_usuario, capacidade=25, data_inicio=date(2026, 8, 1), data_fim=date(2026, 12, 15), dias_aula="2,4"),
+        Turma(id_curso=cursos[1].id_curso, id_professor=prof2.id_usuario, capacidade=15, data_inicio=date(2026, 5, 1), data_fim=date(2026, 8, 30), dias_aula="1,3,5"),
+        Turma(id_curso=cursos[2].id_curso, id_professor=prof3.id_usuario, capacidade=30, data_inicio=date(2026, 7, 1), data_fim=date(2026, 10, 30), dias_aula="2,4,6"),
+    ]
+    db.add_all(turmas)
+    db.flush()
+
+    matriculas = [
+        Matricula(id_aluno=alunos[0].id_aluno, id_turma=turmas[0].id_turma, data_matricula=date(2026, 5, 20), status=0),
+        Matricula(id_aluno=alunos[1].id_aluno, id_turma=turmas[0].id_turma, data_matricula=date(2026, 5, 21), status=0),
+        Matricula(id_aluno=alunos[2].id_aluno, id_turma=turmas[0].id_turma, data_matricula=date(2026, 5, 22), status=0),
+        Matricula(id_aluno=alunos[3].id_aluno, id_turma=turmas[1].id_turma, data_matricula=date(2026, 7, 20), status=0),
+        Matricula(id_aluno=alunos[4].id_aluno, id_turma=turmas[1].id_turma, data_matricula=date(2026, 7, 21), status=0),
+        Matricula(id_aluno=alunos[5].id_aluno, id_turma=turmas[2].id_turma, data_matricula=date(2026, 4, 15), status=0),
+        Matricula(id_aluno=alunos[6].id_aluno, id_turma=turmas[2].id_turma, data_matricula=date(2026, 4, 16), status=0),
+        Matricula(id_aluno=alunos[7].id_aluno, id_turma=turmas[2].id_turma, data_matricula=date(2026, 4, 17), status=0),
+    ]
+    db.add_all(matriculas)
+    db.flush()
+
+    estoque = [
+        Estoque(nome_item="Caneta esferográfica", quantidade_disponivel=200, unidade="un", estoque_minimo=50),
+        Estoque(nome_item="Caderno universitário", quantidade_disponivel=80, unidade="un", estoque_minimo=20),
+        Estoque(nome_item="Lápis HB", quantidade_disponivel=5, unidade="un", estoque_minimo=30),
+        Estoque(nome_item="Borracha branca", quantidade_disponivel=60, unidade="un", estoque_minimo=15),
+        Estoque(nome_item="Papel sulfite A4 (resma)", quantidade_disponivel=12, unidade="resma", estoque_minimo=5),
+        Estoque(nome_item="Tesoura escolar", quantidade_disponivel=3, unidade="un", estoque_minimo=10),
+    ]
+    db.add_all(estoque)
+
+    db.commit()
+    logger.info("Test data seeded: %d cursos, %d professores, %d alunos, %d turmas, %d matrículas, %d itens estoque",
+                len(cursos), 3, len(alunos), len(turmas), len(matriculas), len(estoque))
 
 
 app.include_router(alunos_router)
