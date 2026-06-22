@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { TurmaService } from '../../../../core/services/turma.service';
 import { NotaService } from '../../../../core/services/nota.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -74,25 +72,33 @@ export class TurmaDetailPage implements OnInit {
       return;
     }
 
-    forkJoin({
-      turmas: this.turmaService.listMine(),
-      notas: this.notaService.listByTurma(id, this.provaSelecionada).pipe(
-        catchError(() => of([] as Nota[])),
-      ),
-    }).subscribe({
-      next: ({ turmas, notas }) => {
+    this.turmaService.listMine().subscribe({
+      next: (turmas) => {
         this.turma = turmas.find((t) => t.idTurma === id) ?? null;
         if (!this.turma) {
           this.error = 'Turma não encontrada ou você não tem acesso a ela';
           this.loading = false;
           return;
         }
+        this.loadNotas(this.turma.idTurma);
+      },
+      error: () => {
+        this.error = 'Erro ao carregar dados da turma';
+        this.loading = false;
+      },
+    });
+  }
+
+  private loadNotas(turmaId: number): void {
+    this.notaService.listByTurma(turmaId, this.provaSelecionada).subscribe({
+      next: (notas) => {
         this.notas = notas;
         this.calcularDistribuicao();
         this.loading = false;
       },
       error: () => {
-        this.error = 'Erro ao carregar dados da turma';
+        this.notas = [];
+        this.calcularDistribuicao();
         this.loading = false;
       },
     });
