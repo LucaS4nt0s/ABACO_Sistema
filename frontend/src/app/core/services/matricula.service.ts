@@ -1,6 +1,6 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 
 import { Matricula, MatriculaCreatePayload, MatriculaUpdatePayload } from '../models/matricula.model';
 
@@ -8,32 +8,36 @@ import { Matricula, MatriculaCreatePayload, MatriculaUpdatePayload } from '../mo
 export class MatriculaService {
   private readonly baseUrl = '/api/v1/matriculas';
 
-  private _list$: Observable<Matricula[]> | null = null;
-  private _mine$: Observable<Matricula[]> | null = null;
+  private _listCache: Matricula[] | null = null;
+  private _mineCache: Matricula[] | null = null;
 
   constructor(private readonly http: HttpClient) {}
 
   list(): Observable<Matricula[]> {
-    if (!this._list$) {
-      this._list$ = this.http.get<Matricula[]>(this.baseUrl).pipe(shareReplay(1));
+    if (this._listCache) {
+      return of(this._listCache);
     }
-    return this._list$;
+    return this.http.get<Matricula[]>(this.baseUrl).pipe(
+      tap((data) => this._listCache = data),
+    );
   }
 
   listMine(): Observable<Matricula[]> {
-    if (!this._mine$) {
-      this._mine$ = this.http.get<Matricula[]>(`${this.baseUrl}/me`).pipe(shareReplay(1));
+    if (this._mineCache) {
+      return of(this._mineCache);
     }
-    return this._mine$;
+    return this.http.get<Matricula[]>(`${this.baseUrl}/me`).pipe(
+      tap((data) => this._mineCache = data),
+    );
   }
 
   refreshList(): Observable<Matricula[]> {
-    this._list$ = null;
+    this._listCache = null;
     return this.list();
   }
 
   refreshMine(): Observable<Matricula[]> {
-    this._mine$ = null;
+    this._mineCache = null;
     return this.listMine();
   }
 

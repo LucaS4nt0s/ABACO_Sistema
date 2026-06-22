@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 
 import { Turma, TurmaCreatePayload, TurmaUpdatePayload } from '../models/turma.model';
 
@@ -8,7 +8,7 @@ import { Turma, TurmaCreatePayload, TurmaUpdatePayload } from '../models/turma.m
 export class TurmaService {
   private readonly baseUrl = '/api/v1/turmas';
 
-  private _mine$: Observable<Turma[]> | null = null;
+  private _mineCache: Turma[] | null = null;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -17,10 +17,12 @@ export class TurmaService {
   }
 
   listMine(): Observable<Turma[]> {
-    if (!this._mine$) {
-      this._mine$ = this.http.get<Turma[]>(`${this.baseUrl}/me`).pipe(shareReplay(1));
+    if (this._mineCache) {
+      return of(this._mineCache);
     }
-    return this._mine$;
+    return this.http.get<Turma[]>(`${this.baseUrl}/me`).pipe(
+      tap((data) => this._mineCache = data),
+    );
   }
 
   getById(turmaId: number): Observable<Turma> {
@@ -28,7 +30,7 @@ export class TurmaService {
   }
 
   refreshMine(): Observable<Turma[]> {
-    this._mine$ = null;
+    this._mineCache = null;
     return this.listMine();
   }
 
