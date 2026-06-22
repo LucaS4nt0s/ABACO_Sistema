@@ -72,18 +72,13 @@ export class TurmaDetailPage implements OnInit {
       return;
     }
 
-    this.turmaService.listMine().subscribe({
-      next: (turmas) => {
-        this.turma = turmas.find((t) => t.idTurma === id) ?? null;
-        if (!this.turma) {
-          this.error = 'Turma não encontrada ou você não tem acesso a ela';
-          this.loading = false;
-          return;
-        }
-        this.loadNotas(this.turma.idTurma);
+    this.turmaService.getById(id).subscribe({
+      next: (turma) => {
+        this.turma = turma;
+        this.loadNotas(turma.idTurma);
       },
       error: () => {
-        this.error = 'Erro ao carregar dados da turma';
+        this.error = 'Turma não encontrada ou você não tem acesso a ela';
         this.loading = false;
       },
     });

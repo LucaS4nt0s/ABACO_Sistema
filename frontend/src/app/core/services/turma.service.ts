@@ -23,6 +23,10 @@ export class TurmaService {
     return this._mine$;
   }
 
+  getById(turmaId: number): Observable<Turma> {
+    return this.http.get<Turma>(`${this.baseUrl}/${turmaId}`);
+  }
+
   refreshMine(): Observable<Turma[]> {
     this._mine$ = null;
     return this.listMine();
