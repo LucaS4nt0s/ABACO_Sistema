@@ -9,7 +9,7 @@
       <select [ngModel]="selectedTurma?.idTurma ?? ''" (ngModelChange)="onTurmaChange($event)">
         <option value="" disabled>Selecione uma turma</option>
         <option *ngFor="let turma of turmas" [value]="turma.idTurma">
-          #{{ turma.idTurma }} — {{ turma.curso?.nomeCurso ?? 'Sem curso' }} — {{ turma.professor?.nome ?? 'Sem professor' }} {{ turma.dataInicio ? '(' + (turma.dataInicio | slice:0:10) + ')' : '' }}
+          #{{ turma.idTurma }} — {{ turma.curso?.nomeCurso ?? 'Sem curso' }}
         </option>
       </select>
     </label>
