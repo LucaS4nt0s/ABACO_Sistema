@@ -9,7 +9,7 @@
       <select [ngModel]="selectedTurma?.idTurma ?? ''" (ngModelChange)="onTurmaChange($event)">
         <option value="" disabled>Selecione uma turma</option>
         <option *ngFor="let turma of turmas" [value]="turma.idTurma">
-          #{{ turma.idTurma }} — {{ turma.curso?.nomeCurso ?? 'Sem curso' }} — {{ turma.professor?.nome ?? 'Sem professor' }} {{ turma.dataInicio ? '(' + (turma.dataInicio | slice:0:10) + ')' : '' }}
+          #{{ turma.idTurma }} — {{ turma.curso?.nomeCurso ?? 'Sem curso' }}
         </option>
       </select>
     </label>
@@ -30,7 +30,8 @@
       Nenhum aluno matriculado nesta turma.
     </div>
 
-    <table *ngIf="!loadingPresencas && students.length > 0" class="presencas-table">
+    <div class="table-wrap" *ngIf="!loadingPresencas && students.length > 0">
+    <table class="presencas-table">
       <thead>
         <tr>
           <th>Aluno</th>
@@ -48,6 +49,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
 
     <button *ngIf="students.length > 0" type="button" class="save-btn" [disabled]="saving" (click)="save()">
       {{ saving ? 'Salvando...' : 'Salvar Presenças' }}

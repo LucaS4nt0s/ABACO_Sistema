@@ -19,3 +19,8 @@
   margin: 0.4rem 0 1.5rem;
   color: #475569;
 }
+
+@media (max-width: 768px) {
+  .pedido-form-page { padding: 1rem; }
+  .pedido-form-page h1 { font-size: 1.3rem; }
+}

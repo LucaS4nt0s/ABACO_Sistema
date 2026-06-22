@@ -99,3 +99,11 @@
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 768px) {
+  .attendance-management { padding: 1rem; }
+  .attendance-management__topbar { flex-direction: column; }
+  .attendance-management__topbar h1 { font-size: 1.3rem; }
+  .attendance-management__controls { padding: 1rem; }
+  .attendance-management__controls label { max-width: 100%; }
+}

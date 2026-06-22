@@ -19,6 +19,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
+  menuOpen = false;
+
   ngOnInit(): void {
     this.estoqueService.loadAlertasCount();
     this.pollInterval = setInterval(() => {

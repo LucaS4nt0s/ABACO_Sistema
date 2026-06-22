@@ -42,4 +42,8 @@
 .aluno-card__status--ativa { background: #fef2f2; color: #dc2626; }
 .aluno-card__status--concluida { background: #f0fdf4; color: #15803d; }
 
-@media (max-width: 768px) { .alunos-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .alunos-page { padding: 1rem; }
+  .alunos-header h1 { font-size: 1.25rem; }
+  .alunos-grid { grid-template-columns: 1fr; }
+}

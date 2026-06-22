@@ -82,5 +82,9 @@
 }
 
 @media (max-width: 768px) {
+  .enrollments-management { padding: 1rem; }
+  .enrollments-management__topbar { flex-direction: column; }
+  .enrollments-management__topbar h1 { font-size: 1.3rem; }
+  .enrollments-management__topbar p { font-size: 0.85rem; }
   .enrollments-grid { grid-template-columns: 1fr; }
 }

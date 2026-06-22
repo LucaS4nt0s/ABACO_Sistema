@@ -15,6 +15,8 @@ export class AcademicoLayoutComponent {
   readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
+  menuOpen = false;
+
   logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
