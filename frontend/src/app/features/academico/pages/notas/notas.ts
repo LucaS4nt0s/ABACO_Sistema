@@ -131,7 +131,7 @@ export class NotasPage implements OnInit {
     this.loadingNotas = true;
     this.students = [];
 
-    this.matriculaService.list().subscribe({
+    this.matriculaService.listMine().subscribe({
       next: (matriculas) => {
         this.matriculas = matriculas.filter(
           (m) => m.idTurma === this.selectedTurma!.idTurma && m.status === 0

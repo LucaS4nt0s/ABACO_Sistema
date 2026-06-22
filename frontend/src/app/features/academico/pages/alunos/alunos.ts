@@ -58,7 +58,7 @@ export class AlunosPage implements OnInit {
   }
 
   private loadMatriculas(turmas: Turma[]): void {
-    this.matriculaService.list().subscribe({
+    this.matriculaService.listMine().subscribe({
       next: (matriculas) => {
         const turmaIds = new Set(turmas.map((t) => t.idTurma));
         const statusNomes: Record<number, string> = { 0: 'Ativa', 1: 'Concluída', 2: 'Cancelada' };
