@@ -180,11 +180,9 @@
 }
 
 @media (max-width: 768px) {
-  .turmas-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .classes-management__topbar {
-    flex-direction: column;
-  }
+  .classes-management { padding: 1rem; }
+  .turmas-grid { grid-template-columns: 1fr; }
+  .classes-management__topbar { flex-direction: column; }
+  .classes-management__topbar h1 { font-size: 1.3rem; }
+  .classes-management__topbar p { font-size: 0.85rem; }
 }

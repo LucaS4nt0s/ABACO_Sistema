@@ -168,3 +168,10 @@
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 768px) {
+  .estoque-management { padding: 1rem; }
+  .estoque-management__topbar { flex-direction: column; }
+  .estoque-management__topbar h1 { font-size: 1.3rem; }
+  .estoque-management__topbar p { font-size: 0.85rem; }
+}

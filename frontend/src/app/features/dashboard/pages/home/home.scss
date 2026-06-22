@@ -154,6 +154,13 @@
     gap: 12px;
   }
 
+  .dashboard__header h1 {
+    font-size: 20px;
+  }
+  .dashboard__header p {
+    font-size: 13px;
+  }
+
   .charts-grid {
     grid-template-columns: 1fr;
     gap: 16px;

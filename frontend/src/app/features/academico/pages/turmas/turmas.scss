@@ -53,4 +53,8 @@
 .turma-card__btn--presenca { background: #f0fdf4; color: #15803d; }
 .turma-card__btn--notas { background: #fef9c3; color: #854d0e; }
 
-@media (max-width: 768px) { .turmas-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .turmas-page { padding: 1rem; }
+  .turmas-header h1 { font-size: 1.25rem; }
+  .turmas-grid { grid-template-columns: 1fr; }
+}

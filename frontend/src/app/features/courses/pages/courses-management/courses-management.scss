@@ -63,3 +63,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .courses-management { padding: 1rem; }
+  .courses-management__topbar { flex-direction: column; }
+  .courses-management__topbar h1 { font-size: 1.3rem; }
+  .courses-management__topbar p { font-size: 0.85rem; }
+}

@@ -83,5 +83,9 @@
 }
 
 @media (max-width: 768px) {
+  .students-management { padding: 1rem; }
+  .students-management__topbar { flex-direction: column; }
+  .students-management__topbar h1 { font-size: 1.3rem; }
+  .students-management__topbar p { font-size: 0.85rem; }
   .students-grid { grid-template-columns: 1fr; }
 }
