@@ -11,22 +11,6 @@ class LoginRequest(BaseModel):
     senha: str = Field(min_length=1)
 
 
-class RegisterRequest(BaseModel):
-    nome: str = Field(min_length=1)
-    email: EmailStr
-    telefone: str | None = None
-    senha: str = Field(min_length=8)
-    confirmar_senha: str = Field(min_length=8)
-
-    @model_validator(mode="after")
-    def check_passwords_match(self):
-        if self.senha != self.confirmar_senha:
-            raise ValueError("As senhas não conferem")
-        if not SENHA_PATTERN.match(self.senha):
-            raise ValueError("A senha deve conter pelo menos uma letra e um número")
-        return self
-
-
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 

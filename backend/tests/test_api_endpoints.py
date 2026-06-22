@@ -46,26 +46,6 @@ class TestAuthEndpoints:
         response = client.post("/api/v1/auth/login", json={})
         assert response.status_code == 422
 
-    def test_register_valid(self):
-        response = client.post("/api/v1/auth/register", json={
-            "nome": "Teste",
-            "email": "novo@teste.com",
-            "senha": "abc12345",
-            "confirmar_senha": "abc12345",
-        })
-        assert response.status_code == 201
-        assert "sucesso" in response.json()["message"].lower()
-
-    def test_register_weak_password_returns_422(self):
-        response = client.post("/api/v1/auth/register", json={
-            "nome": "Teste",
-            "email": "novo@teste.com",
-            "senha": "12345678",
-            "confirmar_senha": "12345678",
-        })
-        assert response.status_code == 422
-
-
 class TestProtectedEndpoints:
     def test_alunos_without_token_returns_401(self):
         response = client.get("/api/v1/alunos")

@@ -9,10 +9,6 @@ class InvalidCredentialsError(Exception):
     pass
 
 
-class EmailAlreadyExistsError(Exception):
-    pass
-
-
 class EmailNotFoundError(Exception):
     pass
 
@@ -49,27 +45,6 @@ def build_login_response(usuario: Usuario) -> dict:
             "cargo": usuario.cargo,
         },
     }
-
-
-def register_user(db: Session, nome: str, email: str, senha: str, confirmar_senha: str, telefone: str | None) -> Usuario:
-    if senha != confirmar_senha:
-        raise PasswordsDoNotMatchError
-
-    existing = db.query(Usuario).filter(Usuario.email == email).first()
-    if existing:
-        raise EmailAlreadyExistsError
-
-    usuario = Usuario(
-        nome=nome,
-        email=email,
-        telefone=telefone,
-        senha_hash=hash_password(senha),
-        cargo=2,
-    )
-    db.add(usuario)
-    db.commit()
-    db.refresh(usuario)
-    return usuario
 
 
 def process_forgot_password(db: Session, email: str) -> str:

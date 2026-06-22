@@ -7,13 +7,11 @@ from app.schemas.auth_schema import (
     ForgotPasswordRequest,
     LoginRequest,
     MessageResponse,
-    RegisterRequest,
     ResetPasswordRequest,
     TokenResponse,
     UsuarioResponse,
 )
 from app.services.auth_service import (
-    EmailAlreadyExistsError,
     EmailNotFoundError,
     InvalidCredentialsError,
     InvalidResetTokenError,
@@ -22,7 +20,6 @@ from app.services.auth_service import (
     build_login_response,
     process_forgot_password,
     process_reset_password,
-    register_user,
 )
 from app.core.limiter import limiter
 from app.services.email_service import send_reset_email
@@ -45,25 +42,6 @@ def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)
     response = build_login_response(usuario)
     response["usuario"] = UsuarioResponse(**response["usuario"])
     return response
-
-
-@router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
-@limiter.limit("3/minute")
-def register(request: Request, payload: RegisterRequest, db: Session = Depends(get_db)):
-    try:
-        register_user(db, payload.nome, payload.email, payload.senha, payload.confirmar_senha, payload.telefone)
-    except EmailAlreadyExistsError:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Este e-mail já está cadastrado",
-        )
-    except PasswordsDoNotMatchError:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="As senhas não conferem",
-        )
-
-    return {"message": "Conta criada com sucesso. Você já pode fazer login."}
 
 
 @router.post("/forgot-password", response_model=MessageResponse)

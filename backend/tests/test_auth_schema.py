@@ -4,7 +4,6 @@ from pydantic import ValidationError
 from app.schemas.auth_schema import (
     ForgotPasswordRequest,
     LoginRequest,
-    RegisterRequest,
     ResetPasswordRequest,
 )
 
@@ -21,35 +20,6 @@ class TestLoginRequest:
     def test_invalid_email_rejected(self):
         with pytest.raises(ValidationError):
             LoginRequest(email="nao-email", senha="abc")
-
-
-class TestRegisterRequest:
-    def test_valid(self):
-        s = RegisterRequest(nome="Teste", email="t@t.com", senha="abc12345", confirmar_senha="abc12345")
-        assert s.email == "t@t.com"
-
-    def test_short_password_rejected(self):
-        with pytest.raises(ValidationError):
-            RegisterRequest(nome="T", email="t@t.com", senha="1234567", confirmar_senha="1234567")
-
-    def test_password_without_letter_rejected(self):
-        with pytest.raises(ValidationError) as exc:
-            RegisterRequest(nome="T", email="t@t.com", senha="12345678", confirmar_senha="12345678")
-        assert "letra" in str(exc.value).lower() or "senha" in str(exc.value).lower()
-
-    def test_password_without_number_rejected(self):
-        with pytest.raises(ValidationError) as exc:
-            RegisterRequest(nome="T", email="t@t.com", senha="abcdefgh", confirmar_senha="abcdefgh")
-        assert "senha" in str(exc.value).lower() or "número" in str(exc.value).lower()
-
-    def test_passwords_dont_match_rejected(self):
-        with pytest.raises(ValidationError) as exc:
-            RegisterRequest(nome="T", email="t@t.com", senha="abc12345", confirmar_senha="abc54321")
-        assert "conferem" in str(exc.value).lower()
-
-    def test_empty_name_rejected(self):
-        with pytest.raises(ValidationError):
-            RegisterRequest(nome="", email="t@t.com", senha="abc12345", confirmar_senha="abc12345")
 
 
 class TestForgotPasswordRequest:
