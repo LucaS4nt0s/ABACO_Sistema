@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.matricula import Matricula
+from app.models.turma import Turma
 from app.schemas.matricula_schema import MatriculaCreateSchema, MatriculaUpdateSchema
 
 
@@ -104,6 +105,16 @@ def create_matricula(db: Session, payload: MatriculaCreateSchema) -> Matricula:
 
 def list_matriculas(db: Session) -> list[Matricula]:
     return db.query(Matricula).order_by(Matricula.id_matricula.desc()).all()
+
+
+def list_matriculas_by_professor(db: Session, professor_id: int) -> list[Matricula]:
+    return (
+        db.query(Matricula)
+        .join(Matricula.turma)
+        .filter(Turma.id_professor == professor_id)
+        .order_by(Matricula.id_matricula.desc())
+        .all()
+    )
 
 
 def get_matricula_by_id(db: Session, matricula_id: int) -> Matricula:

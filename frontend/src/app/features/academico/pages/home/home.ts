@@ -27,20 +27,15 @@ export class AcademicoHome implements OnInit {
     this.turmaService.listMine().subscribe({
       next: (turmas: Turma[]) => {
         this.totalTurmas = turmas.length;
-        const turmaIds = new Set(turmas.map((t) => t.idTurma));
 
-        if (turmaIds.size === 0) {
+        if (turmas.length === 0) {
           this.loading = false;
           return;
         }
 
-        this.matriculaService.list().subscribe({
+        this.matriculaService.listMine().subscribe({
           next: (matriculas: Matricula[]) => {
-            const alunosUnicos = new Set(
-              matriculas
-                .filter((m) => turmaIds.has(m.idTurma))
-                .map((m) => m.idAluno)
-            );
+            const alunosUnicos = new Set(matriculas.map((m) => m.idAluno));
             this.totalAlunos = alunosUnicos.size;
             this.loading = false;
           },
