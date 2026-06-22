@@ -43,7 +43,7 @@ export class PedidoFormPageComponent {
         this.notifications.success('Pedido criado com sucesso.');
         this.saving = false;
         this.changeDetectorRef.detectChanges();
-        this.router.navigate(['/admin/logistico/pedidos']);
+        this.router.navigate(['/academico/pedidos']);
       },
       error: (err) => {
         const message = err?.error?.detail || err?.message || 'Erro ao criar pedido.';
@@ -55,6 +55,6 @@ export class PedidoFormPageComponent {
   }
 
   onCancel(): void {
-    this.router.navigate(['/admin/logistico/pedidos']);
+    this.router.navigate(['/academico/pedidos']);
   }
 }

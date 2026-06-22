@@ -165,10 +165,11 @@ export class PedidoFormComponent implements OnInit, OnDestroy {
   }
 
   private loadTurmas(): void {
-    const sub = this.turmaService.list().subscribe({
+    const sub = this.turmaService.listMine().subscribe({
       next: (turmas) => {
         this.turmas = turmas;
       },
+      error: () => {},
     });
     this.subscriptions.push(sub);
   }
@@ -179,6 +180,7 @@ export class PedidoFormComponent implements OnInit, OnDestroy {
         this.estoqueItems = items;
         this.filteredEstoque = this.filteredEstoque.map(() => [...items]);
       },
+      error: () => {},
     });
     this.subscriptions.push(sub);
   }

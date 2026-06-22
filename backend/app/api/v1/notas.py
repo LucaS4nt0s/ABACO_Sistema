@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/v1/notas", tags=["notas"])
 @router.post("")
 def create_notas(
     payload: NotaBatchSchema,
-    _current_user: dict = Depends(verify_cargo(1, 3)),
+    _current_user: dict = Depends(verify_cargo(1, 2, 3)),
     db: Session = Depends(get_db),
 ):
     if payload.prova < 1:
@@ -34,7 +34,7 @@ def create_notas(
 @router.get("/matricula/{matricula_id}")
 def read_notas_by_matricula(
     matricula_id: int,
-    _current_user: dict = Depends(verify_cargo(1, 3)),
+    _current_user: dict = Depends(verify_cargo(1, 2, 3)),
     db: Session = Depends(get_db),
 ):
     notas = list_notas_by_matricula(db, matricula_id)
@@ -45,7 +45,7 @@ def read_notas_by_matricula(
 def read_notas_by_turma(
     turma_id: int,
     prova: int | None = Query(None),
-    _current_user: dict = Depends(verify_cargo(1, 3)),
+    _current_user: dict = Depends(verify_cargo(1, 2, 3)),
     db: Session = Depends(get_db),
 ):
     notas = list_notas_by_turma(db, turma_id, prova)
@@ -55,7 +55,7 @@ def read_notas_by_turma(
 @router.get("/media/turma/{turma_id}")
 def read_media_turma(
     turma_id: int,
-    _current_user: dict = Depends(verify_cargo(1, 3)),
+    _current_user: dict = Depends(verify_cargo(1, 2, 3)),
     db: Session = Depends(get_db),
 ):
     medias = calcular_media_por_prova(db, turma_id)

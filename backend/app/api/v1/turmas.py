@@ -21,7 +21,7 @@ router = APIRouter(prefix="/api/v1/turmas", tags=["turmas"])
 
 
 @router.get("")
-def read_turmas(_current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+def read_turmas(_current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
     return [TurmaResponseSchema.model_validate(turma) for turma in list_turmas(db)]
 
 

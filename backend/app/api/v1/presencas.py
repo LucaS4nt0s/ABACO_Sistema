@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/v1/presencas", tags=["presencas"])
 @router.post("")
 def create_presencas(
     payload: PresencaBatchSchema,
-    _current_user: dict = Depends(verify_cargo(1, 3)),
+    _current_user: dict = Depends(verify_cargo(1, 2, 3)),
     db: Session = Depends(get_db),
 ):
     presencas = create_or_update_presencas(db, payload)
@@ -25,7 +25,7 @@ def create_presencas(
 def read_presencas_by_turma(
     turma_id: int,
     data_aula: date | None = Query(None, alias="dataAula"),
-    _current_user: dict = Depends(verify_cargo(1, 3)),
+    _current_user: dict = Depends(verify_cargo(1, 2, 3)),
     db: Session = Depends(get_db),
 ):
     presencas = list_presencas_by_turma(db, turma_id, data_aula)
