@@ -113,3 +113,11 @@
   color: #64748b;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .student-grades { padding: 1rem; }
+  .student-grades__topbar { flex-direction: column; }
+  .student-grades__topbar h1 { font-size: 1.3rem; }
+  .table-card { padding: 1rem; }
+  .table-card__header h1 { font-size: 1.15rem; }
+}

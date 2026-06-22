@@ -66,3 +66,9 @@
   margin: 0;
   color: #64748b;
 }
+
+@media (max-width: 768px) {
+  .logistico-dashboard { padding: 1rem; }
+  .logistico-dashboard__header h1 { font-size: 1.3rem; }
+  .logistico-dashboard__cards { grid-template-columns: 1fr; }
+}

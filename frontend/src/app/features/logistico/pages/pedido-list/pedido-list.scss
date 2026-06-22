@@ -65,3 +65,10 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .pedido-list { padding: 1rem; }
+  .pedido-list__topbar { flex-direction: column; }
+  .pedido-list__topbar h1 { font-size: 1.3rem; }
+  .tabs { flex-wrap: wrap; }
+}

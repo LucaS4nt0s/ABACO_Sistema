@@ -32,7 +32,8 @@
       Nenhum aluno matriculado nesta turma.
     </div>
 
-    <table *ngIf="!loadingNotas && students.length > 0" class="notas-table">
+    <div class="table-wrap" *ngIf="!loadingNotas && students.length > 0">
+    <table class="notas-table">
       <thead>
         <tr>
           <th>Aluno</th>
@@ -56,6 +57,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
 
     <button *ngIf="students.length > 0" type="button" class="save-btn" [disabled]="saving" (click)="save()">
       {{ saving ? 'Salvando...' : 'Salvar Notas' }}

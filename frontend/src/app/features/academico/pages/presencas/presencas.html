@@ -30,7 +30,8 @@
       Nenhum aluno matriculado nesta turma.
     </div>
 
-    <table *ngIf="!loadingPresencas && students.length > 0" class="presencas-table">
+    <div class="table-wrap" *ngIf="!loadingPresencas && students.length > 0">
+    <table class="presencas-table">
       <thead>
         <tr>
           <th>Aluno</th>
@@ -48,6 +49,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
 
     <button *ngIf="students.length > 0" type="button" class="save-btn" [disabled]="saving" (click)="save()">
       {{ saving ? 'Salvando...' : 'Salvar Presenças' }}
