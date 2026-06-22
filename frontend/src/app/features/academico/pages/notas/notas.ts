@@ -63,8 +63,9 @@ export class NotasPage implements OnInit {
     this.loadTurmas();
   }
 
-  onTurmaChange(turmaId: number): void {
-    this.selectedTurma = this.turmas.find((t) => t.idTurma === turmaId) ?? null;
+  onTurmaChange(turmaId: number | string): void {
+    const id = Number(turmaId);
+    this.selectedTurma = this.turmas.find((t) => t.idTurma === id) ?? null;
     this.students = [];
     this.feedback = null;
     if (this.selectedTurma) {
@@ -72,8 +73,8 @@ export class NotasPage implements OnInit {
     }
   }
 
-  onProvaChange(prova: number): void {
-    this.prova = prova;
+  onProvaChange(prova: number | string): void {
+    this.prova = Number(prova);
     this.feedback = null;
     if (this.selectedTurma) {
       this.loadNotas();

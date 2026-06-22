@@ -37,11 +37,12 @@ export class AlunosPage implements OnInit {
 
   ngOnInit(): void { this.loadData(); }
 
-  onFiltroChange(turmaId: number): void {
-    this.filtroTurma = turmaId;
-    this.alunos = turmaId === 0
+  onFiltroChange(turmaId: number | string): void {
+    const id = Number(turmaId);
+    this.filtroTurma = id;
+    this.alunos = id === 0
       ? this.todosAlunos
-      : this.todosAlunos.filter((a) => a.idTurma === turmaId);
+      : this.todosAlunos.filter((a) => a.idTurma === id);
   }
 
   private loadData(): void {
