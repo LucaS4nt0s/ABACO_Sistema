@@ -10,6 +10,7 @@ interface AlunoRow {
   nome: string;
   telefone: string;
   turma: string;
+  idTurma: number;
   status: string;
 }
 
@@ -40,10 +41,7 @@ export class AlunosPage implements OnInit {
     this.filtroTurma = turmaId;
     this.alunos = turmaId === 0
       ? this.todosAlunos
-      : this.todosAlunos.filter((a) => {
-          const t = this.turmas.find((tt) => tt.idTurma === turmaId);
-          return t ? a.turma === t.curso?.nomeCurso : false;
-        });
+      : this.todosAlunos.filter((a) => a.idTurma === turmaId);
   }
 
   private loadData(): void {
@@ -69,6 +67,7 @@ export class AlunosPage implements OnInit {
             nome: m.aluno?.nome ?? `Aluno #${m.idAluno}`,
             telefone: m.aluno?.telefone ?? '—',
             turma: turmas.find((t) => t.idTurma === m.idTurma)?.curso?.nomeCurso ?? `Turma #${m.idTurma}`,
+            idTurma: m.idTurma,
             status: statusNomes[m.status ?? 0] ?? '—',
           }));
 
