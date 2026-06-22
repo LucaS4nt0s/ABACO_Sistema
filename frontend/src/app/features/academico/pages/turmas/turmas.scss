@@ -49,8 +49,8 @@
 
 .turma-card__actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9; }
 .turma-card__btn { padding: 0.35rem 0.75rem; border-radius: 8px; font-size: 0.82rem; font-weight: 600; text-decoration: none; }
-.turma-card__btn--alunos { background: #f0f9ff; color: #0369a1; }
+.turma-card__btn--detalhes { background: #fef3c7; color: #92400e; }
 .turma-card__btn--presenca { background: #f0fdf4; color: #15803d; }
-.turma-card__btn--notas { background: #fef9c3; color: #854d0e; }
+.turma-card__btn--notas { background: #f0f9ff; color: #0369a1; }
 
 @media (max-width: 768px) { .turmas-grid { grid-template-columns: 1fr; } }
