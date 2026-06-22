@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.services.auth_service import (
-    EmailAlreadyExistsError,
     EmailNotFoundError,
     InvalidCredentialsError,
     InvalidResetTokenError,
@@ -12,7 +11,6 @@ from app.services.auth_service import (
     build_login_response,
     process_forgot_password,
     process_reset_password,
-    register_user,
 )
 
 
@@ -37,21 +35,6 @@ class TestBuildLoginResponse:
         assert response["token_type"] == "bearer"
         assert response["usuario"]["idUsuario"] == usuario.id_usuario
         assert response["usuario"]["email"] == "teste@abaco.org.br"
-
-
-class TestRegisterUser:
-    def test_creates_user_successfully(self, db_session: Session):
-        u = register_user(db_session, "Novo", "novo@abaco.org.br", "abc12345", "abc12345", None)
-        assert u.email == "novo@abaco.org.br"
-        assert u.cargo == 2
-
-    def test_passwords_dont_match(self, db_session: Session):
-        with pytest.raises(PasswordsDoNotMatchError):
-            register_user(db_session, "Novo", "novo@abaco.org.br", "abc12345", "diferente", None)
-
-    def test_duplicate_email(self, db_session: Session, usuario):
-        with pytest.raises(EmailAlreadyExistsError):
-            register_user(db_session, "Novo", "teste@abaco.org.br", "abc12345", "abc12345", None)
 
 
 class TestProcessForgotPassword:

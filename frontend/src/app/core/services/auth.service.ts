@@ -77,7 +77,6 @@ interface AuthState {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly loginUrl = `${environment.apiUrl}/api/v1/auth/login`;
-  private readonly registerUrl = `${environment.apiUrl}/api/v1/auth/register`;
   private readonly forgotPasswordUrl = `${environment.apiUrl}/api/v1/auth/forgot-password`;
   private readonly resetPasswordUrl = `${environment.apiUrl}/api/v1/auth/reset-password`;
   private readonly TOKEN_KEY = 'abaco_token';
@@ -109,15 +108,6 @@ export class AuthService {
       }),
       catchError((error) => {
         const message = error?.error?.detail || error?.message || 'Credenciais inválidas';
-        return throwError(() => ({ status: error?.status, message }));
-      })
-    );
-  }
-
-  register(nome: string, email: string, telefone: string | null, senha: string, confirmar_senha: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(this.registerUrl, { nome, email, telefone, senha, confirmar_senha }).pipe(
-      catchError((error) => {
-        const message = error?.error?.detail || error?.message || 'Erro ao criar conta';
         return throwError(() => ({ status: error?.status, message }));
       })
     );

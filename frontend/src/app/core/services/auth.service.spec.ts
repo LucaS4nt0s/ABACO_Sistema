@@ -40,20 +40,6 @@ describe('AuthService', () => {
     expect(service.authState().role).toBe('DIRECTOR');
   });
 
-  it('register sends correct payload', () => {
-    service.register('Teste', 't@t.com', null, 'abc12345', 'abc12345').subscribe();
-
-    const req = httpMock.expectOne('http://localhost:8000/api/v1/auth/register');
-    expect(req.request.body).toEqual({
-      nome: 'Teste',
-      email: 't@t.com',
-      telefone: null,
-      senha: 'abc12345',
-      confirmar_senha: 'abc12345',
-    });
-    req.flush({ message: 'ok' });
-  });
-
   it('forgotPassword sends email', () => {
     service.forgotPassword('user@abaco.org.br').subscribe();
 

@@ -38,7 +38,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_tags=[
-        {"name": "auth", "description": "Autenticação — login, registro, recuperação de senha"},
+        {"name": "auth", "description": "Autenticação — login e recuperação de senha"},
         {"name": "alunos", "description": "Cadastro e gestão de alunos"},
         {"name": "cursos", "description": "Cadastro e gestão de cursos"},
         {"name": "turmas", "description": "Cadastro e gestão de turmas"},
