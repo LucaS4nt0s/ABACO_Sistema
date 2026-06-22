@@ -4,13 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { EmailField } from '../../../../shared/components/email-field/email-field';
-import { PrimaryButton } from '../../../../shared/components/primary-button/primary-button';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmailField, PrimaryButton],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.scss'],
 })
@@ -20,6 +18,7 @@ export class ForgotPassword {
   loading = false;
   error: string | null = null;
   success: string | null = null;
+  shake = false;
 
   constructor(private fb: FormBuilder, private auth: AuthService) {
     this.form = this.fb.group({
@@ -28,9 +27,13 @@ export class ForgotPassword {
   }
 
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error = null;
     this.success = null;
+    this.shake = false;
 
     this.loading = true;
     this.form.disable();
@@ -48,6 +51,8 @@ export class ForgotPassword {
       },
       error: (err) => {
         this.error = err?.message || 'Erro ao processar solicitação';
+        this.shake = true;
+        setTimeout(() => this.shake = false, 500);
       }
     });
   }
