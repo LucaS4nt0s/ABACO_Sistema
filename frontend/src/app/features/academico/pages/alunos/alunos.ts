@@ -10,6 +10,7 @@ interface AlunoRow {
   nome: string;
   telefone: string;
   turma: string;
+  idTurma: number;
   status: string;
 }
 
@@ -36,14 +37,12 @@ export class AlunosPage implements OnInit {
 
   ngOnInit(): void { this.loadData(); }
 
-  onFiltroChange(turmaId: number): void {
-    this.filtroTurma = turmaId;
-    this.alunos = turmaId === 0
+  onFiltroChange(turmaId: number | string): void {
+    const id = Number(turmaId);
+    this.filtroTurma = id;
+    this.alunos = id === 0
       ? this.todosAlunos
-      : this.todosAlunos.filter((a) => {
-          const t = this.turmas.find((tt) => tt.idTurma === turmaId);
-          return t ? a.turma === t.curso?.nomeCurso : false;
-        });
+      : this.todosAlunos.filter((a) => a.idTurma === id);
   }
 
   private loadData(): void {
@@ -58,7 +57,7 @@ export class AlunosPage implements OnInit {
   }
 
   private loadMatriculas(turmas: Turma[]): void {
-    this.matriculaService.list().subscribe({
+    this.matriculaService.listMine().subscribe({
       next: (matriculas) => {
         const turmaIds = new Set(turmas.map((t) => t.idTurma));
         const statusNomes: Record<number, string> = { 0: 'Ativa', 1: 'Concluída', 2: 'Cancelada' };
@@ -69,6 +68,7 @@ export class AlunosPage implements OnInit {
             nome: m.aluno?.nome ?? `Aluno #${m.idAluno}`,
             telefone: m.aluno?.telefone ?? '—',
             turma: turmas.find((t) => t.idTurma === m.idTurma)?.curso?.nomeCurso ?? `Turma #${m.idTurma}`,
+            idTurma: m.idTurma,
             status: statusNomes[m.status ?? 0] ?? '—',
           }));
 

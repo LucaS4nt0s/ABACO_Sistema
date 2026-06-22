@@ -42,8 +42,8 @@
       </div>
 
       <div class="turma-card__actions">
-        <a class="turma-card__btn turma-card__btn--alunos" [routerLink]="['/academico/alunos']">
-          Ver Alunos
+        <a class="turma-card__btn turma-card__btn--detalhes" [routerLink]="['/academico/turmas', turma.idTurma]">
+          Ver Detalhes
         </a>
         <a class="turma-card__btn turma-card__btn--presenca" [routerLink]="['/academico/presencas']">
           Registrar Presença

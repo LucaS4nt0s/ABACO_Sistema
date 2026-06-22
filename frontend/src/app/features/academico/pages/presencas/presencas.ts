@@ -46,8 +46,9 @@ export class PresencasPage implements OnInit {
     this.loadTurmas();
   }
 
-  onTurmaChange(turmaId: number): void {
-    this.selectedTurma = this.turmas.find((t) => t.idTurma === turmaId) ?? null;
+  onTurmaChange(turmaId: number | string): void {
+    const id = Number(turmaId);
+    this.selectedTurma = this.turmas.find((t) => t.idTurma === id) ?? null;
     this.students = [];
     this.feedback = null;
     if (this.selectedTurma && this.dataAula) {
@@ -111,7 +112,7 @@ export class PresencasPage implements OnInit {
     this.loadingPresencas = true;
     this.students = [];
 
-    this.matriculaService.list().subscribe({
+    this.matriculaService.listMine().subscribe({
       next: (matriculas) => {
         this.matriculas = matriculas.filter(
           (m) => m.idTurma === this.selectedTurma!.idTurma && m.status === 0

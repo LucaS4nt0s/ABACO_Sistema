@@ -32,7 +32,7 @@ def read_minhas_turmas(current_user: dict = Depends(verify_cargo(1, 2)), db: Ses
 
 
 @router.get("/{turma_id}")
-def read_turma(turma_id: int, _current_user: dict = Depends(verify_cargo(1, 3)), db: Session = Depends(get_db)):
+def read_turma(turma_id: int, _current_user: dict = Depends(verify_cargo(1, 2, 3)), db: Session = Depends(get_db)):
     try:
         turma = get_turma_by_id(db, turma_id)
     except TurmaNotFoundError as exc:

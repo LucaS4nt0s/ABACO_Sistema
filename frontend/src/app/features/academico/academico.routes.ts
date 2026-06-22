@@ -11,6 +11,7 @@ export const ACADEMICO_ROUTES: Routes = [
 		children: [
 			{ path: '', pathMatch: 'full', loadComponent: () => import('./pages/home/home').then(m => m.AcademicoHome) },
 			{ path: 'turmas', loadComponent: () => import('./pages/turmas/turmas').then(m => m.TurmasPage) },
+			{ path: 'turmas/:id', loadComponent: () => import('./pages/turma-detail/turma-detail').then(m => m.TurmaDetailPage) },
 			{ path: 'alunos', loadComponent: () => import('./pages/alunos/alunos').then(m => m.AlunosPage) },
 			{ path: 'presencas', loadComponent: () => import('./pages/presencas/presencas').then(m => m.PresencasPage) },
 			{ path: 'notas', loadComponent: () => import('./pages/notas/notas').then(m => m.NotasPage) },
