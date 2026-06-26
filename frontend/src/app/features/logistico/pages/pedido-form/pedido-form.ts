@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PedidoCreatePayload } from '../../../../core/models/pedido.model';
 import { PedidoService } from '../../../../core/services/pedido.service';
@@ -15,6 +16,7 @@ import { PedidoFormComponent, PedidoFormSubmit } from '../../components/pedido-f
   styleUrls: ['./pedido-form.scss'],
 })
 export class PedidoFormPageComponent {
+  private readonly authService = inject(AuthService);
   saving = false;
 
   constructor(
@@ -23,6 +25,11 @@ export class PedidoFormPageComponent {
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly router: Router,
   ) {}
+
+  private get pedidosRoute(): string {
+    const role = this.authService.getRoleFromToken();
+    return role === 'TEACHER' ? '/academico/pedidos' : '/admin/logistico/pedidos';
+  }
 
   onSave(payload: PedidoFormSubmit): void {
     this.saving = true;
@@ -43,7 +50,7 @@ export class PedidoFormPageComponent {
         this.notifications.success('Pedido criado com sucesso.');
         this.saving = false;
         this.changeDetectorRef.detectChanges();
-        this.router.navigate(['/academico/pedidos']);
+        this.router.navigate([this.pedidosRoute]);
       },
       error: (err) => {
         const message = err?.error?.detail || err?.message || 'Erro ao criar pedido.';
@@ -55,6 +62,6 @@ export class PedidoFormPageComponent {
   }
 
   onCancel(): void {
-    this.router.navigate(['/academico/pedidos']);
+    this.router.navigate([this.pedidosRoute]);
   }
 }

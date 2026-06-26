@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from app.schemas.pedido_schema import PedidoCreateSchema, PedidoItemCreateSchema, PedidoUpdateSchema
+from app.schemas.pedido_schema import ItemPedidoCreateSchema, PedidoCreateSchema, PedidoUpdateSchema
 from app.services.pedido_service import (
     PedidoCannotBeDeliveredError,
     PedidoNotFoundError,
@@ -16,7 +16,7 @@ class TestCreatePedido:
     def test_creates_successfully(self, db_session: Session, turma, usuario):
         payload = PedidoCreateSchema(
             idTurma=turma.id_turma,
-            itens=[PedidoItemCreateSchema(nomeItem="Caneta", quantidade=10)],
+            itens=[ItemPedidoCreateSchema(nomeItem="Caneta", quantidade=10)],
         )
         result = create_pedido(db_session, payload, usuario.id_usuario)
         assert result.id_pedido is not None
@@ -26,8 +26,8 @@ class TestCreatePedido:
         payload = PedidoCreateSchema(
             idTurma=turma.id_turma,
             itens=[
-                PedidoItemCreateSchema(nomeItem="Caneta", quantidade=10),
-                PedidoItemCreateSchema(nomeItem="Papel", quantidade=5),
+                ItemPedidoCreateSchema(nomeItem="Caneta", quantidade=10),
+                ItemPedidoCreateSchema(nomeItem="Papel", quantidade=5),
             ],
         )
         result = create_pedido(db_session, payload, usuario.id_usuario)
@@ -38,7 +38,7 @@ class TestListPedidos:
     def test_lists_all(self, db_session: Session, turma, usuario):
         payload = PedidoCreateSchema(
             idTurma=turma.id_turma,
-            itens=[PedidoItemCreateSchema(nomeItem="Caneta", quantidade=10)],
+            itens=[ItemPedidoCreateSchema(nomeItem="Caneta", quantidade=10)],
         )
         create_pedido(db_session, payload, usuario.id_usuario)
 
@@ -50,7 +50,7 @@ class TestGetPedidoById:
     def test_finds_existing(self, db_session: Session, turma, usuario):
         payload = PedidoCreateSchema(
             idTurma=turma.id_turma,
-            itens=[PedidoItemCreateSchema(nomeItem="Caneta", quantidade=10)],
+            itens=[ItemPedidoCreateSchema(nomeItem="Caneta", quantidade=10)],
         )
         pedido = create_pedido(db_session, payload, usuario.id_usuario)
         result = get_pedido_by_id(db_session, pedido.id_pedido)
@@ -65,7 +65,7 @@ class TestDeletePedido:
     def test_deletes_existing(self, db_session: Session, turma, usuario):
         payload = PedidoCreateSchema(
             idTurma=turma.id_turma,
-            itens=[PedidoItemCreateSchema(nomeItem="Caneta", quantidade=10)],
+            itens=[ItemPedidoCreateSchema(nomeItem="Caneta", quantidade=10)],
         )
         pedido = create_pedido(db_session, payload, usuario.id_usuario)
         delete_pedido(db_session, pedido.id_pedido)

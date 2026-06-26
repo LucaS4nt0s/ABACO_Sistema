@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } fro
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
+import { AuthService } from '../../../../core/services/auth.service';
 import { Estoque } from '../../../../core/models/estoque.model';
 import { EstoqueService } from '../../../../core/services/estoque.service';
 import { Turma } from '../../../../core/models/turma.model';
@@ -24,6 +25,7 @@ export interface PedidoFormSubmit {
 export class PedidoFormComponent implements OnInit, OnDestroy {
   private readonly subscriptions: Subscription[] = [];
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
   private readonly estoqueService = inject(EstoqueService);
   private readonly turmaService = inject(TurmaService);
 
@@ -165,7 +167,9 @@ export class PedidoFormComponent implements OnInit, OnDestroy {
   }
 
   private loadTurmas(): void {
-    const sub = this.turmaService.listMine().subscribe({
+    const role = this.authService.getRoleFromToken();
+    const obs = role === 'TEACHER' ? this.turmaService.listMine() : this.turmaService.list();
+    const sub = obs.subscribe({
       next: (turmas) => {
         this.turmas = turmas;
       },

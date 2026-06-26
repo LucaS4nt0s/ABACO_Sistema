@@ -17,4 +17,4 @@ class Pedido(Base):
 
     usuario = relationship("Usuario", lazy="joined")
     turma = relationship("Turma", lazy="joined")
-    itens = relationship("ItemPedido", lazy="joined")
+    itens = relationship("ItemPedido", lazy="joined", cascade="all, delete-orphan")

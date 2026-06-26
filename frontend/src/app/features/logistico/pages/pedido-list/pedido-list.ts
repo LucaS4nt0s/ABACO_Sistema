@@ -140,7 +140,9 @@ export class PedidoListComponent implements OnInit {
   }
 
   newPedido(): void {
-    this.router.navigate(['/admin/logistico/pedidos/novo']);
+    const role = this.authService.getRoleFromToken();
+    const route = role === 'TEACHER' ? '/academico/pedidos/novo' : '/admin/logistico/pedidos/novo';
+    this.router.navigate([route]);
   }
 
   private loadPedidos(): void {

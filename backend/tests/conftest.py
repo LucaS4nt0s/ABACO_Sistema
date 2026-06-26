@@ -29,7 +29,7 @@ def usuario(db_session: Session) -> Usuario:
     u = Usuario(
         nome="Teste Usuario",
         email="teste@abaco.org.br",
-        senha_hash="$2b$12$LJ3m4ys3Lk7TSw0fhVBXB.2Ml7rP5tpj9k0.0GQxq7LhM30Bh2B9G",
+        senha_hash="$2b$12$6rgU3Nzuu7ZMdPqt7O1kZOkLTZGUQEKd9BsN3Oh/wdZdNvXTfAvha",
         cargo=1,
     )
     db_session.add(u)
@@ -43,7 +43,7 @@ def usuario_professor(db_session: Session) -> Usuario:
     u = Usuario(
         nome="Professor Teste",
         email="prof@abaco.org.br",
-        senha_hash="$2b$12$LJ3m4ys3Lk7TSw0fhVBXB.2Ml7rP5tpj9k0.0GQxq7LhM30Bh2B9G",
+        senha_hash="$2b$12$6rgU3Nzuu7ZMdPqt7O1kZOkLTZGUQEKd9BsN3Oh/wdZdNvXTfAvha",
         cargo=2,
     )
     db_session.add(u)

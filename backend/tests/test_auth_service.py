@@ -50,10 +50,11 @@ class TestProcessForgotPassword:
 
 class TestProcessResetPassword:
     def test_resets_password_with_valid_token(self, db_session: Session, usuario):
+        old_hash = usuario.senha_hash
         token = process_forgot_password(db_session, "teste@abaco.org.br")
         process_reset_password(db_session, token, "novaSenha1", "novaSenha1")
-        updated = db_session.query(usuario.__class__).filter_by(email="teste@abaco.org.br").first()
-        assert updated.senha_hash != usuario.senha_hash
+        db_session.refresh(usuario)
+        assert usuario.senha_hash != old_hash
 
     def test_passwords_dont_match(self, db_session: Session, usuario):
         token = process_forgot_password(db_session, "teste@abaco.org.br")
