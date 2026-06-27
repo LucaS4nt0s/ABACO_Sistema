@@ -1,6 +1,6 @@
 ﻿import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { Matricula, MatriculaCreatePayload, MatriculaUpdatePayload } from '../models/matricula.model';
 
@@ -8,36 +8,21 @@ import { Matricula, MatriculaCreatePayload, MatriculaUpdatePayload } from '../mo
 export class MatriculaService {
   private readonly baseUrl = '/api/v1/matriculas';
 
-  private _listCache: Matricula[] | null = null;
-  private _mineCache: Matricula[] | null = null;
-
   constructor(private readonly http: HttpClient) {}
 
   list(): Observable<Matricula[]> {
-    if (this._listCache) {
-      return of(this._listCache);
-    }
-    return this.http.get<Matricula[]>(this.baseUrl).pipe(
-      tap((data) => this._listCache = data),
-    );
+    return this.http.get<Matricula[]>(this.baseUrl);
   }
 
   listMine(): Observable<Matricula[]> {
-    if (this._mineCache) {
-      return of(this._mineCache);
-    }
-    return this.http.get<Matricula[]>(`${this.baseUrl}/me`).pipe(
-      tap((data) => this._mineCache = data),
-    );
+    return this.http.get<Matricula[]>(`${this.baseUrl}/me`);
   }
 
   refreshList(): Observable<Matricula[]> {
-    this._listCache = null;
     return this.list();
   }
 
   refreshMine(): Observable<Matricula[]> {
-    this._mineCache = null;
     return this.listMine();
   }
 
