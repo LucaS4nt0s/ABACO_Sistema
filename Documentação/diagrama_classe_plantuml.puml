@@ -1,0 +1,707 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+' ============================================================
+' MODEL
+' ============================================================
+package "MODEL" {
+  class Aluno <<Entity>> {
+    - id_aluno : int
+    - nome : str
+    - telefone : str
+    - data_nascimento : date
+    - rua : str
+    - bairro : str
+    - numero : int
+    + get_id_aluno() : int
+    + set_id_aluno(id_aluno : int) : void
+    + get_nome() : str
+    + set_nome(nome : str) : void
+    + get_telefone() : str
+    + set_telefone(telefone : str) : void
+    + get_data_nascimento() : date
+    + set_data_nascimento(data_nascimento : date) : void
+    + get_rua() : str
+    + set_rua(rua : str) : void
+    + get_bairro() : str
+    + set_bairro(bairro : str) : void
+    + get_numero() : int
+    + set_numero(numero : int) : void
+  }
+
+  class Curso <<Entity>> {
+    - id_curso : int
+    - nome_curso : str
+    + get_id_curso() : int
+    + set_id_curso(id_curso : int) : void
+    + get_nome_curso() : str
+    + set_nome_curso(nome_curso : str) : void
+  }
+
+  class Turma <<Entity>> {
+    - id_turma : int
+    - capacidade : int
+    - data_inicio : date
+    - data_fim : date
+    - id_curso : int
+    - id_professor : int
+    - dias_aula : str
+    - avaliacoes : json
+    + vagas_ocupadas : int
+    + get_id_turma() : int
+    + set_id_turma(id_turma : int) : void
+    + get_capacidade() : int
+    + set_capacidade(capacidade : int) : void
+    + get_data_inicio() : date
+    + set_data_inicio(data_inicio : date) : void
+    + get_data_fim() : date
+    + set_data_fim(data_fim : date) : void
+    + get_id_curso() : int
+    + set_id_curso(id_curso : int) : void
+    + get_id_professor() : int
+    + set_id_professor(id_professor : int) : void
+    + get_dias_aula() : str
+    + set_dias_aula(dias_aula : str) : void
+    + get_avaliacoes() : json
+    + set_avaliacoes(avaliacoes : json) : void
+    + get_vagas_ocupadas() : int
+  }
+
+  class Matricula <<Entity>> {
+    - id_matricula : int
+    - id_aluno : int
+    - id_turma : int
+    - data_matricula : date
+    - status : int
+    + get_id_matricula() : int
+    + set_id_matricula(id_matricula : int) : void
+    + get_id_aluno() : int
+    + set_id_aluno(id_aluno : int) : void
+    + get_id_turma() : int
+    + set_id_turma(id_turma : int) : void
+    + get_data_matricula() : date
+    + set_data_matricula(data_matricula : date) : void
+    + get_status() : int
+    + set_status(status : int) : void
+  }
+
+  class Nota <<Entity>> {
+    - id_nota : int
+    - nota : float
+    - prova : int
+    - id_matricula : int
+    + get_id_nota() : int
+    + set_id_nota(id_nota : int) : void
+    + get_nota() : float
+    + set_nota(nota : float) : void
+    + get_prova() : int
+    + set_prova(prova : int) : void
+    + get_id_matricula() : int
+    + set_id_matricula(id_matricula : int) : void
+  }
+
+  class Presenca <<Entity>> {
+    - id_presenca : int
+    - id_matricula : int
+    - data_aula : date
+    - presente : bool
+    + get_id_presenca() : int
+    + set_id_presenca(id_presenca : int) : void
+    + get_id_matricula() : int
+    + set_id_matricula(id_matricula : int) : void
+    + get_data_aula() : date
+    + set_data_aula(data_aula : date) : void
+    + get_presente() : bool
+    + set_presente(presente : bool) : void
+  }
+
+  class Usuario <<Entity>> {
+    - id_usuario : int
+    - nome : str
+    - telefone : str
+    - email : str
+    - senha_hash : str
+    - cargo : int
+    + get_id_usuario() : int
+    + set_id_usuario(id_usuario : int) : void
+    + get_nome() : str
+    + set_nome(nome : str) : void
+    + get_telefone() : str
+    + set_telefone(telefone : str) : void
+    + get_email() : str
+    + set_email(email : str) : void
+    + get_senha_hash() : str
+    + set_senha_hash(senha_hash : str) : void
+    + get_cargo() : int
+    + set_cargo(cargo : int) : void
+  }
+
+  class Pedido <<Entity>> {
+    - id_pedido : int
+    - id_usuario : int
+    - id_turma : int
+    - data_pedido : date
+    - status : int
+    + get_id_pedido() : int
+    + set_id_pedido(id_pedido : int) : void
+    + get_id_usuario() : int
+    + set_id_usuario(id_usuario : int) : void
+    + get_id_turma() : int
+    + set_id_turma(id_turma : int) : void
+    + get_data_pedido() : date
+    + set_data_pedido(data_pedido : date) : void
+    + get_status() : int
+    + set_status(status : int) : void
+  }
+
+  class ItemPedido <<Entity>> {
+    - id_item_pedido : int
+    - id_pedido : int
+    - id_item_estoque : int
+    - nome_item : str
+    - quantidade : int
+    - preco_unitario : float
+    + get_id_item_pedido() : int
+    + set_id_item_pedido(id_item_pedido : int) : void
+    + get_id_pedido() : int
+    + set_id_pedido(id_pedido : int) : void
+    + get_id_item_estoque() : int
+    + set_id_item_estoque(id_item_estoque : int) : void
+    + get_nome_item() : str
+    + set_nome_item(nome_item : str) : void
+    + get_quantidade() : int
+    + set_quantidade(quantidade : int) : void
+    + get_preco_unitario() : float
+    + set_preco_unitario(preco_unitario : float) : void
+  }
+
+  class Estoque <<Entity>> {
+    - id_item_estoque : int
+    - nome_item : str
+    - quantidade_disponivel : int
+    - unidade : str
+    - estoque_minimo : int
+    + get_id_item_estoque() : int
+    + set_id_item_estoque(id_item_estoque : int) : void
+    + get_nome_item() : str
+    + set_nome_item(nome_item : str) : void
+    + get_quantidade_disponivel() : int
+    + set_quantidade_disponivel(quantidade_disponivel : int) : void
+    + get_unidade() : str
+    + set_unidade(unidade : str) : void
+    + get_estoque_minimo() : int
+    + set_estoque_minimo(estoque_minimo : int) : void
+  }
+
+  class MovimentacaoEstoque <<Entity>> {
+    - id_movimentacao : int
+    - id_item_estoque : int
+    - quantidade : int
+    - tipo_movimentacao : str
+    - justificativa : str
+    - data_movimentacao : datetime
+    + get_id_movimentacao() : int
+    + set_id_movimentacao(id_movimentacao : int) : void
+    + get_id_item_estoque() : int
+    + set_id_item_estoque(id_item_estoque : int) : void
+    + get_quantidade() : int
+    + set_quantidade(quantidade : int) : void
+    + get_tipo_movimentacao() : str
+    + set_tipo_movimentacao(tipo_movimentacao : str) : void
+    + get_justificativa() : str
+    + set_justificativa(justificativa : str) : void
+    + get_data_movimentacao() : datetime
+    + set_data_movimentacao(data_movimentacao : datetime) : void
+  }
+
+  ' Relacionamentos Model
+  Aluno "1" -- "0..*" Matricula
+  Curso "1" -- "0..*" Turma
+  Turma "1" -- "0..*" Matricula
+  Turma "0..*" -- "0..1" Usuario : professor
+  Turma "1" -- "0..*" Pedido
+  Matricula "1" -- "0..*" Nota
+  Matricula "1" -- "0..*" Presenca
+  Usuario "1" -- "0..*" Pedido : solicitante
+  Pedido "1" -- "0..*" ItemPedido
+  ItemPedido "0..*" -- "0..1" Estoque
+  Estoque "1" -- "0..*" MovimentacaoEstoque
+}
+
+' ============================================================
+' CONTROLLER
+' ============================================================
+package "CONTROLADOR" {
+  class ControladorAuth <<Controller>> {
+    + login(email, senha) : Token
+    + forgotPassword(email) : Mensagem
+    + resetPassword(token, novaSenha) : Mensagem
+  }
+
+  class ControladorAluno <<Controller>> {
+    + listar() : list
+    + obterPorId(id) : Aluno
+    + criar(payload) : Aluno
+    + atualizar(id, payload) : Aluno
+    + excluir(id) : dict
+  }
+
+  class ControladorCurso <<Controller>> {
+    + listar() : list
+    + obterPorId(id) : Curso
+    + criar(payload) : Curso
+    + atualizar(id, payload) : Curso
+    + excluir(id) : dict
+  }
+
+  class ControladorTurma <<Controller>> {
+    + listar() : list
+    + listarMinhas() : list
+    + obterPorId(id) : Turma
+    + criar(payload) : Turma
+    + atualizar(id, payload) : Turma
+    + excluir(id) : dict
+  }
+
+  class ControladorMatricula <<Controller>> {
+    + listar() : list
+    + listarMinhas() : list
+    + obterPorId(id) : Matricula
+    + criar(payload) : Matricula
+    + atualizar(id, payload) : Matricula
+    + excluir(id) : dict
+  }
+
+  class ControladorNota <<Controller>> {
+    + criarEmLote(payload) : list
+    + obterPorMatricula(id) : list
+    + obterPorTurma(id, prova) : list
+    + obterMediaTurma(id) : response
+  }
+
+  class ControladorPresenca <<Controller>> {
+    + criarEmLote(payload) : list
+    + obterPorTurma(id, data) : list
+  }
+
+  class ControladorUsuario <<Controller>> {
+    + listar() : list
+    + obterPorId(id) : Usuario
+    + criar(payload) : Usuario
+    + atualizar(id, payload) : Usuario
+    + excluir(id) : dict
+  }
+
+  class ControladorPedido <<Controller>> {
+    + listar() : list
+    + obterPorId(id) : Pedido
+    + criar(payload, idUsuario) : Pedido
+    + aprovar(id) : Pedido
+    + comprar(id, payload) : Pedido
+    + entregar(id) : Pedido
+    + atualizarStatus(id, payload) : Pedido
+    + excluir(id) : dict
+  }
+
+  class ControladorEstoque <<Controller>> {
+    + listar() : list
+    + pesquisar(q) : list
+    + obterAlertas() : list
+    + obterPorId(id) : Estoque
+    + criar(payload) : Estoque
+    + atualizar(id, payload) : Estoque
+    + excluir(id) : dict
+    + darBaixa(id, payload) : Estoque
+  }
+
+  class ControladorDashboard <<Controller>> {
+    + obterKpis() : Kpis
+    + obterGraficoAcademico() : Grafico
+    + obterGraficoLogistica() : Grafico
+  }
+
+  class ControladorHistorico <<Controller>> {
+    + obterPorMatricula(id) : Historico
+  }
+}
+
+' ============================================================
+' DAO / SERVICE
+' ============================================================
+package "DAO" {
+  class ServicoAuth <<Service>> {
+    + autenticarUsuario(db, email, senha) : Usuario
+    + construirRespostaLogin(usuario) : dict
+    + processarEsqueciSenha(db, email) : string
+    + processarRedefinirSenha(db, token, novaSenha, confirmar) : void
+  }
+
+  class ServicoAluno <<DAO>> {
+    + criar(db, payload) : Aluno
+    + listar(db) : list
+    + obterPorId(db, id) : Aluno
+    + atualizar(db, id, payload) : Aluno
+    + excluir(db, id) : void
+  }
+
+  class ServicoCurso <<DAO>> {
+    + criar(db, payload) : Curso
+    + listar(db) : list
+    + obterPorId(db, id) : Curso
+    + atualizar(db, id, payload) : Curso
+    + excluir(db, id) : void
+  }
+
+  class ServicoTurma <<DAO>> {
+    + criar(db, payload) : Turma
+    + listar(db) : list
+    + listarPorProfessor(db, idProf) : list
+    + obterPorId(db, id) : Turma
+    + atualizar(db, id, payload) : Turma
+    + excluir(db, id) : void
+  }
+
+  class ServicoMatricula <<DAO>> {
+    + criar(db, payload) : Matricula
+    + listar(db) : list
+    + listarPorProfessor(db, idProf) : list
+    + obterPorId(db, id) : Matricula
+    + atualizar(db, id, payload) : Matricula
+    + excluir(db, id) : void
+    # verificarlotada(db, idTurma) : void
+    # verificarDuplicada(db, idAluno, idTurma) : void
+  }
+
+  class ServicoNota <<DAO>> {
+    + criarOuAtualizar(db, payload) : list
+    + listarPorMatricula(db, id) : list
+    + listarPorTurma(db, id, prova) : list
+    + calcularMedia(db, idTurma) : list
+  }
+
+  class ServicoPresenca <<DAO>> {
+    + criarOuAtualizar(db, payload) : list
+    + listarPorTurma(db, id, data) : list
+  }
+
+  class ServicoUsuario <<DAO>> {
+    + criar(db, payload) : Usuario
+    + listar(db) : list
+    + obterPorId(db, id) : Usuario
+    + atualizar(db, id, payload) : Usuario
+    + excluir(db, id) : void
+  }
+
+  class ServicoPedido <<DAO>> {
+    + criar(db, payload, idUsuario) : Pedido
+    + listar(db) : list
+    + obterPorId(db, id) : Pedido
+    + aprovar(db, id) : Pedido
+    + comprar(db, id, payload) : Pedido
+    + entregar(db, id) : Pedido
+    + atualizarStatus(db, id, payload) : Pedido
+    + excluir(db, id) : void
+  }
+
+  class ServicoEstoque <<DAO>> {
+    + criar(db, payload) : Estoque
+    + listar(db) : list
+    + pesquisarPorNome(db, termo) : list
+    + obterPorId(db, id) : Estoque
+    + atualizar(db, id, payload) : Estoque
+    + excluir(db, id) : void
+    + darBaixa(db, id, qtd, just) : Estoque
+    + obterAlertas(db) : list
+    + deduzirPorPedido(db, pedido) : void
+  }
+
+  class ServicoDashboard <<Service>> {
+    + obterKpis(db) : dict
+    + obterGraficoAcademico(db) : dict
+    + obterGraficoLogistica(db) : dict
+  }
+
+  class ServicoHistorico <<Service>> {
+    + obterPorMatricula(db, id) : dict
+  }
+
+  class ServicoEmail <<Service>> {
+    + enviarEmailRedefinicao(email, token) : void
+  }
+}
+
+' ============================================================
+' VIEW
+' ============================================================
+package "VISÃO" {
+  class PaginaLogin <<Component>> {
+    - email : string
+    - senha : string
+    - lembrar : bool
+    + get_email() : string
+    + set_email(email : string) : void
+    + get_senha() : string
+    + set_senha(senha : string) : void
+    + get_lembrar() : bool
+    + set_lembrar(lembrar : bool) : void
+    + onSubmit() : void
+    + redirecionarPorCargo(cargo) : void
+  }
+
+  class PaginaRecuperarSenha <<Component>> {
+    - email : string
+    + get_email() : string
+    + set_email(email : string) : void
+    + onSubmit() : void
+  }
+
+  class PaginaRedefinirSenha <<Component>> {
+    - token : string
+    - novaSenha : string
+    - confirmarSenha : string
+    + get_token() : string
+    + set_token(token : string) : void
+    + get_novaSenha() : string
+    + set_novaSenha(novaSenha : string) : void
+    + get_confirmarSenha() : string
+    + set_confirmarSenha(confirmarSenha : string) : void
+    + onSubmit() : void
+  }
+
+  class PaginaInicioAdmin <<Component>> {
+    - kpis : any
+    - graficoAcademico : any
+    - graficoLogistica : any
+    - contagemAlertas : number
+    + get_kpis() : any
+    + set_kpis(kpis : any) : void
+    + get_graficoAcademico() : any
+    + set_graficoAcademico(graficoAcademico : any) : void
+    + get_graficoLogistica() : any
+    + set_graficoLogistica(graficoLogistica : any) : void
+    + get_contagemAlertas() : number
+    + set_contagemAlertas(contagemAlertas : number) : void
+    + carregarKpis() : void
+    + carregarGraficos() : void
+  }
+
+  class PaginaAlunos <<Component>> {
+    - alunos : any[]
+    - termoPesquisa : string
+    + get_alunos() : any[]
+    + set_alunos(alunos : any[]) : void
+    + get_termoPesquisa() : string
+    + set_termoPesquisa(termoPesquisa : string) : void
+    + carregarTodos() : void
+    + salvar(data) : void
+    + atualizar(id, data) : void
+    + confirmarExclusao(id) : void
+  }
+
+  class PaginaCursos <<Component>> {
+    - cursos : any[]
+    + get_cursos() : any[]
+    + set_cursos(cursos : any[]) : void
+    + carregarTodos() : void
+    + salvar(data) : void
+    + atualizar(id, data) : void
+    + confirmarExclusao(id) : void
+  }
+
+  class PaginaTurmas <<Component>> {
+    - turmas : any[]
+    - cursos : any[]
+    - professores : any[]
+    + get_turmas() : any[]
+    + set_turmas(turmas : any[]) : void
+    + get_cursos() : any[]
+    + set_cursos(cursos : any[]) : void
+    + get_professores() : any[]
+    + set_professores(professores : any[]) : void
+    + carregarTodos() : void
+    + duplicar(id) : void
+    + excluir(id) : void
+  }
+
+  class PaginaMatriculas <<Component>> {
+    - matriculas : any[]
+    - alunos : any[]
+    - turmas : any[]
+    + get_matriculas() : any[]
+    + set_matriculas(matriculas : any[]) : void
+    + get_alunos() : any[]
+    + set_alunos(alunos : any[]) : void
+    + get_turmas() : any[]
+    + set_turmas(turmas : any[]) : void
+    + carregarTodos() : void
+    + salvar(data) : void
+    + confirmarExclusao(id) : void
+    + abrirHistorico(id) : void
+  }
+
+  class PaginaNotas <<Component>> {
+    - idTurma : number
+    - prova : number
+    - notas : any[]
+    - medias : any
+    + get_idTurma() : number
+    + set_idTurma(idTurma : number) : void
+    + get_prova() : number
+    + set_prova(prova : number) : void
+    + get_notas() : any[]
+    + set_notas(notas : any[]) : void
+    + get_medias() : any
+    + set_medias(medias : any) : void
+    + carregarNotas(idTurma, prova) : void
+    + salvarNotas(payload) : void
+    + carregarMedia(idTurma) : void
+  }
+
+  class PaginaPresencas <<Component>> {
+    - idTurma : number
+    - dataAula : string
+    - presencas : any[]
+    + get_idTurma() : number
+    + set_idTurma(idTurma : number) : void
+    + get_dataAula() : string
+    + set_dataAula(dataAula : string) : void
+    + get_presencas() : any[]
+    + set_presencas(presencas : any[]) : void
+    + carregarPresencas(idTurma, data) : void
+    + salvarPresencas(payload) : void
+    + alternarPresenca(idAluno) : void
+  }
+
+  class PaginaEstoque <<Component>> {
+    - itens : any[]
+    - termoPesquisa : string
+    - alertas : any[]
+    + get_itens() : any[]
+    + set_itens(itens : any[]) : void
+    + get_termoPesquisa() : string
+    + set_termoPesquisa(termoPesquisa : string) : void
+    + get_alertas() : any[]
+    + set_alertas(alertas : any[]) : void
+    + carregarTodos() : void
+    + pesquisar(texto) : void
+    + carregarAlertas() : void
+    + salvar(data) : void
+    + abrirFormularioBaixa(item) : void
+  }
+
+  class PaginaPedidos <<Component>> {
+    - pedidos : any[]
+    - abaAtiva : string
+    + get_pedidos() : any[]
+    + set_pedidos(pedidos : any[]) : void
+    + get_abaAtiva() : string
+    + set_abaAtiva(abaAtiva : string) : void
+    + carregarTodos() : void
+    + aprovar(id) : void
+    + comprar(id, payload) : void
+    + entregar(id) : void
+  }
+
+  class PaginaUsuarios <<Component>> {
+    - usuarios : any[]
+    + get_usuarios() : any[]
+    + set_usuarios(usuarios : any[]) : void
+    + carregarTodos() : void
+    + salvar(data) : void
+    + confirmarExclusao(id) : void
+  }
+
+  class PaginaHistorico <<Component>> {
+    - historico : any
+    + get_historico() : any
+    + set_historico(historico : any) : void
+    + carregarHistorico(idMatricula) : void
+    + exportarPDF() : void
+  }
+
+  class PaginaInicioAcademico <<Component>> {
+    - totalTurmas : number
+    - totalAlunos : number
+    + get_totalTurmas() : number
+    + set_totalTurmas(totalTurmas : number) : void
+    + get_totalAlunos() : number
+    + set_totalAlunos(totalAlunos : number) : void
+    + carregarDados() : void
+  }
+
+  class PaginaDetalheTurma <<Component>> {
+    - turma : any
+    - alunos : any[]
+    + get_turma() : any
+    + set_turma(turma : any) : void
+    + get_alunos() : any[]
+    + set_alunos(alunos : any[]) : void
+    + carregarTurma(id) : void
+    + carregarAlunos() : void
+  }
+
+  class PaginaFormularioPedido <<Component>> {
+    - turmas : any[]
+    - itens : any[]
+    + get_turmas() : any[]
+    + set_turmas(turmas : any[]) : void
+    + get_itens() : any[]
+    + set_itens(itens : any[]) : void
+    + salvar(payload) : void
+  }
+
+  class PaginaAcessoNegado <<Component>> {
+  }
+
+  class PaginaNaoEncontrada <<Component>> {
+  }
+}
+
+' ============================================================
+' Dependencias entre camadas
+' ============================================================
+
+ControladorAuth --> ServicoAuth
+ControladorAuth --> ServicoEmail
+ControladorAluno --> ServicoAluno
+ControladorCurso --> ServicoCurso
+ControladorTurma --> ServicoTurma
+ControladorMatricula --> ServicoMatricula
+ControladorNota --> ServicoNota
+ControladorPresenca --> ServicoPresenca
+ControladorUsuario --> ServicoUsuario
+ControladorPedido --> ServicoPedido
+ControladorEstoque --> ServicoEstoque
+ControladorDashboard --> ServicoDashboard
+ControladorHistorico --> ServicoHistorico
+
+ServicoAuth --> Usuario
+ServicoAluno --> Aluno
+ServicoCurso --> Curso
+ServicoTurma --> Turma
+ServicoTurma --> Curso
+ServicoTurma --> Usuario
+ServicoMatricula --> Aluno
+ServicoMatricula --> Turma
+ServicoNota --> Nota
+ServicoNota --> Matricula
+ServicoPresenca --> Presenca
+ServicoPresenca --> Matricula
+ServicoUsuario --> Usuario
+ServicoPedido --> Pedido
+ServicoPedido --> ItemPedido
+ServicoEstoque --> Estoque
+ServicoEstoque --> MovimentacaoEstoque
+ServicoDashboard --> Turma
+ServicoDashboard --> Pedido
+ServicoDashboard --> Estoque
+ServicoDashboard --> Matricula
+ServicoHistorico --> Matricula
+ServicoHistorico --> Aluno
+ServicoHistorico --> Turma
+ServicoHistorico --> Nota
+ServicoHistorico --> Presenca
+
+@enduml
