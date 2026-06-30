@@ -1,11 +1,21 @@
 classDiagram
 
     %% ============================================================
-    %% MODEL - backend/app/models/
+    %% BACKEND APP ROOT
     %% ============================================================
-    namespace Model {
+    class AppInit {
+        <<package>>
+        +__init__.py
+    }
+
+    %% ============================================================
+    %% MODELS - backend/app/models/
+    %% 11 SQLAlchemy entities
+    %% ============================================================
+    namespace models {
+
         class Aluno {
-            <<Entity>>
+            <<Entity>> tabela: aluno
             -id_aluno: int (PK, column: idaluno)
             -nome: str (NOT NULL)
             -telefone: str?
@@ -28,8 +38,9 @@ classDiagram
             +set_bairro(bairro) void
             +set_numero(num) void
         }
+
         class Curso {
-            <<Entity>>
+            <<Entity>> tabela: curso
             -id_curso: int (PK, column: idcurso)
             -nome_curso: str (NOT NULL, column: nomecurso)
             +get_id_curso() int
@@ -37,8 +48,9 @@ classDiagram
             +set_id_curso(id) void
             +set_nome_curso(nome) void
         }
+
         class Turma {
-            <<Entity>>
+            <<Entity>> tabela: turma
             -id_turma: int (PK, column: idturma)
             -capacidade: int?
             -data_inicio: date? (column: datainicio)
@@ -66,8 +78,9 @@ classDiagram
             +set_dias_aula(dias) void
             +set_avaliacoes(avals) void
         }
+
         class Matricula {
-            <<Entity>>
+            <<Entity>> tabela: matricula
             -id_matricula: int (PK, column: idmatricula)
             -id_aluno: int (FK, column: idaluno)
             -id_turma: int (FK, column: idturma)
@@ -84,8 +97,9 @@ classDiagram
             +set_data_matricula(data) void
             +set_status(status) void
         }
+
         class Nota {
-            <<Entity>>
+            <<Entity>> tabela: nota
             -id_nota: int (PK, column: idnota)
             -nota: float?
             -prova: int?
@@ -99,8 +113,9 @@ classDiagram
             +set_prova(prova) void
             +set_id_matricula(id) void
         }
+
         class Presenca {
-            <<Entity>>
+            <<Entity>> tabela: presenca
             -id_presenca: int (PK, column: idpresenca)
             -id_matricula: int (FK, column: idmatricula)
             -data_aula: date? (column: dataaula)
@@ -114,14 +129,15 @@ classDiagram
             +set_data_aula(data) void
             +set_presente(presente) void
         }
+
         class Usuario {
-            <<Entity>>
+            <<Entity>> tabela: usuario
             -id_usuario: int (PK, column: idusuario)
             -nome: str?
             -telefone: str?
             -email: str? (UNIQUE)
             -senha_hash: str? (column: senhahash)
-            -cargo: int?
+            -cargo: int? (1=Diretor,2=Professor,3=Admin)
             +get_id_usuario() int
             +get_nome() str?
             +get_telefone() str?
@@ -135,13 +151,14 @@ classDiagram
             +set_senha_hash(hash) void
             +set_cargo(cargo) void
         }
+
         class Pedido {
-            <<Entity>>
+            <<Entity>> tabela: pedido
             -id_pedido: int (PK, column: idpedido)
             -id_usuario: int (FK, column: idusuario)
             -id_turma: int (FK, column: idturma)
             -data_pedido: date? (column: datapedido)
-            -status: int?
+            -status: int? (0=Solicitado,1=Aprovado,2=Comprado,3=Entregue)
             +get_id_pedido() int
             +get_id_usuario() int
             +get_id_turma() int
@@ -153,8 +170,9 @@ classDiagram
             +set_data_pedido(data) void
             +set_status(status) void
         }
+
         class ItemPedido {
-            <<Entity>>
+            <<Entity>> tabela: itempedido
             -id_item_pedido: int (PK, column: iditempedido)
             -id_pedido: int (FK, column: idpedido)
             -id_item_estoque: int? (FK, column: iditemestoque)
@@ -174,8 +192,9 @@ classDiagram
             +set_quantidade(qtd) void
             +set_preco_unitario(preco) void
         }
+
         class Estoque {
-            <<Entity>>
+            <<Entity>> tabela: estoque
             -id_item_estoque: int (PK, column: iditemestoque)
             -nome_item: str? (column: nomeitem)
             -quantidade_disponivel: int? (column: quantidadedisponivel)
@@ -192,8 +211,9 @@ classDiagram
             +set_unidade(unidade) void
             +set_estoque_minimo(min) void
         }
+
         class MovimentacaoEstoque {
-            <<Entity>>
+            <<Entity>> tabela: movimentacao_estoque
             -id_movimentacao: int (PK, column: idmovimentacao)
             -id_item_estoque: int (FK, column: iditemestoque)
             -quantidade: int
@@ -215,7 +235,7 @@ classDiagram
         }
 
 
-        %% Model Relationships
+        %% RELATIONSHIPS
         Aluno "1" --> "*" Matricula
         Curso "1" --> "*" Turma
         Turma "1" --> "*" Matricula
@@ -230,9 +250,11 @@ classDiagram
     }
 
     %% ============================================================
-    %% SCHEMA - backend/app/schemas/
+    %% SCHEMAS - backend/app/schemas/
+    %% Pydantic DTOs (request validation + response serialization)
     %% ============================================================
-    namespace Schema {
+    namespace schemas {
+
         class AlunoCreateSchema {
             <<DTO>>
             +nome: str
@@ -242,15 +264,7 @@ classDiagram
             +bairro: str?
             +numero: int?
         }
-        class AlunoUpdateSchema {
-            <<DTO>>
-            +nome: str?
-            +telefone: str?
-            +dataNascimento: date?
-            +rua: str?
-            +bairro: str?
-            +numero: int?
-        }
+
         class AlunoResponseSchema {
             <<DTO>>
             +id_aluno (alias idAluno): int
@@ -263,96 +277,53 @@ classDiagram
         }
 
         class CursoCreateSchema { <<DTO>> +nomeCurso: str }
-        class CursoUpdateSchema { <<DTO>> +nomeCurso: str }
         class CursoResponseSchema { <<DTO>> +id_curso (alias idCurso): int ; +nome_curso (alias nomeCurso): str }
 
         class TurmaCreateSchema { <<DTO>> +capacidade: int? ; +dataInicio: date? ; +dataFim: date? ; +idCurso: int ; +idProfessor: int? ; +diasAula: str? ; +avaliacoes: list? }
-        class TurmaUpdateSchema { <<DTO>> +capacidade: int? ; +dataInicio: date? ; +dataFim: date? ; +idCurso: int? ; +idProfessor: int? ; +diasAula: str? ; +avaliacoes: list? }
-        class TurmaCursoInfo { <<DTO>> +id_curso (alias idCurso): int ; +nome_curso (alias nomeCurso): str }
-        class TurmaProfessorInfo { <<DTO>> +id_usuario (alias idUsuario): int ; +nome: str? }
         class TurmaResponseSchema { <<DTO>> +id_turma (alias idTurma): int ; +capacidade: int? ; +data_inicio (alias dataInicio): date? ; +data_fim (alias dataFim): date? ; +id_curso (alias idCurso): int ; +id_professor (alias idProfessor): int? ; +dias_aula (alias diasAula): str? ; +vagas_ocupadas (alias vagasOcupadas): int? ; +avaliacoes: list? ; +curso: TurmaCursoInfo? ; +professor: TurmaProfessorInfo? }
 
         class MatriculaCreateSchema { <<DTO>> +idAluno: int ; +idTurma: int ; +dataMatricula: date? ; +status: int? }
-        class MatriculaUpdateSchema { <<DTO>> +idAluno: int? ; +idTurma: int? ; +dataMatricula: date? ; +status: int? }
-        class MatriculaAlunoInfo { <<DTO>> +id_aluno (alias idAluno): int ; +nome: str? ; +telefone: str? }
-        class MatriculaCursoInfo { <<DTO>> +id_curso (alias idCurso): int ; +nome_curso (alias nomeCurso): str }
-        class MatriculaTurmaInfo { <<DTO>> +id_turma (alias idTurma): int ; +capacidade: int? ; +curso: MatriculaCursoInfo? }
         class MatriculaResponseSchema { <<DTO>> +id_matricula (alias idMatricula): int ; +id_aluno (alias idAluno): int? ; +id_turma (alias idTurma): int? ; +data_matricula (alias dataMatricula): date? ; +status: int? ; +aluno: MatriculaAlunoInfo? ; +turma: MatriculaTurmaInfo? }
 
-        class NotaItemSchema { <<DTO>> +idMatricula: int ; +nota: float? }
         class NotaBatchSchema { <<DTO>> +idTurma: int ; +prova: int ; +notas: list[NotaItemSchema] }
-        class NotaAlunoInfo { <<DTO>> +id_aluno (alias idAluno): int ; +nome: str? }
-        class NotaTurmaInfo { <<DTO>> +id_turma (alias idTurma): int ; +nome_curso (alias nomeCurso): str? }
-        class NotaMatriculaInfo { <<DTO>> +id_matricula (alias idMatricula): int ; +aluno: NotaAlunoInfo? ; +turma: NotaTurmaInfo? }
         class NotaResponseSchema { <<DTO>> +id_nota (alias idNota): int ; +id_matricula (alias idMatricula): int ; +nota: float? ; +prova: int? ; +matricula: NotaMatriculaInfo? }
-        class MediaProvaSchema { <<DTO>> +prova: int ; +media: float? }
         class MediaTurmaSchema { <<DTO>> +id_turma (alias idTurma): int ; +medias: list[MediaProvaSchema] }
 
-        class PresencaItemSchema { <<DTO>> +idMatricula: int ; +presente: bool }
         class PresencaBatchSchema { <<DTO>> +idTurma: int ; +dataAula: date ; +presencas: list[PresencaItemSchema] }
-        class PresencaAlunoInfo { <<DTO>> +id_aluno (alias idAluno): int ; +nome: str? }
-        class PresencaMatriculaInfo { <<DTO>> +id_matricula (alias idMatricula): int ; +aluno: PresencaAlunoInfo? }
         class PresencaResponseSchema { <<DTO>> +id_presenca (alias idPresenca): int ; +id_matricula (alias idMatricula): int ; +data_aula (alias dataAula): date? ; +presente: bool? ; +matricula: PresencaMatriculaInfo? }
 
         class UsuarioCreateSchema { <<DTO>> +nome: str ; +email: EmailStr ; +senha: str ; +cargo: int ; +telefone: str? }
-        class UsuarioUpdateSchema { <<DTO>> +nome: str ; +telefone: str? ; +cargo: int }
         class UsuarioResponseSchema { <<DTO>> +id_usuario (alias idUsuario): int ; +nome: str? ; +telefone: str? ; +email: EmailStr? ; +cargo: int? }
 
-        class ItemPedidoCreateSchema { <<DTO>> +nomeItem: str ; +quantidade: int? ; +idItemEstoque: int? ; +precoUnitario: float? }
-        class ItemPedidoCompraSchema { <<DTO>> +idItemPedido: int ; +quantidade: int }
         class PedidoCreateSchema { <<DTO>> +idTurma: int ; +dataPedido: date? ; +itens: list[ItemPedidoCreateSchema] }
-        class PedidoUpdateSchema { <<DTO>> +status: int }
-        class PedidoCompraSchema { <<DTO>> +itens: list[ItemPedidoCompraSchema] }
-        class EstoqueItemInfo { <<DTO>> +id_item_estoque (alias idItemEstoque): int ; +nome_item (alias nomeItem): str? ; +unidade: str? }
-        class ItemPedidoResponseSchema { <<DTO>> +id_item_pedido (alias idItemPedido): int ; +id_pedido (alias idPedido): int ; +id_item_estoque (alias idItemEstoque): int? ; +nome_item (alias nomeItem): str? ; +quantidade: int? ; +preco_unitario (alias precoUnitario): float? ; +item_estoque: EstoqueItemInfo? }
-        class UsuarioPedidoInfo { <<DTO>> +id_usuario (alias idUsuario): int ; +nome: str? }
-        class TurmaPedidoInfo { <<DTO>> +id_turma (alias idTurma): int ; +capacidade: int? ; +nome_curso (alias nomeCurso): str? }
         class PedidoResponseSchema { <<DTO>> +id_pedido (alias idPedido): int ; +id_usuario (alias idUsuario): int ; +id_turma (alias idTurma): int ; +data_pedido (alias dataPedido): date? ; +status: int? ; +usuario: UsuarioPedidoInfo? ; +turma: TurmaPedidoInfo? ; +itens: list[ItemPedidoResponseSchema]? }
 
         class EstoqueCreateSchema { <<DTO>> +nomeItem: str ; +quantidadeDisponivel: int? ; +unidade: str? ; +estoqueMinimo: int? }
-        class EstoqueUpdateSchema { <<DTO>> +nomeItem: str? ; +quantidadeDisponivel: int? ; +unidade: str? ; +estoqueMinimo: int? }
         class EstoqueResponseSchema { <<DTO>> +id_item_estoque (alias idItemEstoque): int ; +nome_item (alias nomeItem): str? ; +quantidade_disponivel (alias quantidadeDisponivel): int? ; +unidade: str? ; +estoque_minimo (alias estoqueMinimo): int? }
-        class EstoqueBaixaSchema { <<DTO>> +quantidade: int ; +justificativa: str }
-        class EstoqueAlertaResponseSchema { <<DTO>> +id_item_estoque (alias idItemEstoque): int ; +nome_item (alias nomeItem): str? ; +quantidade_disponivel (alias quantidadeDisponivel): int? ; +unidade: str? ; +estoque_minimo (alias estoqueMinimo): int? }
 
         class LoginRequest { <<DTO>> +email: EmailStr ; +senha: str }
-        class ForgotPasswordRequest { <<DTO>> +email: EmailStr }
-        class ResetPasswordRequest { <<DTO>> +token: str ; +nova_senha: str ; +confirmar_senha: str }
-        class UsuarioResponse { <<DTO>> +idUsuario: int ; +nome: str? ; +email: EmailStr ; +cargo: int? }
         class TokenResponse { <<DTO>> +access_token: str ; +token_type: str = "bearer" ; +usuario: UsuarioResponse }
         class MessageResponse { <<DTO>> +message: str }
 
         class KpisResponse { <<DTO>> +total_alunos_ativos: int ; +total_turmas_vigentes: int ; +total_pedidos_pendentes: int ; +total_estoque_critico: int }
-        class AlunosPorCurso { <<DTO>> +curso: str ; +quantidade: int }
-        class StatusMatriculas { <<DTO>> +status: int ; +quantidade: int }
         class ChartAcademicoResponse { <<DTO>> +alunos_por_curso: list[AlunosPorCurso] ; +status_matriculas: list[StatusMatriculas] }
-        class ConsumoItem { <<DTO>> +item: str ; +quantidade: int }
         class ChartLogisticaResponse { <<DTO>> +consumo_mes_atual: list[ConsumoItem] }
-
-        class HistoricoNotaInfo { <<DTO>> +prova: int? ; +nota: float? }
-        class HistoricoPresencaInfo { <<DTO>> +data_aula (alias dataAula): date? ; +presente: bool? }
-        class HistoricoAlunoInfo { <<DTO>> +id_aluno (alias idAluno): int ; +nome: str ; +data_nascimento (alias dataNascimento): date? ; +telefone: str? }
-        class HistoricoTurmaInfo { <<DTO>> +id_turma (alias idTurma): int ; +nome_curso (alias nomeCurso): str ; +nome_professor (alias nomeProfessor): str? ; +data_inicio (alias dataInicio): date? ; +data_fim (alias dataFim): date? ; +dias_aula (alias diasAula): str? }
         class HistoricoResponse { <<DTO>> +id_matricula (alias idMatricula): int ; +data_matricula (alias dataMatricula): date? ; +status: int? ; +aluno: HistoricoAlunoInfo ; +turma: HistoricoTurmaInfo ; +notas: list[HistoricoNotaInfo] ; +presencas: list[HistoricoPresencaInfo] ; +percentual_frequencia (alias percentualFrequencia): float? }
 
 
-        %% Schema composition relationships
+        %% Schema compositions
         TurmaResponseSchema *-- TurmaCursoInfo
         TurmaResponseSchema *-- TurmaProfessorInfo
         MatriculaResponseSchema *-- MatriculaAlunoInfo
         MatriculaResponseSchema *-- MatriculaTurmaInfo
         MatriculaTurmaInfo *-- MatriculaCursoInfo
         NotaResponseSchema *-- NotaMatriculaInfo
-        NotaMatriculaInfo *-- NotaAlunoInfo
-        NotaMatriculaInfo *-- NotaTurmaInfo
         PresencaResponseSchema *-- PresencaMatriculaInfo
-        PresencaMatriculaInfo *-- PresencaAlunoInfo
         PedidoResponseSchema *-- UsuarioPedidoInfo
         PedidoResponseSchema *-- TurmaPedidoInfo
         PedidoResponseSchema *-- ItemPedidoResponseSchema
         ItemPedidoResponseSchema *-- EstoqueItemInfo
         PedidoCreateSchema *-- ItemPedidoCreateSchema
-        PedidoCompraSchema *-- ItemPedidoCompraSchema
         NotaBatchSchema *-- NotaItemSchema
         PresencaBatchSchema *-- PresencaItemSchema
         HistoricoResponse *-- HistoricoAlunoInfo
@@ -366,9 +337,11 @@ classDiagram
     }
 
     %% ============================================================
-    %% CONTROLLER - backend/app/api/v1/
+    %% API / V1 - backend/app/api/v1/
+    %% FastAPI Routers (controllers)
     %% ============================================================
-    namespace Controller {
+    namespace api_v1 {
+
         class AuthRouter {
             <<Controller>>
             +login(payload: LoginRequest, request, db) TokenResponse
@@ -475,30 +448,37 @@ classDiagram
     }
 
     %% ============================================================
-    %% CORE - backend/app/core/ + db/
+    %% CORE - backend/app/core/
     %% ============================================================
-    namespace Core {
+    namespace core {
+
         class Settings {
-            <<Configuration>>
-            +app_name: str = "SGA ABACO API"
+            <<Configuration>> BaseSettings
+            +app_name: str = ""
             +database_url: str
             +secret_key: str
             +jwt_algorithm: str = "HS256"
             +access_token_expire_minutes: int = 120
             +reset_token_expire_minutes: int = 15
-            +smtp_host: str ; +smtp_port: int
-            +frontend_url: str ; +cors_origins: str
-            +rate_limit_auth: str ; +rate_limit_default: str
+            +smtp_host: str
+            +smtp_port: int
+            +smtp_user: str
+            +smtp_password: str
+            +smtp_from: str
+            +frontend_url: str
+            +cors_origins: str
+            +rate_limit_auth: str
+            +rate_limit_default: str
             +get_cors_origin_list() list~str~
         }
 
         class SecurityUtils {
             <<Utility>>
-            +verify_password(plain_password, password_hash) bool
-            +hash_password(password) str
-            +create_access_token(subject, cargo, expires_delta?) str
-            +create_reset_token(email, expires_delta?) str
-            +decode_reset_token(token) dict
+            +verify_password(plain_password: str, password_hash: str) bool
+            +hash_password(password: str) str
+            +create_access_token(subject: str, cargo: int, expires_delta?) str
+            +create_reset_token(email: str, expires_delta?) str
+            +decode_reset_token(token: str) dict
         }
 
         class AuthDependencies {
@@ -508,14 +488,6 @@ classDiagram
             +verify_director_role() dict
         }
 
-        class Database {
-            <<Infrastructure>>
-            +engine: Engine
-            +SessionLocal: sessionmaker
-            +Base: declarative_base
-            +get_db() Generator[Session]
-        }
-
         class RateLimiter {
             <<Infrastructure>>
             +limiter: Limiter
@@ -523,9 +495,25 @@ classDiagram
     }
 
     %% ============================================================
-    %% SERVICE - backend/app/services/
+    %% DB - backend/app/db/
     %% ============================================================
-    namespace Service {
+    namespace db {
+
+        class Database {
+            <<Infrastructure>>
+            +engine: Engine
+            +SessionLocal: sessionmaker
+            +Base: declarative_base
+            +get_db() Generator[Session]
+        }
+    }
+
+    %% ============================================================
+    %% SERVICES - backend/app/services/
+    %% Business logic layer
+    %% ============================================================
+    namespace services {
+
         class AuthService {
             <<Service>>
             +authenticate_user(db, email, senha) Usuario
@@ -535,7 +523,7 @@ classDiagram
         }
 
         class AlunoService {
-            <<DAO>>
+            <<Service>>
             +create_aluno(db, payload: AlunoCreateSchema) Aluno
             +list_alunos(db) list~Aluno~
             +get_aluno_by_id(db, aluno_id) Aluno
@@ -544,7 +532,7 @@ classDiagram
         }
 
         class CursoService {
-            <<DAO>>
+            <<Service>>
             +create_curso(db, payload: CursoCreateSchema) Curso
             +list_cursos(db) list~Curso~
             +get_curso_by_id(db, curso_id) Curso
@@ -553,9 +541,7 @@ classDiagram
         }
 
         class TurmaService {
-            <<DAO>>
-            #_resolve_curso(db, curso_id) void
-            #_resolve_professor(db, professor_id) void
+            <<Service>>
             +create_turma(db, payload: TurmaCreateSchema) Turma
             +list_turmas(db) list~Turma~
             +list_turmas_by_professor(db, professor_id) list~Turma~
@@ -565,12 +551,7 @@ classDiagram
         }
 
         class MatriculaService {
-            <<DAO>>
-            #_resolve_aluno(db, aluno_id) void
-            #_resolve_turma(db, turma_id) void
-            #_check_turma_lotada(db, turma_id) void
-            #_get_turma_curso_id(db, turma_id) int
-            #_check_matricula_duplicada(db, aluno_id, turma_id, exclude_id?) void
+            <<Service>>
             +create_matricula(db, payload: MatriculaCreateSchema) Matricula
             +list_matriculas(db) list~Matricula~
             +list_matriculas_by_professor(db, professor_id) list~Matricula~
@@ -580,7 +561,7 @@ classDiagram
         }
 
         class NotaService {
-            <<DAO>>
+            <<Service>>
             +create_or_update_notas(db, payload: NotaBatchSchema) list~Nota~
             +list_notas_by_matricula(db, matricula_id) list~Nota~
             +list_notas_by_turma(db, turma_id, prova?) list~Nota~
@@ -588,13 +569,13 @@ classDiagram
         }
 
         class PresencaService {
-            <<DAO>>
+            <<Service>>
             +create_or_update_presencas(db, payload: PresencaBatchSchema) list~Presenca~
             +list_presencas_by_turma(db, turma_id, data_aula?) list~Presenca~
         }
 
         class UsuarioService {
-            <<DAO>>
+            <<Service>>
             +create_usuario(db, payload: UsuarioCreateSchema) Usuario
             +list_usuarios(db) list~Usuario~
             +get_usuario_by_id(db, usuario_id) Usuario
@@ -603,8 +584,7 @@ classDiagram
         }
 
         class PedidoService {
-            <<DAO>>
-            #_resolve_turma(db, turma_id) void
+            <<Service>>
             +create_pedido(db, payload: PedidoCreateSchema, usuario_id) Pedido
             +list_pedidos(db) list~Pedido~
             +get_pedido_by_id(db, pedido_id) Pedido
@@ -616,7 +596,7 @@ classDiagram
         }
 
         class EstoqueService {
-            <<DAO>>
+            <<Service>>
             +create_estoque(db, payload: EstoqueCreateSchema) Estoque
             +list_estoque(db) list~Estoque~
             +search_estoque_by_name(db, term) list~Estoque~
@@ -629,15 +609,14 @@ classDiagram
         }
 
         class DashboardService {
-            <<DAO>>
+            <<Service>>
             +get_kpis(db) dict
             +get_chart_academico(db) dict
             +get_chart_logistica(db) dict
         }
 
         class HistoricoService {
-            <<DAO>>
-            #_calculate_frequencia(presencas) float?
+            <<Service>>
             +get_historico_by_matricula(db, matricula_id) dict
         }
 
@@ -645,217 +624,87 @@ classDiagram
             <<Service>>
             +send_reset_email(to_email, reset_token) void
         }
-
-
-        %% Exception classes
-        class AlunoNotFoundError <<Exception>>
-        class AlunoHasDependenciesError <<Exception>>
-        class CursoNotFoundError <<Exception>>
-        class CursoHasDependenciesError <<Exception>>
-        class TurmaNotFoundError <<Exception>>
-        class TurmaHasDependenciesError <<Exception>>
-        class CursoNotFoundForTurmaError <<Exception>>
-        class ProfessorNotFoundForTurmaError <<Exception>>
-        class MatriculaNotFoundError <<Exception>>
-        class MatriculaHasDependenciesError <<Exception>>
-        class AlunoNotFoundForMatriculaError <<Exception>>
-        class TurmaNotFoundForMatriculaError <<Exception>>
-        class TurmaLotadaError <<Exception>>
-        class MatriculaDuplicadaError <<Exception>>
-        class InvalidMatriculasError <<Exception>>
-        class PedidoNotFoundError <<Exception>>
-        class PedidoHasDependenciesError <<Exception>>
-        class TurmaNotFoundForPedidoError <<Exception>>
-        class PedidoInvalidTransitionError <<Exception>>
-        class PedidoCannotBeDeliveredError <<Exception>>
-        class EstoqueNotFoundError <<Exception>>
-        class EstoqueHasDependenciesError <<Exception>>
-        class EstoqueSaldoInsuficienteError <<Exception>>
-        class EstoqueBaixaJustificativaError <<Exception>>
-        class EstoqueAlreadyExistsError <<Exception>>
-        class InvalidCredentialsError <<Exception>>
-        class EmailNotFoundError <<Exception>>
-        class PasswordsDoNotMatchError <<Exception>>
-        class InvalidResetTokenError <<Exception>>
     }
 
     %% ============================================================
-    %% VIEW (Angular Frontend) - frontend/src/app/
-    %% ============================================================
-    namespace View {
-        %% Pages / Components
-        class LoginPage {
-            <<Component>>
-            -email: string
-            -senha: string
-            -lembrar: bool
-            +onSubmit() void
-            +redirectByRole(cargo) void
-        }
-        class ForgotPasswordPage { <<Component>> -email: string ; +onSubmit() void }
-        class ResetPasswordPage { <<Component>> -token: string ; -novaSenha: string ; -confirmarSenha: string ; +onSubmit() void }
-
-        class AdminHome { <<Component>> -kpis: KpisResponse ; -chartAcademico: ChartAcademicoResponse ; -chartLogistica: ChartLogisticaResponse ; -alertasCount: number ; +loadKpis() void ; +loadCharts() void }
-        class StudentsManagementComponent { <<Component>> -alunos: Aluno[] ; -searchTerm: string ; +loadAlunos() void ; +save(data) void ; +confirmDelete(id) void }
-        class CoursesManagementComponent { <<Component>> -cursos: Curso[] ; +loadCursos() void ; +save(data) void ; +confirmDelete(id) void }
-        class ClassesManagementComponent { <<Component>> -turmas: Turma[] ; -cursos: Curso[] ; -professores: Usuario[] ; +loadTurmas() void ; +duplicate(id) void ; +delete(id) void }
-        class EnrollmentsManagementComponent { <<Component>> -matriculas: Matricula[] ; -alunos: Aluno[] ; -turmas: Turma[] ; +loadMatriculas() void ; +save(data) void ; +confirmDelete(id) void ; +onViewTranscript(id) void }
-        class GradesManagementComponent { <<Component>> -turmaId: number ; -prova: number ; -notas: Nota[] ; -medias: MediaTurma ; +loadNotas(turmaId, prova) void ; +saveNotas(payload) void ; +loadMedia(turmaId) void }
-        class AttendanceManagementComponent { <<Component>> -turmaId: number ; -dataAula: string ; -presencas: Presenca[] ; +loadPresencas(turmaId, data) void ; +savePresencas(payload) void ; +togglePresenca(alunoId) void }
-        class EstoqueManagementComponent { <<Component>> -itens: Estoque[] ; -searchTerm: string ; -alertas: EstoqueAlerta[] ; +loadEstoque() void ; +search(query) void ; +save(data) void ; +openBaixaForm(item) void }
-        class PedidoListComponent { <<Component>> -pedidos: Pedido[] ; -activeTab: string ; +loadPedidos() void ; +aprovar(id) void ; +comprar(id, payload) void ; +entregar(id) void }
-        class UsersManagementComponent { <<Component>> -usuarios: Usuario[] ; +loadUsuarios() void ; +save(data) void ; +confirmDelete(id) void }
-        class TranscriptViewComponent { <<Component>> -historico: Historico ; +loadHistorico(matriculaId) void ; +exportPDF() void }
-        class AcademicoHome { <<Component>> -totalTurmas: number ; -totalAlunos: number ; +loadData() void }
-        class TurmaDetailPage { <<Component>> -turma: Turma ; -alunos: any[] ; +loadTurma(id) void ; +loadAlunos() void }
-        class PedidoFormPageComponent { <<Component>> -turmas: Turma[] ; -itens: any[] ; +save(payload) void }
-        class AccessDenied { <<Component>> }
-        class NotFound { <<Component>> }
-
-
-        %% Angular Services
-        class AlunoService {
-            <<Service>>
-            +list() Observable~Aluno[]~
-            +create(payload) Observable~Aluno~
-            +update(id, payload) Observable~Aluno~
-            +delete(id) Observable~dict~
-        }
-        class AuthService {
-            <<Service>>
-            +login(email, password) Observable~TokenResponse~
-            +forgotPassword(email) Observable~MessageResponse~
-            +resetPassword(token, novaSenha, confirmarSenha) Observable~MessageResponse~
-            +logout() void
-            +isAuthenticated() bool
-            +hasRole(roles) bool
-            +getToken() string?
-        }
-        class CursoService { <<Service>> +list() Observable~Curso[]~ ; +create(payload) Observable~Curso~ ; +update(id, payload) Observable~Curso~ ; +delete(id) Observable~dict~ }
-        class TurmaService { <<Service>> +list() Observable~Turma[]~ ; +listMine() Observable~Turma[]~ ; +getById(id) Observable~Turma~ ; +create(payload) Observable~Turma~ ; +update(id, payload) Observable~Turma~ ; +delete(id) Observable~dict~ }
-        class MatriculaService { <<Service>> +list() Observable~Matricula[]~ ; +listMine() Observable~Matricula[]~ ; +create(payload) Observable~Matricula~ ; +update(id, payload) Observable~Matricula~ ; +delete(id) Observable~dict~ }
-        class NotaService { <<Service>> +listByTurma(turmaId, prova?) Observable~Nota[]~ ; +listByMatricula(id) Observable~Nota[]~ ; +create(payload) Observable~Nota[]~ ; +getMediaTurma(turmaId) Observable~MediaTurma~ }
-        class PresencaService { <<Service>> +listByTurma(turmaId, dataAula?) Observable~Presenca[]~ ; +create(payload) Observable~Presenca[]~ }
-        class UsuarioService { <<Service>> +list() Observable~Usuario[]~ ; +create(payload) Observable~Usuario~ ; +update(id, payload) Observable~Usuario~ ; +delete(id) Observable~dict~ }
-        class PedidoService { <<Service>> +list() Observable~Pedido[]~ ; +create(payload) Observable~Pedido~ ; +aprovar(pedidoId) Observable~Pedido~ ; +comprar(pedidoId, payload) Observable~Pedido~ ; +entregar(pedidoId) Observable~Pedido~ ; +delete(id) Observable~dict~ }
-        class EstoqueService { <<Service>> +list() Observable~Estoque[]~ ; +search(q) Observable~Estoque[]~ ; +create(payload) Observable~Estoque~ ; +update(id, payload) Observable~Estoque~ ; +delete(id) Observable~dict~ ; +baixa(id, payload) Observable~Estoque~ ; +getAlertas() Observable~EstoqueAlerta[]~ }
-        class DashboardService { <<Service>> +getKpis() Observable~Kpis~ ; +getChartAcademico() Observable~ChartAcademico~ ; +getChartLogistica() Observable~ChartLogistica~ }
-        class HistoricoService { <<Service>> +getByMatricula(id) Observable~Historico~ }
-        class NotificationService { <<Service>> +error(message) void ; +success(message) void ; +clear() void }
-        class DialogService { <<Service>> +confirm(options) Observable~bool~ }
-
-
-        %% Guards & Interceptors
-        class AuthGuard { <<Guard>> +canActivate() bool }
-        class RoleGuard { <<Guard>> +canActivate(allowedCargos: int[]) bool }
-        class TokenInterceptor { <<Interceptor>> +intercept(req, next) HttpEvent }
-        class ErrorInterceptor { <<Interceptor>> +intercept(req, next) HttpEvent }
-    }
-
-    %% ============================================================
-    %% CROSS-LAYER DEPENDENCIES
+    %% CROSS-LAYER DEPENDENCIES (arrows go top-down)
     %% ============================================================
 
-    %% Controller --> Service
-    AuthRouter ..> AuthService
-    AuthRouter ..> EmailService
-    AlunoRouter ..> AlunoService
-    CursoRouter ..> CursoService
-    TurmaRouter ..> TurmaService
-    MatriculaRouter ..> MatriculaService
-    NotaRouter ..> NotaService
-    PresencaRouter ..> PresencaService
-    UsuarioRouter ..> UsuarioService
-    PedidoRouter ..> PedidoService
-    EstoqueRouter ..> EstoqueService
-    DashboardRouter ..> DashboardService
-    HistoricoRouter ..> HistoricoService
+    %% api/v1 --> services
+    AuthRouter ..> AuthService : depends on
+    AuthRouter ..> EmailService : depends on
+    AlunoRouter ..> AlunoService : depends on
+    CursoRouter ..> CursoService : depends on
+    TurmaRouter ..> TurmaService : depends on
+    MatriculaRouter ..> MatriculaService : depends on
+    NotaRouter ..> NotaService : depends on
+    PresencaRouter ..> PresencaService : depends on
+    UsuarioRouter ..> UsuarioService : depends on
+    PedidoRouter ..> PedidoService : depends on
+    EstoqueRouter ..> EstoqueService : depends on
+    DashboardRouter ..> DashboardService : depends on
+    HistoricoRouter ..> HistoricoService : depends on
 
-    %% Service --> Model
-    AuthService ..> Usuario
-    AlunoService ..> Aluno
-    CursoService ..> Curso
-    TurmaService ..> Turma
-    TurmaService ..> Curso
-    TurmaService ..> Usuario
-    MatriculaService ..> Aluno
-    MatriculaService ..> Turma
-    NotaService ..> Nota
-    NotaService ..> Matricula
-    PresencaService ..> Presenca
-    PresencaService ..> Matricula
-    UsuarioService ..> Usuario
-    PedidoService ..> Pedido
-    PedidoService ..> ItemPedido
-    EstoqueService ..> Estoque
-    EstoqueService ..> MovimentacaoEstoque
-    DashboardService ..> Turma
-    DashboardService ..> Pedido
-    DashboardService ..> Estoque
-    DashboardService ..> Matricula
-    HistoricoService ..> Matricula
-    HistoricoService ..> Aluno
-    HistoricoService ..> Turma
-    HistoricoService ..> Nota
-    HistoricoService ..> Presenca
+    %% api/v1 --> core
+    AuthRouter ..> AuthDependencies : uses
+    AuthRouter ..> RateLimiter : uses
+    AlunoRouter ..> AuthDependencies : uses
+    CursoRouter ..> AuthDependencies : uses
+    TurmaRouter ..> AuthDependencies : uses
+    MatriculaRouter ..> AuthDependencies : uses
+    NotaRouter ..> AuthDependencies : uses
+    PresencaRouter ..> AuthDependencies : uses
+    UsuarioRouter ..> AuthDependencies : uses
+    PedidoRouter ..> AuthDependencies : uses
+    EstoqueRouter ..> AuthDependencies : uses
+    DashboardRouter ..> AuthDependencies : uses
+    HistoricoRouter ..> AuthDependencies : uses
 
-    %% Service --> Exceptions
-    AlunoService ..> AlunoNotFoundError
-    AlunoService ..> AlunoHasDependenciesError
-    CursoService ..> CursoNotFoundError
-    CursoService ..> CursoHasDependenciesError
-    TurmaService ..> TurmaNotFoundError
-    TurmaService ..> CursoNotFoundForTurmaError
-    TurmaService ..> ProfessorNotFoundForTurmaError
-    MatriculaService ..> AlunoNotFoundForMatriculaError
-    MatriculaService ..> TurmaNotFoundForMatriculaError
-    MatriculaService ..> TurmaLotadaError
-    MatriculaService ..> MatriculaDuplicadaError
-    NotaService ..> InvalidMatriculasError
-    PedidoService ..> PedidoNotFoundError
-    PedidoService ..> TurmaNotFoundForPedidoError
-    PedidoService ..> PedidoInvalidTransitionError
-    EstoqueService ..> EstoqueNotFoundError
-    EstoqueService ..> EstoqueSaldoInsuficienteError
-    EstoqueService ..> EstoqueAlreadyExistsError
-    AuthService ..> InvalidCredentialsError
-    AuthService ..> EmailNotFoundError
-    AuthService ..> PasswordsDoNotMatchError
-    AuthService ..> InvalidResetTokenError
-    HistoricoService ..> MatriculaNotFoundError
+    %% services --> models
+    AuthService ..> Usuario : queries
+    AlunoService ..> Aluno : queries
+    CursoService ..> Curso : queries
+    TurmaService ..> Turma : queries
+    TurmaService ..> Curso : queries
+    TurmaService ..> Usuario : queries
+    MatriculaService ..> Aluno : queries
+    MatriculaService ..> Turma : queries
+    NotaService ..> Nota : queries
+    NotaService ..> Matricula : queries
+    PresencaService ..> Presenca : queries
+    PresencaService ..> Matricula : queries
+    UsuarioService ..> Usuario : queries
+    PedidoService ..> Pedido : queries
+    PedidoService ..> ItemPedido : queries
+    EstoqueService ..> Estoque : queries
+    EstoqueService ..> MovimentacaoEstoque : queries
+    DashboardService ..> Turma : queries
+    DashboardService ..> Pedido : queries
+    DashboardService ..> Estoque : queries
+    DashboardService ..> Matricula : queries
+    HistoricoService ..> Matricula : queries
+    HistoricoService ..> Aluno : queries
+    HistoricoService ..> Turma : queries
+    HistoricoService ..> Nota : queries
+    HistoricoService ..> Presenca : queries
 
-    %% Controller --> Core
-    AuthRouter ..> AuthDependencies
-    AuthRouter ..> RateLimiter
-    AlunoRouter ..> AuthDependencies
-    CursoRouter ..> AuthDependencies
-    TurmaRouter ..> AuthDependencies
-    MatriculaRouter ..> AuthDependencies
-    NotaRouter ..> AuthDependencies
-    PresencaRouter ..> AuthDependencies
-    UsuarioRouter ..> AuthDependencies
-    PedidoRouter ..> AuthDependencies
-    EstoqueRouter ..> AuthDependencies
-    DashboardRouter ..> AuthDependencies
-    HistoricoRouter ..> AuthDependencies
+    %% services --> db + core
+    AuthService ..> Database : uses
+    AuthService ..> SecurityUtils : uses
+    AlunoService ..> Database : uses
+    CursoService ..> Database : uses
+    TurmaService ..> Database : uses
+    MatriculaService ..> Database : uses
+    NotaService ..> Database : uses
+    PresencaService ..> Database : uses
+    UsuarioService ..> Database : uses
+    PedidoService ..> Database : uses
+    EstoqueService ..> Database : uses
+    DashboardService ..> Database : uses
+    HistoricoService ..> Database : uses
+    EmailService ..> Settings : uses
 
-    %% Core internal
-    AuthDependencies ..> SecurityUtils
-    AuthDependencies ..> Settings
-    Database ..> Settings
-
-    %% Service --> Core
-    AuthService ..> SecurityUtils
-    AuthService ..> Database
-    EmailService ..> Settings
-    AlunoService ..> Database
-    CursoService ..> Database
-    TurmaService ..> Database
-    MatriculaService ..> Database
-    NotaService ..> Database
-    PresencaService ..> Database
-    UsuarioService ..> Database
-    PedidoService ..> Database
-    EstoqueService ..> Database
-    DashboardService ..> Database
-    HistoricoService ..> Database
+    %% core internal
+    AuthDependencies ..> SecurityUtils : uses
+    AuthDependencies ..> Settings : reads
+    Database ..> Settings : reads
