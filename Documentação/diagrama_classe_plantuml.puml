@@ -6,218 +6,239 @@ skinparam classAttributeIconSize 0
 
 ' ============================================================
 ' MODELS - backend/app/models/
+' Cada sub-pacote = 1 arquivo .py
 ' ============================================================
 package "models" {
 
-  class Aluno <<Entity>> {
-    - id_aluno : int (PK, column: idaluno)
-    - nome : str (NOT NULL)
-    - telefone : str ?
-    - data_nascimento : date ? (column: nascimento)
-    - rua : str ?
-    - bairro : str ?
-    - numero : int ?
-    ' ---- Getters ----
-    + get_id_aluno() : int
-    + get_nome() : str
-    + get_telefone() : str?
-    + get_data_nascimento() : date?
-    + get_rua() : str?
-    + get_bairro() : str?
-    + get_numero() : int?
-    ' ---- Setters ----
-    + set_id_aluno(id: int) : void
-    + set_nome(nome: str) : void
-    + set_telefone(telefone: str?) : void
-    + set_data_nascimento(data: date?) : void
-    + set_rua(rua: str?) : void
-    + set_bairro(bairro: str?) : void
-    + set_numero(numero: int?) : void
+  package "aluno.py" {
+    class Aluno <<Entity>> {
+      - id_aluno : int (PK)
+      - nome : str (NOT NULL)
+      - telefone : str ?
+      - data_nascimento : date ?
+      - rua : str ?
+      - bairro : str ?
+      - numero : int ?
+      + get_id_aluno() : int
+      + get_nome() : str
+      + get_telefone() : str?
+      + get_data_nascimento() : date?
+      + get_rua() : str?
+      + get_bairro() : str?
+      + get_numero() : int?
+      + set_id_aluno(id: int) : void
+      + set_nome(nome: str) : void
+      + set_telefone(tel: str?) : void
+      + set_data_nascimento(data: date?) : void
+      + set_rua(rua: str?) : void
+      + set_bairro(bairro: str?) : void
+      + set_numero(num: int?) : void
+    }
   }
 
-  class Curso <<Entity>> {
-    - id_curso : int (PK, column: idcurso)
-    - nome_curso : str (NOT NULL, column: nomecurso)
-    + get_id_curso() : int
-    + get_nome_curso() : str
-    + set_id_curso(id: int) : void
-    + set_nome_curso(nome: str) : void
+  package "curso.py" {
+    class Curso <<Entity>> {
+      - id_curso : int (PK)
+      - nome_curso : str (NOT NULL)
+      + get_id_curso() : int
+      + get_nome_curso() : str
+      + set_id_curso(id: int) : void
+      + set_nome_curso(nome: str) : void
+    }
   }
 
-  class Turma <<Entity>> {
-    - id_turma : int (PK, column: idturma)
-    - capacidade : int ?
-    - data_inicio : date ? (column: datainicio)
-    - data_fim : date ? (column: datafim)
-    - id_curso : int (FK, column: idcurso)
-    - id_professor : int ? (FK, column: idprofessor)
-    - dias_aula : str ? (column: diasaula)
-    - avaliacoes : list ? (JSONB)
-    + vagas_ocupadas : int (readonly)
-    + get_id_turma() : int
-    + get_capacidade() : int?
-    + get_data_inicio() : date?
-    + get_data_fim() : date?
-    + get_id_curso() : int
-    + get_id_professor() : int?
-    + get_dias_aula() : str?
-    + get_avaliacoes() : list?
-    + get_vagas_ocupadas() : int
-    + set_id_turma(id: int) : void
-    + set_capacidade(capacidade: int?) : void
-    + set_data_inicio(data: date?) : void
-    + set_data_fim(data: date?) : void
-    + set_id_curso(id: int) : void
-    + set_id_professor(id: int?) : void
-    + set_dias_aula(dias: str?) : void
-    + set_avaliacoes(avaliacoes: list?) : void
+  package "turma.py" {
+    class Turma <<Entity>> {
+      - id_turma : int (PK)
+      - capacidade : int ?
+      - data_inicio : date ?
+      - data_fim : date ?
+      - id_curso : int (FK)
+      - id_professor : int ? (FK)
+      - dias_aula : str ?
+      - avaliacoes : list ? (JSONB)
+      + vagas_ocupadas : int (readonly)
+      + get_id_turma() : int
+      + get_capacidade() : int?
+      + get_data_inicio() : date?
+      + get_data_fim() : date?
+      + get_id_curso() : int
+      + get_id_professor() : int?
+      + get_dias_aula() : str?
+      + get_avaliacoes() : list?
+      + get_vagas_ocupadas() : int
+      + set_id_turma(id: int) : void
+      + set_capacidade(cap: int?) : void
+      + set_data_inicio(data: date?) : void
+      + set_data_fim(data: date?) : void
+      + set_id_curso(id: int) : void
+      + set_id_professor(id: int?) : void
+      + set_dias_aula(dias: str?) : void
+      + set_avaliacoes(avals: list?) : void
+    }
   }
 
-  class Matricula <<Entity>> {
-    - id_matricula : int (PK, column: idmatricula)
-    - id_aluno : int (FK, column: idaluno)
-    - id_turma : int (FK, column: idturma)
-    - data_matricula : date ? (column: datamatricula)
-    - status : int ?
-    + get_id_matricula() : int
-    + get_id_aluno() : int
-    + get_id_turma() : int
-    + get_data_matricula() : date?
-    + get_status() : int?
-    + set_id_matricula(id: int) : void
-    + set_id_aluno(id: int) : void
-    + set_id_turma(id: int) : void
-    + set_data_matricula(data: date?) : void
-    + set_status(status: int?) : void
+  package "matricula.py" {
+    class Matricula <<Entity>> {
+      - id_matricula : int (PK)
+      - id_aluno : int (FK)
+      - id_turma : int (FK)
+      - data_matricula : date ?
+      - status : int ?
+      + get_id_matricula() : int
+      + get_id_aluno() : int
+      + get_id_turma() : int
+      + get_data_matricula() : date?
+      + get_status() : int?
+      + set_id_matricula(id: int) : void
+      + set_id_aluno(id: int) : void
+      + set_id_turma(id: int) : void
+      + set_data_matricula(data: date?) : void
+      + set_status(status: int?) : void
+    }
   }
 
-  class Nota <<Entity>> {
-    - id_nota : int (PK, column: idnota)
-    - nota : float ?
-    - prova : int ?
-    - id_matricula : int (FK, column: idmatricula)
-    + get_id_nota() : int
-    + get_nota() : float?
-    + get_prova() : int?
-    + get_id_matricula() : int
-    + set_id_nota(id: int) : void
-    + set_nota(nota: float?) : void
-    + set_prova(prova: int?) : void
-    + set_id_matricula(id: int) : void
+  package "nota.py" {
+    class Nota <<Entity>> {
+      - id_nota : int (PK)
+      - nota : float ?
+      - prova : int ?
+      - id_matricula : int (FK)
+      + get_id_nota() : int
+      + get_nota() : float?
+      + get_prova() : int?
+      + get_id_matricula() : int
+      + set_id_nota(id: int) : void
+      + set_nota(nota: float?) : void
+      + set_prova(prova: int?) : void
+      + set_id_matricula(id: int) : void
+    }
   }
 
-  class Presenca <<Entity>> {
-    - id_presenca : int (PK, column: idpresenca)
-    - id_matricula : int (FK, column: idmatricula)
-    - data_aula : date ? (column: dataaula)
-    - presente : bool ?
-    + get_id_presenca() : int
-    + get_id_matricula() : int
-    + get_data_aula() : date?
-    + get_presente() : bool?
-    + set_id_presenca(id: int) : void
-    + set_id_matricula(id: int) : void
-    + set_data_aula(data: date?) : void
-    + set_presente(presente: bool?) : void
+  package "presenca.py" {
+    class Presenca <<Entity>> {
+      - id_presenca : int (PK)
+      - id_matricula : int (FK)
+      - data_aula : date ?
+      - presente : bool ?
+      + get_id_presenca() : int
+      + get_id_matricula() : int
+      + get_data_aula() : date?
+      + get_presente() : bool?
+      + set_id_presenca(id: int) : void
+      + set_id_matricula(id: int) : void
+      + set_data_aula(data: date?) : void
+      + set_presente(presente: bool?) : void
+    }
   }
 
-  class Usuario <<Entity>> {
-    - id_usuario : int (PK, column: idusuario)
-    - nome : str ?
-    - telefone : str ?
-    - email : str ? (UNIQUE)
-    - senha_hash : str ? (column: senhahash)
-    - cargo : int ?
-    + get_id_usuario() : int
-    + get_nome() : str?
-    + get_telefone() : str?
-    + get_email() : str?
-    + get_senha_hash() : str?
-    + get_cargo() : int?
-    + set_id_usuario(id: int) : void
-    + set_nome(nome: str?) : void
-    + set_telefone(telefone: str?) : void
-    + set_email(email: str?) : void
-    + set_senha_hash(hash: str?) : void
-    + set_cargo(cargo: int?) : void
+  package "usuario.py" {
+    class Usuario <<Entity>> {
+      - id_usuario : int (PK)
+      - nome : str ?
+      - telefone : str ?
+      - email : str ? (UNIQUE)
+      - senha_hash : str ?
+      - cargo : int ?
+      + get_id_usuario() : int
+      + get_nome() : str?
+      + get_telefone() : str?
+      + get_email() : str?
+      + get_senha_hash() : str?
+      + get_cargo() : int?
+      + set_id_usuario(id: int) : void
+      + set_nome(nome: str?) : void
+      + set_telefone(tel: str?) : void
+      + set_email(email: str?) : void
+      + set_senha_hash(hash: str?) : void
+      + set_cargo(cargo: int?) : void
+    }
   }
 
-  class Pedido <<Entity>> {
-    - id_pedido : int (PK, column: idpedido)
-    - id_usuario : int (FK, column: idusuario)
-    - id_turma : int (FK, column: idturma)
-    - data_pedido : date ? (column: datapedido)
-    - status : int ?
-    + get_id_pedido() : int
-    + get_id_usuario() : int
-    + get_id_turma() : int
-    + get_data_pedido() : date?
-    + get_status() : int?
-    + set_id_pedido(id: int) : void
-    + set_id_usuario(id: int) : void
-    + set_id_turma(id: int) : void
-    + set_data_pedido(data: date?) : void
-    + set_status(status: int?) : void
+  package "pedido.py" {
+    class Pedido <<Entity>> {
+      - id_pedido : int (PK)
+      - id_usuario : int (FK)
+      - id_turma : int (FK)
+      - data_pedido : date ?
+      - status : int ?
+      + get_id_pedido() : int
+      + get_id_usuario() : int
+      + get_id_turma() : int
+      + get_data_pedido() : date?
+      + get_status() : int?
+      + set_id_pedido(id: int) : void
+      + set_id_usuario(id: int) : void
+      + set_id_turma(id: int) : void
+      + set_data_pedido(data: date?) : void
+      + set_status(status: int?) : void
+    }
   }
 
-  class ItemPedido <<Entity>> {
-    - id_item_pedido : int (PK, column: iditempedido)
-    - id_pedido : int (FK, column: idpedido)
-    - id_item_estoque : int ? (FK, column: iditemestoque)
-    - nome_item : str ? (column: nomeitem)
-    - quantidade : int ?
-    - preco_unitario : float ? (column: precounitario)
-    + get_id_item_pedido() : int
-    + get_id_pedido() : int
-    + get_id_item_estoque() : int?
-    + get_nome_item() : str?
-    + get_quantidade() : int?
-    + get_preco_unitario() : float?
-    + set_id_item_pedido(id: int) : void
-    + set_id_pedido(id: int) : void
-    + set_id_item_estoque(id: int?) : void
-    + set_nome_item(nome: str?) : void
-    + set_quantidade(quantidade: int?) : void
-    + set_preco_unitario(preco: float?) : void
+  package "item_pedido.py" {
+    class ItemPedido <<Entity>> {
+      - id_item_pedido : int (PK)
+      - id_pedido : int (FK)
+      - id_item_estoque : int ? (FK)
+      - nome_item : str ?
+      - quantidade : int ?
+      - preco_unitario : float ?
+      + get_id_item_pedido() : int
+      + get_id_pedido() : int
+      + get_id_item_estoque() : int?
+      + get_nome_item() : str?
+      + get_quantidade() : int?
+      + get_preco_unitario() : float?
+      + set_id_item_pedido(id: int) : void
+      + set_id_pedido(id: int) : void
+      + set_id_item_estoque(id: int?) : void
+      + set_nome_item(nome: str?) : void
+      + set_quantidade(qtd: int?) : void
+      + set_preco_unitario(preco: float?) : void
+    }
   }
 
-  class Estoque <<Entity>> {
-    - id_item_estoque : int (PK, column: iditemestoque)
-    - nome_item : str ? (column: nomeitem)
-    - quantidade_disponivel : int ? (column: quantidadedisponivel)
-    - unidade : str ?
-    - estoque_minimo : int ? (column: estoqueminimo)
-    + get_id_item_estoque() : int
-    + get_nome_item() : str?
-    + get_quantidade_disponivel() : int?
-    + get_unidade() : str?
-    + get_estoque_minimo() : int?
-    + set_id_item_estoque(id: int) : void
-    + set_nome_item(nome: str?) : void
-    + set_quantidade_disponivel(quantidade: int?) : void
-    + set_unidade(unidade: str?) : void
-    + set_estoque_minimo(min: int?) : void
+  package "estoque.py" {
+    class Estoque <<Entity>> {
+      - id_item_estoque : int (PK)
+      - nome_item : str ?
+      - quantidade_disponivel : int ?
+      - unidade : str ?
+      - estoque_minimo : int ?
+      + get_id_item_estoque() : int
+      + get_nome_item() : str?
+      + get_quantidade_disponivel() : int?
+      + get_unidade() : str?
+      + get_estoque_minimo() : int?
+      + set_id_item_estoque(id: int) : void
+      + set_nome_item(nome: str?) : void
+      + set_quantidade_disponivel(qtd: int?) : void
+      + set_unidade(unidade: str?) : void
+      + set_estoque_minimo(min: int?) : void
+    }
   }
 
-  class MovimentacaoEstoque <<Entity>> {
-    - id_movimentacao : int (PK, column: idmovimentacao)
-    - id_item_estoque : int (FK, column: iditemestoque)
-    - quantidade : int
-    - tipo_movimentacao : str (column: tipomovimentacao)
-    - justificativa : str ?
-    - data_movimentacao : datetime (column: datamovimentacao)
-    + get_id_movimentacao() : int
-    + get_id_item_estoque() : int
-    + get_quantidade() : int
-    + get_tipo_movimentacao() : str
-    + get_justificativa() : str?
-    + get_data_movimentacao() : datetime
-    + set_id_movimentacao(id: int) : void
-    + set_id_item_estoque(id: int) : void
-    + set_quantidade(quantidade: int) : void
-    + set_tipo_movimentacao(tipo: str) : void
-    + set_justificativa(just: str?) : void
-    + set_data_movimentacao(data: datetime) : void
+  package "movimentacao_estoque.py" {
+    class MovimentacaoEstoque <<Entity>> {
+      - id_movimentacao : int (PK)
+      - id_item_estoque : int (FK)
+      - quantidade : int
+      - tipo_movimentacao : str
+      - justificativa : str ?
+      - data_movimentacao : datetime
+      + get_id_movimentacao() : int
+      + get_id_item_estoque() : int
+      + get_quantidade() : int
+      + get_tipo_movimentacao() : str
+      + get_justificativa() : str?
+      + get_data_movimentacao() : datetime
+      + set_id_movimentacao(id: int) : void
+      + set_id_item_estoque(id: int) : void
+      + set_quantidade(qtd: int) : void
+      + set_tipo_movimentacao(tipo: str) : void
+      + set_justificativa(just: str?) : void
+      + set_data_movimentacao(data: datetime) : void
+    }
   }
 
   ' ---- RELATIONSHIPS ----
@@ -239,196 +260,228 @@ package "models" {
 ' ============================================================
 package "schemas" {
 
-  class AlunoCreateSchema <<DTO>> { + nome: str ; + telefone: str? ; + dataNascimento: date? ; + rua: str? ; + bairro: str? ; + numero: int? }
-  class AlunoUpdateSchema <<DTO>> { + nome: str? ; + telefone: str? ; + dataNascimento: date? ; + rua: str? ; + bairro: str? ; + numero: int? }
-  class AlunoResponseSchema <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str ; + telefone: str? ; + data_nascimento (alias dataNascimento): date? ; + rua: str? ; + bairro: str? ; + numero: int? }
-  class CursoCreateSchema <<DTO>> { + nomeCurso: str }
-  class CursoUpdateSchema <<DTO>> { + nomeCurso: str }
-  class CursoResponseSchema <<DTO>> { + id_curso (alias idCurso): int ; + nome_curso (alias nomeCurso): str }
-  class TurmaCreateSchema <<DTO>> { + capacidade: int? ; + dataInicio: date? ; + dataFim: date? ; + idCurso: int ; + idProfessor: int? ; + diasAula: str? ; + avaliacoes: list? }
-  class TurmaUpdateSchema <<DTO>> { + capacidade: int? ; + dataInicio: date? ; + dataFim: date? ; + idCurso: int? ; + idProfessor: int? ; + diasAula: str? ; + avaliacoes: list? }
-  class TurmaCursoInfo <<DTO>> { + id_curso (alias idCurso): int ; + nome_curso (alias nomeCurso): str }
-  class TurmaProfessorInfo <<DTO>> { + id_usuario (alias idUsuario): int ; + nome: str? }
-  class TurmaResponseSchema <<DTO>> { + id_turma (alias idTurma): int ; + capacidade: int? ; + data_inicio (alias dataInicio): date? ; + data_fim (alias dataFim): date? ; + id_curso (alias idCurso): int ; + id_professor (alias idProfessor): int? ; + dias_aula (alias diasAula): str? ; + vagas_ocupadas (alias vagasOcupadas): int? ; + avaliacoes: list? ; + curso: TurmaCursoInfo? ; + professor: TurmaProfessorInfo? }
-  class MatriculaCreateSchema <<DTO>> { + idAluno: int ; + idTurma: int ; + dataMatricula: date? ; + status: int? }
-  class MatriculaUpdateSchema <<DTO>> { + idAluno: int? ; + idTurma: int? ; + dataMatricula: date? ; + status: int? }
-  class MatriculaAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str? ; + telefone: str? }
-  class MatriculaCursoInfo <<DTO>> { + id_curso (alias idCurso): int ; + nome_curso (alias nomeCurso): str }
-  class MatriculaTurmaInfo <<DTO>> { + id_turma (alias idTurma): int ; + capacidade: int? ; + curso: MatriculaCursoInfo? }
-  class MatriculaResponseSchema <<DTO>> { + id_matricula (alias idMatricula): int ; + id_aluno (alias idAluno): int? ; + id_turma (alias idTurma): int? ; + data_matricula (alias dataMatricula): date? ; + status: int? ; + aluno: MatriculaAlunoInfo? ; + turma: MatriculaTurmaInfo? }
-  class NotaItemSchema <<DTO>> { + idMatricula: int ; + nota: float? }
-  class NotaBatchSchema <<DTO>> { + idTurma: int ; + prova: int ; + notas: list[NotaItemSchema] }
-  class NotaAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str? }
-  class NotaTurmaInfo <<DTO>> { + id_turma (alias idTurma): int ; + nome_curso (alias nomeCurso): str? }
-  class NotaMatriculaInfo <<DTO>> { + id_matricula (alias idMatricula): int ; + aluno: NotaAlunoInfo? ; + turma: NotaTurmaInfo? }
-  class NotaResponseSchema <<DTO>> { + id_nota (alias idNota): int ; + id_matricula (alias idMatricula): int ; + nota: float? ; + prova: int? ; + matricula: NotaMatriculaInfo? }
-  class MediaProvaSchema <<DTO>> { + prova: int ; + media: float? }
-  class MediaTurmaSchema <<DTO>> { + id_turma (alias idTurma): int ; + medias: list[MediaProvaSchema] }
-  class PresencaItemSchema <<DTO>> { + idMatricula: int ; + presente: bool }
-  class PresencaBatchSchema <<DTO>> { + idTurma: int ; + dataAula: date ; + presencas: list[PresencaItemSchema] }
-  class PresencaAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str? }
-  class PresencaMatriculaInfo <<DTO>> { + id_matricula (alias idMatricula): int ; + aluno: PresencaAlunoInfo? }
-  class PresencaResponseSchema <<DTO>> { + id_presenca (alias idPresenca): int ; + id_matricula (alias idMatricula): int ; + data_aula (alias dataAula): date? ; + presente: bool? ; + matricula: PresencaMatriculaInfo? }
-  class UsuarioCreateSchema <<DTO>> { + nome: str ; + email: EmailStr ; + senha: str ; + cargo: int ; + telefone: str? }
-  class UsuarioUpdateSchema <<DTO>> { + nome: str ; + telefone: str? ; + cargo: int }
-  class UsuarioResponseSchema <<DTO>> { + id_usuario (alias idUsuario): int ; + nome: str? ; + telefone: str? ; + email: EmailStr? ; + cargo: int? }
-  class ItemPedidoCreateSchema <<DTO>> { + nomeItem: str ; + quantidade: int? ; + idItemEstoque: int? ; + precoUnitario: float? }
-  class ItemPedidoCompraSchema <<DTO>> { + idItemPedido: int ; + quantidade: int }
-  class PedidoCreateSchema <<DTO>> { + idTurma: int ; + dataPedido: date? ; + itens: list[ItemPedidoCreateSchema] }
-  class PedidoUpdateSchema <<DTO>> { + status: int }
-  class PedidoCompraSchema <<DTO>> { + itens: list[ItemPedidoCompraSchema] }
-  class EstoqueItemInfo <<DTO>> { + id_item_estoque (alias idItemEstoque): int ; + nome_item (alias nomeItem): str? ; + unidade: str? }
-  class ItemPedidoResponseSchema <<DTO>> { + id_item_pedido (alias idItemPedido): int ; + id_pedido (alias idPedido): int ; + id_item_estoque (alias idItemEstoque): int? ; + nome_item (alias nomeItem): str? ; + quantidade: int? ; + preco_unitario (alias precoUnitario): float? ; + item_estoque: EstoqueItemInfo? }
-  class UsuarioPedidoInfo <<DTO>> { + id_usuario (alias idUsuario): int ; + nome: str? }
-  class TurmaPedidoInfo <<DTO>> { + id_turma (alias idTurma): int ; + capacidade: int? ; + nome_curso (alias nomeCurso): str? }
-  class PedidoResponseSchema <<DTO>> { + id_pedido (alias idPedido): int ; + id_usuario (alias idUsuario): int ; + id_turma (alias idTurma): int ; + data_pedido (alias dataPedido): date? ; + status: int? ; + usuario: UsuarioPedidoInfo? ; + turma: TurmaPedidoInfo? ; + itens: list[ItemPedidoResponseSchema]? }
-  class EstoqueCreateSchema <<DTO>> { + nomeItem: str ; + quantidadeDisponivel: int? ; + unidade: str? ; + estoqueMinimo: int? }
-  class EstoqueUpdateSchema <<DTO>> { + nomeItem: str? ; + quantidadeDisponivel: int? ; + unidade: str? ; + estoqueMinimo: int? }
-  class EstoqueResponseSchema <<DTO>> { + id_item_estoque (alias idItemEstoque): int ; + nome_item (alias nomeItem): str? ; + quantidade_disponivel (alias quantidadeDisponivel): int? ; + unidade: str? ; + estoque_minimo (alias estoqueMinimo): int? }
-  class EstoqueBaixaSchema <<DTO>> { + quantidade: int ; + justificativa: str }
-  class EstoqueAlertaResponseSchema <<DTO>> { + id_item_estoque (alias idItemEstoque): int ; + nome_item (alias nomeItem): str? ; + quantidade_disponivel (alias quantidadeDisponivel): int? ; + unidade: str? ; + estoque_minimo (alias estoqueMinimo): int? }
-  class LoginRequest <<DTO>> { + email: EmailStr ; + senha: str }
-  class ForgotPasswordRequest <<DTO>> { + email: EmailStr }
-  class ResetPasswordRequest <<DTO>> { + token: str ; + nova_senha: str ; + confirmar_senha: str }
-  class UsuarioResponse <<DTO>> { + idUsuario: int ; + nome: str? ; + email: EmailStr ; + cargo: int? }
-  class TokenResponse <<DTO>> { + access_token: str ; + token_type: str = "bearer" ; + usuario: UsuarioResponse }
-  class MessageResponse <<DTO>> { + message: str }
-  class KpisResponse <<DTO>> { + total_alunos_ativos: int ; + total_turmas_vigentes: int ; + total_pedidos_pendentes: int ; + total_estoque_critico: int }
-  class AlunosPorCurso <<DTO>> { + curso: str ; + quantidade: int }
-  class StatusMatriculas <<DTO>> { + status: int ; + quantidade: int }
-  class ChartAcademicoResponse <<DTO>> { + alunos_por_curso: list[AlunosPorCurso] ; + status_matriculas: list[StatusMatriculas] }
-  class ConsumoItem <<DTO>> { + item: str ; + quantidade: int }
-  class ChartLogisticaResponse <<DTO>> { + consumo_mes_atual: list[ConsumoItem] }
-  class HistoricoNotaInfo <<DTO>> { + prova: int? ; + nota: float? }
-  class HistoricoPresencaInfo <<DTO>> { + data_aula (alias dataAula): date? ; + presente: bool? }
-  class HistoricoAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str ; + data_nascimento (alias dataNascimento): date? ; + telefone: str? }
-  class HistoricoTurmaInfo <<DTO>> { + id_turma (alias idTurma): int ; + nome_curso (alias nomeCurso): str ; + nome_professor (alias nomeProfessor): str? ; + data_inicio (alias dataInicio): date? ; + data_fim (alias dataFim): date? ; + dias_aula (alias diasAula): str? }
-  class HistoricoResponse <<DTO>> { + id_matricula (alias idMatricula): int ; + data_matricula (alias dataMatricula): date? ; + status: int? ; + aluno: HistoricoAlunoInfo ; + turma: HistoricoTurmaInfo ; + notas: list[HistoricoNotaInfo] ; + presencas: list[HistoricoPresencaInfo] ; + percentual_frequencia (alias percentualFrequencia): float? }
+  package "aluno_schema.py" {
+    class AlunoCreateSchema <<DTO>> { + nome: str ; + telefone: str? ; + dataNascimento: date? ; + rua: str? ; + bairro: str? ; + numero: int? }
+    class AlunoUpdateSchema <<DTO>> { + nome: str? ; + telefone: str? ; + dataNascimento: date? ; + rua: str? ; + bairro: str? ; + numero: int? }
+    class AlunoResponseSchema <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str ; + telefone: str? ; + data_nascimento (alias dataNascimento): date? ; + rua: str? ; + bairro: str? ; + numero: int? }
+  }
 
-  ' ---- Schema compositions ----
-  TurmaResponseSchema *-- TurmaCursoInfo
-  TurmaResponseSchema *-- TurmaProfessorInfo
-  MatriculaResponseSchema *-- MatriculaAlunoInfo
-  MatriculaResponseSchema *-- MatriculaTurmaInfo
-  MatriculaTurmaInfo *-- MatriculaCursoInfo
-  NotaResponseSchema *-- NotaMatriculaInfo
-  NotaMatriculaInfo *-- NotaAlunoInfo
-  NotaMatriculaInfo *-- NotaTurmaInfo
-  PresencaResponseSchema *-- PresencaMatriculaInfo
-  PresencaMatriculaInfo *-- PresencaAlunoInfo
-  PedidoResponseSchema *-- UsuarioPedidoInfo
-  PedidoResponseSchema *-- TurmaPedidoInfo
-  PedidoResponseSchema *-- ItemPedidoResponseSchema
-  ItemPedidoResponseSchema *-- EstoqueItemInfo
-  PedidoCreateSchema *-- ItemPedidoCreateSchema
-  PedidoCompraSchema *-- ItemPedidoCompraSchema
-  NotaBatchSchema *-- NotaItemSchema
-  PresencaBatchSchema *-- PresencaItemSchema
-  HistoricoResponse *-- HistoricoAlunoInfo
-  HistoricoResponse *-- HistoricoTurmaInfo
-  HistoricoResponse *-- HistoricoNotaInfo
-  HistoricoResponse *-- HistoricoPresencaInfo
-  ChartAcademicoResponse *-- AlunosPorCurso
-  ChartAcademicoResponse *-- StatusMatriculas
-  ChartLogisticaResponse *-- ConsumoItem
-  MediaTurmaSchema *-- MediaProvaSchema
+  package "auth_schema.py" {
+    class LoginRequest <<DTO>> { + email: EmailStr ; + senha: str }
+    class ForgotPasswordRequest <<DTO>> { + email: EmailStr }
+    class ResetPasswordRequest <<DTO>> { + token: str ; + nova_senha: str ; + confirmar_senha: str }
+    class UsuarioResponse <<DTO>> { + idUsuario: int ; + nome: str? ; + email: EmailStr ; + cargo: int? }
+    class TokenResponse <<DTO>> { + access_token: str ; + token_type: str = "bearer" ; + usuario: UsuarioResponse }
+    class MessageResponse <<DTO>> { + message: str }
+  }
+
+  package "curso_schema.py" {
+    class CursoCreateSchema <<DTO>> { + nomeCurso: str }
+    class CursoUpdateSchema <<DTO>> { + nomeCurso: str }
+    class CursoResponseSchema <<DTO>> { + id_curso (alias idCurso): int ; + nome_curso (alias nomeCurso): str }
+  }
+
+  package "dashboard_schema.py" {
+    class KpisResponse <<DTO>> { + total_alunos_ativos: int ; + total_turmas_vigentes: int ; + total_pedidos_pendentes: int ; + total_estoque_critico: int }
+    class AlunosPorCurso <<DTO>> { + curso: str ; + quantidade: int }
+    class StatusMatriculas <<DTO>> { + status: int ; + quantidade: int }
+    class ChartAcademicoResponse <<DTO>> { + alunos_por_curso: list[AlunosPorCurso] ; + status_matriculas: list[StatusMatriculas] }
+    class ConsumoItem <<DTO>> { + item: str ; + quantidade: int }
+    class ChartLogisticaResponse <<DTO>> { + consumo_mes_atual: list[ConsumoItem] }
+  }
+
+  package "estoque_schema.py" {
+    class EstoqueCreateSchema <<DTO>> { + nomeItem: str ; + quantidadeDisponivel: int? ; + unidade: str? ; + estoqueMinimo: int? }
+    class EstoqueUpdateSchema <<DTO>> { + nomeItem: str? ; + quantidadeDisponivel: int? ; + unidade: str? ; + estoqueMinimo: int? }
+    class EstoqueResponseSchema <<DTO>> { + id_item_estoque (alias idItemEstoque): int ; + nome_item (alias nomeItem): str? ; + quantidade_disponivel (alias quantidadeDisponivel): int? ; + unidade: str? ; + estoque_minimo (alias estoqueMinimo): int? }
+    class EstoqueBaixaSchema <<DTO>> { + quantidade: int ; + justificativa: str }
+    class EstoqueAlertaResponseSchema <<DTO>> { + id_item_estoque (alias idItemEstoque): int ; + nome_item (alias nomeItem): str? ; + quantidade_disponivel (alias quantidadeDisponivel): int? ; + unidade: str? ; + estoque_minimo (alias estoqueMinimo): int? }
+  }
+
+  package "historico_schema.py" {
+    class HistoricoNotaInfo <<DTO>> { + prova: int? ; + nota: float? }
+    class HistoricoPresencaInfo <<DTO>> { + data_aula (alias dataAula): date? ; + presente: bool? }
+    class HistoricoAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str ; + data_nascimento (alias dataNascimento): date? ; + telefone: str? }
+    class HistoricoTurmaInfo <<DTO>> { + id_turma (alias idTurma): int ; + nome_curso (alias nomeCurso): str ; + nome_professor (alias nomeProfessor): str? ; + data_inicio (alias dataInicio): date? ; + data_fim (alias dataFim): date? ; + dias_aula (alias diasAula): str? }
+    class HistoricoResponse <<DTO>> { + id_matricula (alias idMatricula): int ; + data_matricula (alias dataMatricula): date? ; + status: int? ; + aluno: HistoricoAlunoInfo ; + turma: HistoricoTurmaInfo ; + notas: list[HistoricoNotaInfo] ; + presencas: list[HistoricoPresencaInfo] ; + percentual_frequencia (alias percentualFrequencia): float? }
+  }
+
+  package "matricula_schema.py" {
+    class MatriculaCreateSchema <<DTO>> { + idAluno: int ; + idTurma: int ; + dataMatricula: date? ; + status: int? }
+    class MatriculaUpdateSchema <<DTO>> { + idAluno: int? ; + idTurma: int? ; + dataMatricula: date? ; + status: int? }
+    class MatriculaAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str? ; + telefone: str? }
+    class MatriculaCursoInfo <<DTO>> { + id_curso (alias idCurso): int ; + nome_curso (alias nomeCurso): str }
+    class MatriculaTurmaInfo <<DTO>> { + id_turma (alias idTurma): int ; + capacidade: int? ; + curso: MatriculaCursoInfo? }
+    class MatriculaResponseSchema <<DTO>> { + id_matricula (alias idMatricula): int ; + id_aluno (alias idAluno): int? ; + id_turma (alias idTurma): int? ; + data_matricula (alias dataMatricula): date? ; + status: int? ; + aluno: MatriculaAlunoInfo? ; + turma: MatriculaTurmaInfo? }
+  }
+
+  package "nota_schema.py" {
+    class NotaItemSchema <<DTO>> { + idMatricula: int ; + nota: float? }
+    class NotaBatchSchema <<DTO>> { + idTurma: int ; + prova: int ; + notas: list[NotaItemSchema] }
+    class NotaAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str? }
+    class NotaTurmaInfo <<DTO>> { + id_turma (alias idTurma): int ; + nome_curso (alias nomeCurso): str? }
+    class NotaMatriculaInfo <<DTO>> { + id_matricula (alias idMatricula): int ; + aluno: NotaAlunoInfo? ; + turma: NotaTurmaInfo? }
+    class NotaResponseSchema <<DTO>> { + id_nota (alias idNota): int ; + id_matricula (alias idMatricula): int ; + nota: float? ; + prova: int? ; + matricula: NotaMatriculaInfo? }
+    class MediaProvaSchema <<DTO>> { + prova: int ; + media: float? }
+    class MediaTurmaSchema <<DTO>> { + id_turma (alias idTurma): int ; + medias: list[MediaProvaSchema] }
+  }
+
+  package "pedido_schema.py" {
+    class ItemPedidoCreateSchema <<DTO>> { + nomeItem: str ; + quantidade: int? ; + idItemEstoque: int? ; + precoUnitario: float? }
+    class ItemPedidoCompraSchema <<DTO>> { + idItemPedido: int ; + quantidade: int }
+    class PedidoCreateSchema <<DTO>> { + idTurma: int ; + dataPedido: date? ; + itens: list[ItemPedidoCreateSchema] }
+    class PedidoUpdateSchema <<DTO>> { + status: int }
+    class PedidoCompraSchema <<DTO>> { + itens: list[ItemPedidoCompraSchema] }
+    class EstoqueItemInfo <<DTO>> { + id_item_estoque (alias idItemEstoque): int ; + nome_item (alias nomeItem): str? ; + unidade: str? }
+    class ItemPedidoResponseSchema <<DTO>> { + id_item_pedido (alias idItemPedido): int ; + id_pedido (alias idPedido): int ; + id_item_estoque (alias idItemEstoque): int? ; + nome_item (alias nomeItem): str? ; + quantidade: int? ; + preco_unitario (alias precoUnitario): float? ; + item_estoque: EstoqueItemInfo? }
+    class UsuarioPedidoInfo <<DTO>> { + id_usuario (alias idUsuario): int ; + nome: str? }
+    class TurmaPedidoInfo <<DTO>> { + id_turma (alias idTurma): int ; + capacidade: int? ; + nome_curso (alias nomeCurso): str? }
+    class PedidoResponseSchema <<DTO>> { + id_pedido (alias idPedido): int ; + id_usuario (alias idUsuario): int ; + id_turma (alias idTurma): int ; + data_pedido (alias dataPedido): date? ; + status: int? ; + usuario: UsuarioPedidoInfo? ; + turma: TurmaPedidoInfo? ; + itens: list[ItemPedidoResponseSchema]? }
+  }
+
+  package "presenca_schema.py" {
+    class PresencaItemSchema <<DTO>> { + idMatricula: int ; + presente: bool }
+    class PresencaBatchSchema <<DTO>> { + idTurma: int ; + dataAula: date ; + presencas: list[PresencaItemSchema] }
+    class PresencaAlunoInfo <<DTO>> { + id_aluno (alias idAluno): int ; + nome: str? }
+    class PresencaMatriculaInfo <<DTO>> { + id_matricula (alias idMatricula): int ; + aluno: PresencaAlunoInfo? }
+    class PresencaResponseSchema <<DTO>> { + id_presenca (alias idPresenca): int ; + id_matricula (alias idMatricula): int ; + data_aula (alias dataAula): date? ; + presente: bool? ; + matricula: PresencaMatriculaInfo? }
+  }
+
+  package "turma_schema.py" {
+    class TurmaCreateSchema <<DTO>> { + capacidade: int? ; + dataInicio: date? ; + dataFim: date? ; + idCurso: int ; + idProfessor: int? ; + diasAula: str? ; + avaliacoes: list? }
+    class TurmaUpdateSchema <<DTO>> { + capacidade: int? ; + dataInicio: date? ; + dataFim: date? ; + idCurso: int? ; + idProfessor: int? ; + diasAula: str? ; + avaliacoes: list? }
+    class TurmaCursoInfo <<DTO>> { + id_curso (alias idCurso): int ; + nome_curso (alias nomeCurso): str }
+    class TurmaProfessorInfo <<DTO>> { + id_usuario (alias idUsuario): int ; + nome: str? }
+    class TurmaResponseSchema <<DTO>> { + id_turma (alias idTurma): int ; + capacidade: int? ; + data_inicio (alias dataInicio): date? ; + data_fim (alias dataFim): date? ; + id_curso (alias idCurso): int ; + id_professor (alias idProfessor): int? ; + dias_aula (alias diasAula): str? ; + vagas_ocupadas (alias vagasOcupadas): int? ; + avaliacoes: list? ; + curso: TurmaCursoInfo? ; + professor: TurmaProfessorInfo? }
+  }
+
+  package "usuario_schema.py" {
+    class UsuarioCreateSchema <<DTO>> { + nome: str ; + email: EmailStr ; + senha: str ; + cargo: int ; + telefone: str? }
+    class UsuarioUpdateSchema <<DTO>> { + nome: str ; + telefone: str? ; + cargo: int }
+    class UsuarioResponseSchema <<DTO>> { + id_usuario (alias idUsuario): int ; + nome: str? ; + telefone: str? ; + email: EmailStr? ; + cargo: int? }
+  }
 }
 
 ' ============================================================
 ' API / V1 - backend/app/api/v1/
+' Cada sub-pacote = 1 arquivo .py
 ' ============================================================
 package "api/v1" {
 
-  class AuthRouter <<Controller>> {
-    + login(payload: LoginRequest, request, db) : TokenResponse
-    + forgot_password(payload: ForgotPasswordRequest, request, db) : MessageResponse
-    + reset_password(payload: ResetPasswordRequest, request, db) : MessageResponse
+  package "auth.py" {
+    class AuthRouter <<Controller>> {
+      + login(payload: LoginRequest, request, db) : TokenResponse
+      + forgot_password(payload: ForgotPasswordRequest, request, db) : MessageResponse
+      + reset_password(payload: ResetPasswordRequest, request, db) : MessageResponse
+    }
   }
 
-  class AlunoRouter <<Controller>> {
-    + read_alunos(current_user, db) : list
-    + read_aluno(aluno_id, current_user, db) : AlunoResponseSchema
-    + create_alunos(payload: AlunoCreateSchema, current_user, db) : AlunoResponseSchema
-    + update_alunos(aluno_id, payload: AlunoUpdateSchema, current_user, db) : AlunoResponseSchema
-    + delete_alunos(aluno_id, current_user, db) : dict
+  package "alunos.py" {
+    class AlunoRouter <<Controller>> {
+      + read_alunos(current_user, db) : list
+      + read_aluno(aluno_id, current_user, db) : AlunoResponseSchema
+      + create_alunos(payload: AlunoCreateSchema, current_user, db) : AlunoResponseSchema
+      + update_alunos(aluno_id, payload: AlunoUpdateSchema, current_user, db) : AlunoResponseSchema
+      + delete_alunos(aluno_id, current_user, db) : dict
+    }
   }
 
-  class CursoRouter <<Controller>> {
-    + read_cursos(current_user, db) : list
-    + read_curso(curso_id, current_user, db) : CursoResponseSchema
-    + create_cursos(payload: CursoCreateSchema, current_user, db) : CursoResponseSchema
-    + update_cursos(curso_id, payload: CursoUpdateSchema, current_user, db) : CursoResponseSchema
-    + delete_cursos(curso_id, current_user, db) : dict
+  package "cursos.py" {
+    class CursoRouter <<Controller>> {
+      + read_cursos(current_user, db) : list
+      + read_curso(curso_id, current_user, db) : CursoResponseSchema
+      + create_cursos(payload: CursoCreateSchema, current_user, db) : CursoResponseSchema
+      + update_cursos(curso_id, payload: CursoUpdateSchema, current_user, db) : CursoResponseSchema
+      + delete_cursos(curso_id, current_user, db) : dict
+    }
   }
 
-  class TurmaRouter <<Controller>> {
-    + read_turmas(current_user, db) : list
-    + read_minhas_turmas(current_user, db) : list
-    + read_turma(turma_id, current_user, db) : TurmaResponseSchema
-    + create_turmas(payload: TurmaCreateSchema, current_user, db) : TurmaResponseSchema
-    + update_turmas(turma_id, payload: TurmaUpdateSchema, current_user, db) : TurmaResponseSchema
-    + delete_turmas(turma_id, current_user, db) : dict
+  package "turmas.py" {
+    class TurmaRouter <<Controller>> {
+      + read_turmas(current_user, db) : list
+      + read_minhas_turmas(current_user, db) : list
+      + read_turma(turma_id, current_user, db) : TurmaResponseSchema
+      + create_turmas(payload: TurmaCreateSchema, current_user, db) : TurmaResponseSchema
+      + update_turmas(turma_id, payload: TurmaUpdateSchema, current_user, db) : TurmaResponseSchema
+      + delete_turmas(turma_id, current_user, db) : dict
+    }
   }
 
-  class MatriculaRouter <<Controller>> {
-    + read_matriculas(current_user, db) : list
-    + read_matriculas_by_professor(current_user, db) : list
-    + read_matricula(matricula_id, current_user, db) : MatriculaResponseSchema
-    + create_matriculas(payload: MatriculaCreateSchema, current_user, db) : MatriculaResponseSchema
-    + update_matriculas(matricula_id, payload: MatriculaUpdateSchema, current_user, db) : MatriculaResponseSchema
-    + delete_matriculas(matricula_id, current_user, db) : dict
+  package "matriculas.py" {
+    class MatriculaRouter <<Controller>> {
+      + read_matriculas(current_user, db) : list
+      + read_matriculas_by_professor(current_user, db) : list
+      + read_matricula(matricula_id, current_user, db) : MatriculaResponseSchema
+      + create_matriculas(payload: MatriculaCreateSchema, current_user, db) : MatriculaResponseSchema
+      + update_matriculas(matricula_id, payload: MatriculaUpdateSchema, current_user, db) : MatriculaResponseSchema
+      + delete_matriculas(matricula_id, current_user, db) : dict
+    }
   }
 
-  class NotaRouter <<Controller>> {
-    + create_notas(payload: NotaBatchSchema, current_user, db) : list
-    + read_notas_by_matricula(matricula_id, current_user, db) : list
-    + read_notas_by_turma(turma_id, prova?, current_user, db) : list
-    + read_media_turma(turma_id, current_user, db) : MediaTurmaSchema
+  package "notas.py" {
+    class NotaRouter <<Controller>> {
+      + create_notas(payload: NotaBatchSchema, current_user, db) : list
+      + read_notas_by_matricula(matricula_id, current_user, db) : list
+      + read_notas_by_turma(turma_id, prova?, current_user, db) : list
+      + read_media_turma(turma_id, current_user, db) : MediaTurmaSchema
+    }
   }
 
-  class PresencaRouter <<Controller>> {
-    + create_presencas(payload: PresencaBatchSchema, current_user, db) : list
-    + read_presencas_by_turma(turma_id, dataAula?, current_user, db) : list
+  package "presencas.py" {
+    class PresencaRouter <<Controller>> {
+      + create_presencas(payload: PresencaBatchSchema, current_user, db) : list
+      + read_presencas_by_turma(turma_id, dataAula?, current_user, db) : list
+    }
   }
 
-  class UsuarioRouter <<Controller>> {
-    + read_usuarios(current_user, db) : list
-    + read_usuario(usuario_id, current_user, db) : UsuarioResponseSchema
-    + create_usuarios(payload: UsuarioCreateSchema, current_user, db) : UsuarioResponseSchema
-    + update_usuarios(usuario_id, payload: UsuarioUpdateSchema, current_user, db) : UsuarioResponseSchema
-    + delete_usuarios(usuario_id, current_user, db) : dict
+  package "usuarios.py" {
+    class UsuarioRouter <<Controller>> {
+      + read_usuarios(current_user, db) : list
+      + read_usuario(usuario_id, current_user, db) : UsuarioResponseSchema
+      + create_usuarios(payload: UsuarioCreateSchema, current_user, db) : UsuarioResponseSchema
+      + update_usuarios(usuario_id, payload: UsuarioUpdateSchema, current_user, db) : UsuarioResponseSchema
+      + delete_usuarios(usuario_id, current_user, db) : dict
+    }
   }
 
-  class PedidoRouter <<Controller>> {
-    + read_pedidos(current_user, db) : list
-    + read_pedido(pedido_id, current_user, db) : PedidoResponseSchema
-    + create_pedidos(payload: PedidoCreateSchema, current_user, db) : PedidoResponseSchema
-    + aprovar_pedido_endpoint(pedido_id, current_user, db) : PedidoResponseSchema
-    + comprar_pedido_endpoint(pedido_id, payload: PedidoCompraSchema, current_user, db) : PedidoResponseSchema
-    + update_pedidos(pedido_id, payload: PedidoUpdateSchema, current_user, db) : PedidoResponseSchema
-    + entregar_pedido_endpoint(pedido_id, current_user, db) : PedidoResponseSchema
-    + delete_pedidos(pedido_id, current_user, db) : dict
+  package "pedidos.py" {
+    class PedidoRouter <<Controller>> {
+      + read_pedidos(current_user, db) : list
+      + read_pedido(pedido_id, current_user, db) : PedidoResponseSchema
+      + create_pedidos(payload: PedidoCreateSchema, current_user, db) : PedidoResponseSchema
+      + aprovar_pedido_endpoint(pedido_id, current_user, db) : PedidoResponseSchema
+      + comprar_pedido_endpoint(pedido_id, payload: PedidoCompraSchema, current_user, db) : PedidoResponseSchema
+      + update_pedidos(pedido_id, payload: PedidoUpdateSchema, current_user, db) : PedidoResponseSchema
+      + entregar_pedido_endpoint(pedido_id, current_user, db) : PedidoResponseSchema
+      + delete_pedidos(pedido_id, current_user, db) : dict
+    }
   }
 
-  class EstoqueRouter <<Controller>> {
-    + read_estoque(current_user, db) : list
-    + search_estoque(q, current_user, db) : list
-    + read_alertas_estoque(current_user, db) : list
-    + read_estoque_item(estoque_id, current_user, db) : EstoqueResponseSchema
-    + create_estoque_item(payload: EstoqueCreateSchema, current_user, db) : EstoqueResponseSchema
-    + update_estoque_item(estoque_id, payload: EstoqueUpdateSchema, current_user, db) : EstoqueResponseSchema
-    + delete_estoque_item(estoque_id, current_user, db) : dict
-    + baixa_estoque_item(estoque_id, payload: EstoqueBaixaSchema, current_user, db) : EstoqueResponseSchema
+  package "estoque.py" {
+    class EstoqueRouter <<Controller>> {
+      + read_estoque(current_user, db) : list
+      + search_estoque(q, current_user, db) : list
+      + read_alertas_estoque(current_user, db) : list
+      + read_estoque_item(estoque_id, current_user, db) : EstoqueResponseSchema
+      + create_estoque_item(payload: EstoqueCreateSchema, current_user, db) : EstoqueResponseSchema
+      + update_estoque_item(estoque_id, payload: EstoqueUpdateSchema, current_user, db) : EstoqueResponseSchema
+      + delete_estoque_item(estoque_id, current_user, db) : dict
+      + baixa_estoque_item(estoque_id, payload: EstoqueBaixaSchema, current_user, db) : EstoqueResponseSchema
+    }
   }
 
-  class DashboardRouter <<Controller>> {
-    + read_kpis(current_user, db) : KpisResponse
-    + read_charts_academico(current_user, db) : ChartAcademicoResponse
-    + read_charts_logistica(current_user, db) : ChartLogisticaResponse
+  package "dashboard.py" {
+    class DashboardRouter <<Controller>> {
+      + read_kpis(current_user, db) : KpisResponse
+      + read_charts_academico(current_user, db) : ChartAcademicoResponse
+      + read_charts_logistica(current_user, db) : ChartLogisticaResponse
+    }
   }
 
-  class HistoricoRouter <<Controller>> {
-    + read_historico_by_matricula(matricula_id, current_user, db) : HistoricoResponse
+  package "historico.py" {
+    class HistoricoRouter <<Controller>> {
+      + read_historico_by_matricula(matricula_id, current_user, db) : HistoricoResponse
+    }
   }
 }
 
@@ -437,36 +490,44 @@ package "api/v1" {
 ' ============================================================
 package "core" {
 
-  class Settings <<Configuration>> {
-    + app_name : str
-    + database_url : str
-    + secret_key : str
-    + jwt_algorithm : str = "HS256"
-    + access_token_expire_minutes : int = 120
-    + reset_token_expire_minutes : int = 15
-    + smtp_host : str ; + smtp_port : int
-    + smtp_user : str ; + smtp_password : str ; + smtp_from : str
-    + frontend_url : str ; + cors_origins : str
-    + rate_limit_auth : str ; + rate_limit_default : str
-    + get_cors_origin_list() : list[str]
+  package "config.py" {
+    class Settings <<Configuration>> {
+      + app_name : str
+      + database_url : str
+      + secret_key : str
+      + jwt_algorithm : str = "HS256"
+      + access_token_expire_minutes : int = 120
+      + reset_token_expire_minutes : int = 15
+      + smtp_host : str ; + smtp_port : int
+      + smtp_user : str ; + smtp_password : str ; + smtp_from : str
+      + frontend_url : str ; + cors_origins : str
+      + rate_limit_auth : str ; + rate_limit_default : str
+      + get_cors_origin_list() : list[str]
+    }
   }
 
-  class SecurityUtils <<Utility>> {
-    + verify_password(plain: str, hash: str) : bool
-    + hash_password(password: str) : str
-    + create_access_token(subject: str, cargo: int, expires_delta?) : str
-    + create_reset_token(email: str, expires_delta?) : str
-    + decode_reset_token(token: str) : dict
+  package "security.py" {
+    class SecurityUtils <<Utility>> {
+      + verify_password(plain: str, hash: str) : bool
+      + hash_password(password: str) : str
+      + create_access_token(subject: str, cargo: int, expires_delta?) : str
+      + create_reset_token(email: str, expires_delta?) : str
+      + decode_reset_token(token: str) : dict
+    }
   }
 
-  class AuthDependencies <<Utility>> {
-    + get_current_user(authorization?) : dict
-    + verify_cargo(*allowed_cargos) : callable
-    + verify_director_role() : dict
+  package "dependencies.py" {
+    class AuthDependencies <<Utility>> {
+      + get_current_user(authorization?) : dict
+      + verify_cargo(*allowed_cargos) : callable
+      + verify_director_role() : dict
+    }
   }
 
-  class RateLimiter <<Infrastructure>> {
-    + limiter : Limiter
+  package "limiter.py" {
+    class RateLimiter <<Infrastructure>> {
+      + limiter : Limiter
+    }
   }
 }
 
@@ -475,115 +536,144 @@ package "core" {
 ' ============================================================
 package "db" {
 
-  class Database <<Infrastructure>> {
-    + engine : Engine
-    + SessionLocal : sessionmaker
-    + Base : declarative_base
-    + get_db() : Generator[Session]
+  package "database.py" {
+    class Database <<Infrastructure>> {
+      + engine : Engine
+      + SessionLocal : sessionmaker
+      + Base : declarative_base
+      + get_db() : Generator[Session]
+    }
   }
 }
 
 ' ============================================================
 ' SERVICES - backend/app/services/
+' Cada sub-pacote = 1 arquivo .py
 ' ============================================================
 package "services" {
 
-  class AuthService <<Service>> {
-    + authenticate_user(db, email, senha) : Usuario
-    + build_login_response(usuario) : dict
-    + process_forgot_password(db, email) : str
-    + process_reset_password(db, token, nova_senha, confirmar_senha) : void
+  package "auth_service.py" {
+    class AuthService <<Service>> {
+      + authenticate_user(db, email, senha) : Usuario
+      + build_login_response(usuario) : dict
+      + process_forgot_password(db, email) : str
+      + process_reset_password(db, token, nova_senha, confirmar_senha) : void
+    }
   }
 
-  class AlunoService <<Service>> {
-    + create_aluno(db, payload: AlunoCreateSchema) : Aluno
-    + list_alunos(db) : list[Aluno]
-    + get_aluno_by_id(db, aluno_id) : Aluno
-    + update_aluno(db, aluno_id, payload: AlunoUpdateSchema) : Aluno
-    + delete_aluno(db, aluno_id) : void
+  package "aluno_service.py" {
+    class AlunoService <<Service>> {
+      + create_aluno(db, payload: AlunoCreateSchema) : Aluno
+      + list_alunos(db) : list[Aluno]
+      + get_aluno_by_id(db, aluno_id) : Aluno
+      + update_aluno(db, aluno_id, payload: AlunoUpdateSchema) : Aluno
+      + delete_aluno(db, aluno_id) : void
+    }
   }
 
-  class CursoService <<Service>> {
-    + create_curso(db, payload: CursoCreateSchema) : Curso
-    + list_cursos(db) : list[Curso]
-    + get_curso_by_id(db, curso_id) : Curso
-    + update_curso(db, curso_id, payload: CursoUpdateSchema) : Curso
-    + delete_curso(db, curso_id) : void
+  package "curso_service.py" {
+    class CursoService <<Service>> {
+      + create_curso(db, payload: CursoCreateSchema) : Curso
+      + list_cursos(db) : list[Curso]
+      + get_curso_by_id(db, curso_id) : Curso
+      + update_curso(db, curso_id, payload: CursoUpdateSchema) : Curso
+      + delete_curso(db, curso_id) : void
+    }
   }
 
-  class TurmaService <<Service>> {
-    + create_turma(db, payload: TurmaCreateSchema) : Turma
-    + list_turmas(db) : list[Turma]
-    + list_turmas_by_professor(db, professor_id) : list[Turma]
-    + get_turma_by_id(db, turma_id) : Turma
-    + update_turma(db, turma_id, payload: TurmaUpdateSchema) : Turma
-    + delete_turma(db, turma_id) : void
+  package "turma_service.py" {
+    class TurmaService <<Service>> {
+      + create_turma(db, payload: TurmaCreateSchema) : Turma
+      + list_turmas(db) : list[Turma]
+      + list_turmas_by_professor(db, professor_id) : list[Turma]
+      + get_turma_by_id(db, turma_id) : Turma
+      + update_turma(db, turma_id, payload: TurmaUpdateSchema) : Turma
+      + delete_turma(db, turma_id) : void
+    }
   }
 
-  class MatriculaService <<Service>> {
-    + create_matricula(db, payload: MatriculaCreateSchema) : Matricula
-    + list_matriculas(db) : list[Matricula]
-    + list_matriculas_by_professor(db, professor_id) : list[Matricula]
-    + get_matricula_by_id(db, matricula_id) : Matricula
-    + update_matricula(db, matricula_id, payload: MatriculaUpdateSchema) : Matricula
-    + delete_matricula(db, matricula_id) : void
+  package "matricula_service.py" {
+    class MatriculaService <<Service>> {
+      + create_matricula(db, payload: MatriculaCreateSchema) : Matricula
+      + list_matriculas(db) : list[Matricula]
+      + list_matriculas_by_professor(db, professor_id) : list[Matricula]
+      + get_matricula_by_id(db, matricula_id) : Matricula
+      + update_matricula(db, matricula_id, payload: MatriculaUpdateSchema) : Matricula
+      + delete_matricula(db, matricula_id) : void
+    }
   }
 
-  class NotaService <<Service>> {
-    + create_or_update_notas(db, payload: NotaBatchSchema) : list[Nota]
-    + list_notas_by_matricula(db, matricula_id) : list[Nota]
-    + list_notas_by_turma(db, turma_id, prova?) : list[Nota]
-    + calcular_media_por_prova(db, turma_id) : list[MediaProvaSchema]
+  package "nota_service.py" {
+    class NotaService <<Service>> {
+      + create_or_update_notas(db, payload: NotaBatchSchema) : list[Nota]
+      + list_notas_by_matricula(db, matricula_id) : list[Nota]
+      + list_notas_by_turma(db, turma_id, prova?) : list[Nota]
+      + calcular_media_por_prova(db, turma_id) : list[MediaProvaSchema]
+    }
   }
 
-  class PresencaService <<Service>> {
-    + create_or_update_presencas(db, payload: PresencaBatchSchema) : list[Presenca]
-    + list_presencas_by_turma(db, turma_id, data_aula?) : list[Presenca]
+  package "presenca_service.py" {
+    class PresencaService <<Service>> {
+      + create_or_update_presencas(db, payload: PresencaBatchSchema) : list[Presenca]
+      + list_presencas_by_turma(db, turma_id, data_aula?) : list[Presenca]
+    }
   }
 
-  class UsuarioService <<Service>> {
-    + create_usuario(db, payload: UsuarioCreateSchema) : Usuario
-    + list_usuarios(db) : list[Usuario]
-    + get_usuario_by_id(db, usuario_id) : Usuario
-    + update_usuario(db, usuario_id, payload: UsuarioUpdateSchema) : Usuario
-    + delete_usuario(db, usuario_id) : void
+  package "usuario_service.py" {
+    class UsuarioService <<Service>> {
+      + create_usuario(db, payload: UsuarioCreateSchema) : Usuario
+      + list_usuarios(db) : list[Usuario]
+      + get_usuario_by_id(db, usuario_id) : Usuario
+      + update_usuario(db, usuario_id, payload: UsuarioUpdateSchema) : Usuario
+      + delete_usuario(db, usuario_id) : void
+    }
   }
 
-  class PedidoService <<Service>> {
-    + create_pedido(db, payload: PedidoCreateSchema, usuario_id) : Pedido
-    + list_pedidos(db) : list[Pedido]
-    + get_pedido_by_id(db, pedido_id) : Pedido
-    + aprovar_pedido(db, pedido_id) : Pedido
-    + comprar_pedido(db, pedido_id, payload: PedidoCompraSchema) : Pedido
-    + update_pedido_status(db, pedido_id, payload: PedidoUpdateSchema) : Pedido
-    + entregar_pedido(db, pedido_id) : Pedido
-    + delete_pedido(db, pedido_id) : void
+  package "pedido_service.py" {
+    class PedidoService <<Service>> {
+      + create_pedido(db, payload: PedidoCreateSchema, usuario_id) : Pedido
+      + list_pedidos(db) : list[Pedido]
+      + get_pedido_by_id(db, pedido_id) : Pedido
+      + aprovar_pedido(db, pedido_id) : Pedido
+      + comprar_pedido(db, pedido_id, payload: PedidoCompraSchema) : Pedido
+      + update_pedido_status(db, pedido_id, payload: PedidoUpdateSchema) : Pedido
+      + entregar_pedido(db, pedido_id) : Pedido
+      + delete_pedido(db, pedido_id) : void
+    }
   }
 
-  class EstoqueService <<Service>> {
-    + create_estoque(db, payload: EstoqueCreateSchema) : Estoque
-    + list_estoque(db) : list[Estoque]
-    + search_estoque_by_name(db, term) : list[Estoque]
-    + get_estoque_by_id(db, estoque_id) : Estoque
-    + update_estoque(db, estoque_id, payload: EstoqueUpdateSchema) : Estoque
-    + delete_estoque(db, estoque_id) : void
-    + dar_baixa(db, estoque_id, quantidade, justificativa) : Estoque
-    + get_alertas(db) : list[Estoque]
-    + deduzir_por_pedido(db, pedido) : void
+  package "estoque_service.py" {
+    class EstoqueService <<Service>> {
+      + create_estoque(db, payload: EstoqueCreateSchema) : Estoque
+      + list_estoque(db) : list[Estoque]
+      + search_estoque_by_name(db, term) : list[Estoque]
+      + get_estoque_by_id(db, estoque_id) : Estoque
+      + update_estoque(db, estoque_id, payload: EstoqueUpdateSchema) : Estoque
+      + delete_estoque(db, estoque_id) : void
+      + dar_baixa(db, estoque_id, quantidade, justificativa) : Estoque
+      + get_alertas(db) : list[Estoque]
+      + deduzir_por_pedido(db, pedido) : void
+    }
   }
 
-  class DashboardService <<Service>> {
-    + get_kpis(db) : dict
-    + get_chart_academico(db) : dict
-    + get_chart_logistica(db) : dict
+  package "dashboard_service.py" {
+    class DashboardService <<Service>> {
+      + get_kpis(db) : dict
+      + get_chart_academico(db) : dict
+      + get_chart_logistica(db) : dict
+    }
   }
 
-  class HistoricoService <<Service>> {
-    + get_historico_by_matricula(db, matricula_id) : dict
+  package "historico_service.py" {
+    class HistoricoService <<Service>> {
+      + get_historico_by_matricula(db, matricula_id) : dict
+    }
   }
 
-  class EmailService <<Service>> {
-    + send_reset_email(to_email, reset_token) : void
+  package "email_service.py" {
+    class EmailService <<Service>> {
+      + send_reset_email(to_email, reset_token) : void
+    }
   }
 }
 
@@ -591,7 +681,7 @@ package "services" {
 ' CROSS-LAYER DEPENDENCIES
 ' ============================================================
 
-' api/v1 --> services
+' api/v1/ --> services/
 AuthRouter ..> AuthService
 AuthRouter ..> EmailService
 AlunoRouter ..> AlunoService
@@ -606,7 +696,7 @@ EstoqueRouter ..> EstoqueService
 DashboardRouter ..> DashboardService
 HistoricoRouter ..> HistoricoService
 
-' api/v1 --> core
+' api/v1/ --> core/
 AuthRouter ..> AuthDependencies
 AuthRouter ..> RateLimiter
 AlunoRouter ..> AuthDependencies
@@ -621,7 +711,7 @@ EstoqueRouter ..> AuthDependencies
 DashboardRouter ..> AuthDependencies
 HistoricoRouter ..> AuthDependencies
 
-' services --> models
+' services/ --> models/
 AuthService ..> Usuario
 AlunoService ..> Aluno
 CursoService ..> Curso
@@ -649,7 +739,7 @@ HistoricoService ..> Turma
 HistoricoService ..> Nota
 HistoricoService ..> Presenca
 
-' services --> db + core
+' services/ --> db/ + core/
 AuthService ..> Database
 AuthService ..> SecurityUtils
 AlunoService ..> Database
@@ -665,7 +755,7 @@ DashboardService ..> Database
 HistoricoService ..> Database
 EmailService ..> Settings
 
-' core internal
+' core/ internal
 AuthDependencies ..> SecurityUtils
 AuthDependencies ..> Settings
 Database ..> Settings
