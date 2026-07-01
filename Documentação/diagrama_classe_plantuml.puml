@@ -17,18 +17,6 @@ package "app" {
     package "item_pedido.py" { class ItemPedido }
     package "estoque.py" { class Estoque }
     package "movimentacao_estoque.py" { class MovimentacaoEstoque }
-
-    Aluno "1" -- "0..*" Matricula
-    Curso "1" -- "0..*" Turma
-    Turma "1" -- "0..*" Matricula
-    Turma "0..*" -- "0..1" Usuario : professor
-    Turma "1" -- "0..*" Pedido
-    Matricula "1" -- "0..*" Nota
-    Matricula "1" -- "0..*" Presenca
-    Usuario "1" -- "0..*" Pedido : solicitante
-    Pedido "1" -- "0..*" ItemPedido
-    ItemPedido "0..*" -- "0..1" Estoque
-    Estoque "1" -- "0..*" MovimentacaoEstoque
   }
 
   package "schemas" {
@@ -91,10 +79,20 @@ package "app" {
   }
 }
 
-' ============================================================
-' Cross-layer dependencies
-' ============================================================
+' ---- Entity Relationships (outside all packages) ----
+Aluno "1" -- "0..*" Matricula
+Curso "1" -- "0..*" Turma
+Turma "1" -- "0..*" Matricula
+Turma "0..*" -- "0..1" Usuario : professor
+Turma "1" -- "0..*" Pedido
+Matricula "1" -- "0..*" Nota
+Matricula "1" -- "0..*" Presenca
+Usuario "1" -- "0..*" Pedido : solicitante
+Pedido "1" -- "0..*" ItemPedido
+ItemPedido "0..*" -- "0..1" Estoque
+Estoque "1" -- "0..*" MovimentacaoEstoque
 
+' ---- Cross-layer dependencies ----
 AuthRouter ..> AuthService
 AuthRouter ..> EmailService
 AlunoRouter ..> AlunoService
