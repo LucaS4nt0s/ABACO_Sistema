@@ -1,12 +1,7 @@
 @startuml
-skinparam packageStyle rectangle
-skinparam defaultFontName Arial
-skinparam defaultFontSize 11
-hide empty members
+package "app" #LightBlue {
 
-package "app" {
-
-  package "models" as models {
+  package "models" #LightGreen {
     package "aluno.py" { class Aluno }
     package "curso.py" { class Curso }
     package "turma.py" { class Turma }
@@ -20,23 +15,23 @@ package "app" {
     package "movimentacao_estoque.py" { class MovimentacaoEstoque }
   }
 
-  package "schemas" as schemas {
-    package "aluno_schema.py" { class AlunoCreateSchema ; class AlunoUpdateSchema ; class AlunoResponseSchema }
-    package "auth_schema.py" { class LoginRequest ; class TokenResponse ; class MessageResponse }
-    package "curso_schema.py" { class CursoCreateSchema ; class CursoUpdateSchema ; class CursoResponseSchema }
-    package "dashboard_schema.py" { class KpisResponse ; class ChartAcademicoResponse ; class ChartLogisticaResponse }
-    package "estoque_schema.py" { class EstoqueCreateSchema ; class EstoqueUpdateSchema ; class EstoqueResponseSchema ; class EstoqueBaixaSchema }
+  package "schemas" #LightYellow {
+    package "aluno_schema.py" { class AlunoCreateSchema ; class AlunoResponseSchema }
+    package "auth_schema.py" { class LoginRequest ; class TokenResponse }
+    package "curso_schema.py" { class CursoCreateSchema ; class CursoResponseSchema }
+    package "dashboard_schema.py" { class KpisResponse ; class ChartAcademicoResponse }
+    package "estoque_schema.py" { class EstoqueCreateSchema ; class EstoqueResponseSchema }
     package "historico_schema.py" { class HistoricoNotaInfo ; class HistoricoAlunoInfo ; class HistoricoTurmaInfo ; class HistoricoResponse }
-    package "matricula_schema.py" { class MatriculaCreateSchema ; class MatriculaUpdateSchema ; class MatriculaAlunoInfo ; class MatriculaCursoInfo ; class MatriculaTurmaInfo ; class MatriculaResponseSchema }
-    package "nota_schema.py" { class NotaItemSchema ; class NotaBatchSchema ; class NotaAlunoInfo ; class NotaResponseSchema ; class MediaProvaSchema ; class MediaTurmaSchema }
-    package "pedido_schema.py" { class PedidoCreateSchema ; class PedidoUpdateSchema ; class PedidoCompraSchema ; class ItemPedidoCreateSchema ; class ItemPedidoResponseSchema ; class PedidoResponseSchema }
-    package "presenca_schema.py" { class PresencaItemSchema ; class PresencaBatchSchema ; class PresencaAlunoInfo ; class PresencaResponseSchema }
-    package "turma_schema.py" { class TurmaCreateSchema ; class TurmaUpdateSchema ; class TurmaCursoInfo ; class TurmaProfessorInfo ; class TurmaResponseSchema }
-    package "usuario_schema.py" { class UsuarioCreateSchema ; class UsuarioUpdateSchema ; class UsuarioResponseSchema }
+    package "matricula_schema.py" { class MatriculaCreateSchema ; class MatriculaResponseSchema }
+    package "nota_schema.py" { class NotaBatchSchema ; class NotaResponseSchema ; class MediaTurmaSchema }
+    package "pedido_schema.py" { class PedidoCreateSchema ; class PedidoUpdateSchema ; class PedidoResponseSchema }
+    package "presenca_schema.py" { class PresencaBatchSchema ; class PresencaResponseSchema }
+    package "turma_schema.py" { class TurmaCreateSchema ; class TurmaResponseSchema }
+    package "usuario_schema.py" { class UsuarioCreateSchema ; class UsuarioResponseSchema }
   }
 
-  package "api" as api {
-    package "v1" as v1 {
+  package "api" #LightCoral {
+    package "v1" {
       package "auth.py" { class AuthRouter }
       package "alunos.py" { class AlunoRouter }
       package "cursos.py" { class CursoRouter }
@@ -52,18 +47,18 @@ package "app" {
     }
   }
 
-  package "core" as core {
+  package "core" #LightGray {
     package "config.py" { class Settings }
     package "security.py" { class SecurityUtils }
     package "dependencies.py" { class AuthDependencies }
     package "limiter.py" { class RateLimiter }
   }
 
-  package "db" as db {
+  package "db" #LightGray {
     package "database.py" { class Database }
   }
 
-  package "services" as services {
+  package "services" #LightPink {
     package "auth_service.py" { class AuthService }
     package "aluno_service.py" { class AlunoService }
     package "curso_service.py" { class CursoService }
@@ -83,86 +78,13 @@ package "app" {
 Aluno --> Matricula
 Curso --> Turma
 Turma --> Matricula
-Turma --> Usuario : professor
+Turma --> Usuario
 Turma --> Pedido
 Matricula --> Nota
 Matricula --> Presenca
-Usuario --> Pedido : solicitante
+Usuario --> Pedido
 Pedido --> ItemPedido
 ItemPedido --> Estoque
 Estoque --> MovimentacaoEstoque
-
-AuthRouter --> AuthService
-AuthRouter --> EmailService
-AlunoRouter --> AlunoService
-CursoRouter --> CursoService
-TurmaRouter --> TurmaService
-MatriculaRouter --> MatriculaService
-NotaRouter --> NotaService
-PresencaRouter --> PresencaService
-UsuarioRouter --> UsuarioService
-PedidoRouter --> PedidoService
-EstoqueRouter --> EstoqueService
-DashboardRouter --> DashboardService
-HistoricoRouter --> HistoricoService
-
-AuthRouter --> AuthDependencies
-AuthRouter --> RateLimiter
-AlunoRouter --> AuthDependencies
-CursoRouter --> AuthDependencies
-TurmaRouter --> AuthDependencies
-MatriculaRouter --> AuthDependencies
-NotaRouter --> AuthDependencies
-PresencaRouter --> AuthDependencies
-UsuarioRouter --> AuthDependencies
-PedidoRouter --> AuthDependencies
-EstoqueRouter --> AuthDependencies
-DashboardRouter --> AuthDependencies
-HistoricoRouter --> AuthDependencies
-
-AuthService --> Usuario
-AuthService --> Database
-AuthService --> SecurityUtils
-AlunoService --> Aluno
-AlunoService --> Database
-CursoService --> Curso
-CursoService --> Database
-TurmaService --> Turma
-TurmaService --> Curso
-TurmaService --> Usuario
-TurmaService --> Database
-MatriculaService --> Aluno
-MatriculaService --> Turma
-MatriculaService --> Database
-NotaService --> Nota
-NotaService --> Matricula
-NotaService --> Database
-PresencaService --> Presenca
-PresencaService --> Matricula
-PresencaService --> Database
-UsuarioService --> Usuario
-UsuarioService --> Database
-PedidoService --> Pedido
-PedidoService --> ItemPedido
-PedidoService --> Database
-EstoqueService --> Estoque
-EstoqueService --> MovimentacaoEstoque
-EstoqueService --> Database
-DashboardService --> Turma
-DashboardService --> Pedido
-DashboardService --> Estoque
-DashboardService --> Matricula
-DashboardService --> Database
-HistoricoService --> Matricula
-HistoricoService --> Aluno
-HistoricoService --> Turma
-HistoricoService --> Nota
-HistoricoService --> Presenca
-HistoricoService --> Database
-EmailService --> Settings
-
-AuthDependencies --> SecurityUtils
-AuthDependencies --> Settings
-Database --> Settings
 
 @enduml
