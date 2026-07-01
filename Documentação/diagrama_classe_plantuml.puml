@@ -2,10 +2,11 @@
 skinparam packageStyle rectangle
 skinparam defaultFontName Arial
 skinparam defaultFontSize 11
+hide empty members
 
 package "app" {
 
-  package "models" {
+  package "models" as models {
     package "aluno.py" { class Aluno }
     package "curso.py" { class Curso }
     package "turma.py" { class Turma }
@@ -19,7 +20,7 @@ package "app" {
     package "movimentacao_estoque.py" { class MovimentacaoEstoque }
   }
 
-  package "schemas" {
+  package "schemas" as schemas {
     package "aluno_schema.py" { class AlunoCreateSchema ; class AlunoUpdateSchema ; class AlunoResponseSchema }
     package "auth_schema.py" { class LoginRequest ; class TokenResponse ; class MessageResponse }
     package "curso_schema.py" { class CursoCreateSchema ; class CursoUpdateSchema ; class CursoResponseSchema }
@@ -34,8 +35,8 @@ package "app" {
     package "usuario_schema.py" { class UsuarioCreateSchema ; class UsuarioUpdateSchema ; class UsuarioResponseSchema }
   }
 
-  package "api" {
-    package "v1" {
+  package "api" as api {
+    package "v1" as v1 {
       package "auth.py" { class AuthRouter }
       package "alunos.py" { class AlunoRouter }
       package "cursos.py" { class CursoRouter }
@@ -51,18 +52,18 @@ package "app" {
     }
   }
 
-  package "core" {
+  package "core" as core {
     package "config.py" { class Settings }
     package "security.py" { class SecurityUtils }
     package "dependencies.py" { class AuthDependencies }
     package "limiter.py" { class RateLimiter }
   }
 
-  package "db" {
+  package "db" as db {
     package "database.py" { class Database }
   }
 
-  package "services" {
+  package "services" as services {
     package "auth_service.py" { class AuthService }
     package "aluno_service.py" { class AlunoService }
     package "curso_service.py" { class CursoService }
@@ -79,91 +80,89 @@ package "app" {
   }
 }
 
-' ---- Entity Relationships (outside all packages) ----
-Aluno "1" -- "0..*" Matricula
-Curso "1" -- "0..*" Turma
-Turma "1" -- "0..*" Matricula
-Turma "0..*" -- "0..1" Usuario : professor
-Turma "1" -- "0..*" Pedido
-Matricula "1" -- "0..*" Nota
-Matricula "1" -- "0..*" Presenca
-Usuario "1" -- "0..*" Pedido : solicitante
-Pedido "1" -- "0..*" ItemPedido
-ItemPedido "0..*" -- "0..1" Estoque
-Estoque "1" -- "0..*" MovimentacaoEstoque
+Aluno --> Matricula
+Curso --> Turma
+Turma --> Matricula
+Turma --> Usuario : professor
+Turma --> Pedido
+Matricula --> Nota
+Matricula --> Presenca
+Usuario --> Pedido : solicitante
+Pedido --> ItemPedido
+ItemPedido --> Estoque
+Estoque --> MovimentacaoEstoque
 
-' ---- Cross-layer dependencies ----
-AuthRouter ..> AuthService
-AuthRouter ..> EmailService
-AlunoRouter ..> AlunoService
-CursoRouter ..> CursoService
-TurmaRouter ..> TurmaService
-MatriculaRouter ..> MatriculaService
-NotaRouter ..> NotaService
-PresencaRouter ..> PresencaService
-UsuarioRouter ..> UsuarioService
-PedidoRouter ..> PedidoService
-EstoqueRouter ..> EstoqueService
-DashboardRouter ..> DashboardService
-HistoricoRouter ..> HistoricoService
+AuthRouter --> AuthService
+AuthRouter --> EmailService
+AlunoRouter --> AlunoService
+CursoRouter --> CursoService
+TurmaRouter --> TurmaService
+MatriculaRouter --> MatriculaService
+NotaRouter --> NotaService
+PresencaRouter --> PresencaService
+UsuarioRouter --> UsuarioService
+PedidoRouter --> PedidoService
+EstoqueRouter --> EstoqueService
+DashboardRouter --> DashboardService
+HistoricoRouter --> HistoricoService
 
-AuthRouter ..> AuthDependencies
-AuthRouter ..> RateLimiter
-AlunoRouter ..> AuthDependencies
-CursoRouter ..> AuthDependencies
-TurmaRouter ..> AuthDependencies
-MatriculaRouter ..> AuthDependencies
-NotaRouter ..> AuthDependencies
-PresencaRouter ..> AuthDependencies
-UsuarioRouter ..> AuthDependencies
-PedidoRouter ..> AuthDependencies
-EstoqueRouter ..> AuthDependencies
-DashboardRouter ..> AuthDependencies
-HistoricoRouter ..> AuthDependencies
+AuthRouter --> AuthDependencies
+AuthRouter --> RateLimiter
+AlunoRouter --> AuthDependencies
+CursoRouter --> AuthDependencies
+TurmaRouter --> AuthDependencies
+MatriculaRouter --> AuthDependencies
+NotaRouter --> AuthDependencies
+PresencaRouter --> AuthDependencies
+UsuarioRouter --> AuthDependencies
+PedidoRouter --> AuthDependencies
+EstoqueRouter --> AuthDependencies
+DashboardRouter --> AuthDependencies
+HistoricoRouter --> AuthDependencies
 
-AuthService ..> Usuario
-AuthService ..> Database
-AuthService ..> SecurityUtils
-AlunoService ..> Aluno
-AlunoService ..> Database
-CursoService ..> Curso
-CursoService ..> Database
-TurmaService ..> Turma
-TurmaService ..> Curso
-TurmaService ..> Usuario
-TurmaService ..> Database
-MatriculaService ..> Aluno
-MatriculaService ..> Turma
-MatriculaService ..> Database
-NotaService ..> Nota
-NotaService ..> Matricula
-NotaService ..> Database
-PresencaService ..> Presenca
-PresencaService ..> Matricula
-PresencaService ..> Database
-UsuarioService ..> Usuario
-UsuarioService ..> Database
-PedidoService ..> Pedido
-PedidoService ..> ItemPedido
-PedidoService ..> Database
-EstoqueService ..> Estoque
-EstoqueService ..> MovimentacaoEstoque
-EstoqueService ..> Database
-DashboardService ..> Turma
-DashboardService ..> Pedido
-DashboardService ..> Estoque
-DashboardService ..> Matricula
-DashboardService ..> Database
-HistoricoService ..> Matricula
-HistoricoService ..> Aluno
-HistoricoService ..> Turma
-HistoricoService ..> Nota
-HistoricoService ..> Presenca
-HistoricoService ..> Database
-EmailService ..> Settings
+AuthService --> Usuario
+AuthService --> Database
+AuthService --> SecurityUtils
+AlunoService --> Aluno
+AlunoService --> Database
+CursoService --> Curso
+CursoService --> Database
+TurmaService --> Turma
+TurmaService --> Curso
+TurmaService --> Usuario
+TurmaService --> Database
+MatriculaService --> Aluno
+MatriculaService --> Turma
+MatriculaService --> Database
+NotaService --> Nota
+NotaService --> Matricula
+NotaService --> Database
+PresencaService --> Presenca
+PresencaService --> Matricula
+PresencaService --> Database
+UsuarioService --> Usuario
+UsuarioService --> Database
+PedidoService --> Pedido
+PedidoService --> ItemPedido
+PedidoService --> Database
+EstoqueService --> Estoque
+EstoqueService --> MovimentacaoEstoque
+EstoqueService --> Database
+DashboardService --> Turma
+DashboardService --> Pedido
+DashboardService --> Estoque
+DashboardService --> Matricula
+DashboardService --> Database
+HistoricoService --> Matricula
+HistoricoService --> Aluno
+HistoricoService --> Turma
+HistoricoService --> Nota
+HistoricoService --> Presenca
+HistoricoService --> Database
+EmailService --> Settings
 
-AuthDependencies ..> SecurityUtils
-AuthDependencies ..> Settings
-Database ..> Settings
+AuthDependencies --> SecurityUtils
+AuthDependencies --> Settings
+Database --> Settings
 
 @enduml
