@@ -1,77 +1,86 @@
 @startuml
-package "app" #LightBlue {
+package "app" {
 
-  package "models" #LightGreen {
-    package "aluno.py" { class Aluno }
-    package "curso.py" { class Curso }
-    package "turma.py" { class Turma }
-    package "matricula.py" { class Matricula }
-    package "nota.py" { class Nota }
-    package "presenca.py" { class Presenca }
-    package "usuario.py" { class Usuario }
-    package "pedido.py" { class Pedido }
-    package "item_pedido.py" { class ItemPedido }
-    package "estoque.py" { class Estoque }
-    package "movimentacao_estoque.py" { class MovimentacaoEstoque }
+  package "models" {
+    class Aluno
+    class Curso
+    class Turma
+    class Matricula
+    class Nota
+    class Presenca
+    class Usuario
+    class Pedido
+    class ItemPedido
+    class Estoque
+    class MovimentacaoEstoque
   }
 
-  package "schemas" #LightYellow {
-    package "aluno_schema.py" { class AlunoCreateSchema ; class AlunoResponseSchema }
-    package "auth_schema.py" { class LoginRequest ; class TokenResponse }
-    package "curso_schema.py" { class CursoCreateSchema ; class CursoResponseSchema }
-    package "dashboard_schema.py" { class KpisResponse ; class ChartAcademicoResponse }
-    package "estoque_schema.py" { class EstoqueCreateSchema ; class EstoqueResponseSchema }
-    package "historico_schema.py" { class HistoricoNotaInfo ; class HistoricoAlunoInfo ; class HistoricoTurmaInfo ; class HistoricoResponse }
-    package "matricula_schema.py" { class MatriculaCreateSchema ; class MatriculaResponseSchema }
-    package "nota_schema.py" { class NotaBatchSchema ; class NotaResponseSchema ; class MediaTurmaSchema }
-    package "pedido_schema.py" { class PedidoCreateSchema ; class PedidoUpdateSchema ; class PedidoResponseSchema }
-    package "presenca_schema.py" { class PresencaBatchSchema ; class PresencaResponseSchema }
-    package "turma_schema.py" { class TurmaCreateSchema ; class TurmaResponseSchema }
-    package "usuario_schema.py" { class UsuarioCreateSchema ; class UsuarioResponseSchema }
+  package "schemas" {
+    class AlunoCreateSchema
+    class AlunoResponseSchema
+    class CursoCreateSchema
+    class CursoResponseSchema
+    class TurmaCreateSchema
+    class TurmaResponseSchema
+    class MatriculaCreateSchema
+    class MatriculaResponseSchema
+    class NotaBatchSchema
+    class NotaResponseSchema
+    class PresencaBatchSchema
+    class PresencaResponseSchema
+    class UsuarioCreateSchema
+    class UsuarioResponseSchema
+    class PedidoCreateSchema
+    class PedidoUpdateSchema
+    class PedidoResponseSchema
+    class EstoqueCreateSchema
+    class EstoqueResponseSchema
+    class LoginRequest
+    class TokenResponse
+    class KpisResponse
+    class HistoricoResponse
   }
 
-  package "api" #LightCoral {
-    package "v1" {
-      package "auth.py" { class AuthRouter }
-      package "alunos.py" { class AlunoRouter }
-      package "cursos.py" { class CursoRouter }
-      package "turmas.py" { class TurmaRouter }
-      package "matriculas.py" { class MatriculaRouter }
-      package "notas.py" { class NotaRouter }
-      package "presencas.py" { class PresencaRouter }
-      package "usuarios.py" { class UsuarioRouter }
-      package "pedidos.py" { class PedidoRouter }
-      package "estoque.py" { class EstoqueRouter }
-      package "dashboard.py" { class DashboardRouter }
-      package "historico.py" { class HistoricoRouter }
-    }
+  package "api" {
+    class AuthRouter
+    class AlunoRouter
+    class CursoRouter
+    class TurmaRouter
+    class MatriculaRouter
+    class NotaRouter
+    class PresencaRouter
+    class UsuarioRouter
+    class PedidoRouter
+    class EstoqueRouter
+    class DashboardRouter
+    class HistoricoRouter
   }
 
-  package "core" #LightGray {
-    package "config.py" { class Settings }
-    package "security.py" { class SecurityUtils }
-    package "dependencies.py" { class AuthDependencies }
-    package "limiter.py" { class RateLimiter }
+  package "core" {
+    class Settings
+    class SecurityUtils
+    class AuthDependencies
+    class RateLimiter
   }
 
-  package "db" #LightGray {
-    package "database.py" { class Database }
+  package "db" {
+    class Database
   }
 
-  package "services" #LightPink {
-    package "auth_service.py" { class AuthService }
-    package "aluno_service.py" { class AlunoService }
-    package "curso_service.py" { class CursoService }
-    package "turma_service.py" { class TurmaService }
-    package "matricula_service.py" { class MatriculaService }
-    package "nota_service.py" { class NotaService }
-    package "presenca_service.py" { class PresencaService }
-    package "usuario_service.py" { class UsuarioService }
-    package "pedido_service.py" { class PedidoService }
-    package "estoque_service.py" { class EstoqueService }
-    package "dashboard_service.py" { class DashboardService }
-    package "historico_service.py" { class HistoricoService }
-    package "email_service.py" { class EmailService }
+  package "services" {
+    class AuthService
+    class AlunoService
+    class CursoService
+    class TurmaService
+    class MatriculaService
+    class NotaService
+    class PresencaService
+    class UsuarioService
+    class PedidoService
+    class EstoqueService
+    class DashboardService
+    class HistoricoService
+    class EmailService
   }
 }
 
@@ -87,4 +96,17 @@ Pedido --> ItemPedido
 ItemPedido --> Estoque
 Estoque --> MovimentacaoEstoque
 
+AuthRouter --> AuthService
+AuthRouter --> EmailService
+AlunoRouter --> AlunoService
+CursoRouter --> CursoService
+TurmaRouter --> TurmaService
+MatriculaRouter --> MatriculaService
+NotaRouter --> NotaService
+PresencaRouter --> PresencaService
+UsuarioRouter --> UsuarioService
+PedidoRouter --> PedidoService
+EstoqueRouter --> EstoqueService
+DashboardRouter --> DashboardService
+HistoricoRouter --> HistoricoService
 @enduml
