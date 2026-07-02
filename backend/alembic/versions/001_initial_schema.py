@@ -115,7 +115,6 @@ def upgrade() -> None:
         sa.Column("iditempedido", sa.Integer, primary_key=True, autoincrement=True),
         sa.Column("idpedido", sa.Integer, sa.ForeignKey("pedido.idpedido")),
         sa.Column("iditemestoque", sa.Integer, sa.ForeignKey("estoque.iditemestoque")),
-        sa.Column("nomeitem", sa.Text),
         sa.Column("quantidade", sa.Integer),
         sa.Column("precounitario", sa.Float),
     )
